@@ -1,14 +1,26 @@
 import "./App.css";
-// import CommentSection from "./Components/CommentSection";
 import LoginPage from "./Components/LoginPage";
 import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Home from "./Components/Home";
 
 export default function App() {
 
   const [userDetails, setUserDetails] = useState({userId:"", password:"", role:"", name: ""});
 
+  const handleLogout = () => {
+    console.log("LOGGED OUT")
+    setUserDetails({userId:"", password:"", role:"", name: ""});
+    sessionStorage.clear();
+  }
+  
+  useEffect(() => {
+    const userLoggedIn = sessionStorage.getItem("user")
+    console.log(userLoggedIn)
+    userLoggedIn !== null ? setUserDetails(JSON.parse(userLoggedIn)) : setUserDetails({userId:"", password:"", role:"", name: ""})
+    console.log(userDetails)
+  }, [])
+  
   const router = createBrowserRouter([
     {
       path: "/",
@@ -20,7 +32,7 @@ export default function App() {
     },
     {
       path: "/home",
-      element:  userDetails.userId !== "" ? <Home userDetails={userDetails}/> : <Navigate to="/login"/>,
+      element:  userDetails.userId !== "" ? <Home userDetails={userDetails} handleLogout={handleLogout}/> : <Navigate to="/login"/>,
     },
     ]);
 

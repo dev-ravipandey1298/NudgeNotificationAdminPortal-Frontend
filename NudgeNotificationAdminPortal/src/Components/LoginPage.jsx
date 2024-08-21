@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 
 const LoginPage = ({setUserDetails}) => {
@@ -15,6 +15,8 @@ const LoginPage = ({setUserDetails}) => {
       if (loggedInUser !== undefined) {
         setUserDetails(loggedInUser);
         // navigate('/home');
+        loggedInUser.password = "";
+        sessionStorage.setItem("user", JSON.stringify(loggedInUser))
         console.log(loggedInUser)
 
         // Redirect to home after successful login
