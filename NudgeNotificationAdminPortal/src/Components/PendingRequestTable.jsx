@@ -1,44 +1,62 @@
 import React, { useState } from 'react'
 import TemplateForm from './TemplateForm';
 
-const PendingRequestTable = ({ userDetails, pendingRequestData }) => {
+const PendingRequestTable = () => {
 
   const [showTemplateForm, setShowTemplateForm] = useState(false);
 
-  // const pendingRequestData = [
-  //     {
-  //       templateId: "10234599",
-  //       requestedOn: new Date().toLocaleString(),
-  //       requestedBy:"user_maker_1",
-  //       status: "pending_approval"
-  //     },
-  //     {
-  //       templateId: "10234599",
-  //       requestedOn: new Date().toLocaleString(),
-  //       requestedBy:"user_maker_2",
-  //       status: "pending_approval"
-  //     },
-  //     {
-  //       templateId: "10234599",
-  //       requestedOn: new Date().toLocaleString(),
-  //       requestedBy:"user_maker_2",
-  //       status: "pending_approval"
-  //     },
-  //     {
-  //       templateId: "10234599",
-  //       requestedOn: new Date().toLocaleString(),
-  //       requestedBy:"user_maker_2",
-  //       status: "pending_approval"
-  //     },   
-  //   ];
+  const pendingRequestData = [
+    {
+      templateId: "10234599",
+      createdOn: new Date().toLocaleString(),
+      requestedOn: new Date().toLocaleString(),
+      requestedBy: "user_maker_1",
+      approvedOn: "",
+      approvedBy: "",
+      status: "pending_approval"
+    },
+    {
+      templateId: "10234600",
+      createdOn: new Date().toLocaleString(),
+      requestedOn: new Date().toLocaleString(),
+      requestedBy: "user_maker_2",
+      approvedOn: new Date().toLocaleString(),
+      approvedBy: "user1_checker",
+      status: "pending_approval"
+    },
+    {
+      templateId: "10234601",
+      createdOn: new Date().toLocaleString(),
+      requestedOn: new Date().toLocaleString(),
+      requestedBy: "user_maker_1",
+      approvedOn: "",
+      approvedBy: "",
+      status: "pending_approval"
+    },
+    {
+      templateId: "10234602",
+      createdOn: new Date().toLocaleString(),
+      requestedOn: new Date().toLocaleString(),
+      requestedBy: "user_maker_3",
+      approvedOn: "",
+      approvedBy: "",
+      status: "pending_approval"
+    },
+
+  ];
 
   const handleView = () => {
     setShowTemplateForm(true);
   }
 
   return (
-    <>
-      {!showTemplateForm ? <div className='px-5 py-5 pt-14 flex justify-center'>
+    <div>
+      {!showTemplateForm ? 
+      <>
+    <div  className="text-blue-500 underline p-2 hover:cursor-pointer">
+        Back
+      </div>
+      
         <table className="shadow-lg bg-white">
           <thead>
             <tr>
@@ -73,10 +91,10 @@ const PendingRequestTable = ({ userDetails, pendingRequestData }) => {
             );
           })}
         </table>
-      </div>
+        </>
         :
-        <TemplateForm userDetails={userDetails} />}
-    </>
+        <TemplateForm />}
+    </div>
   );
 }
 

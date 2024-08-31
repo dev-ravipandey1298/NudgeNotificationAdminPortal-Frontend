@@ -1,8 +1,11 @@
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 
 const LoginPage = ({setUserDetails}) => {
     const { register, handleSubmit } = useForm();
+
+    const navigate = useNavigate();
 
     const userDetails = [{userId:"user1", password:"password", role:"CHECKER", name: "user_checker1"},
       {userId:"user2", password:"password", role:"MAKER", name: "user_maker1"},
@@ -13,8 +16,8 @@ const LoginPage = ({setUserDetails}) => {
     const onSubmit = (data) => {
       const loggedInUser = userDetails.find(user => user.userId === data.userId);
       if (loggedInUser !== undefined) {
-        setUserDetails(loggedInUser);
-        // navigate('/home');
+        // setUserDetails(loggedInUser);
+        loggedInUser.role === "CHECKER" ? navigate("/checker") : navigate("/maker")
         loggedInUser.password = "";
         sessionStorage.setItem("user", JSON.stringify(loggedInUser))
         console.log(loggedInUser)

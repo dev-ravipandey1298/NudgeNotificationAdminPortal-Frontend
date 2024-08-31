@@ -1,14 +1,25 @@
 import { Controller, useForm } from "react-hook-form";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import Alert from "./Alert";
+import { useNavigate } from "react-router-dom";
 
-const TemplateForm = ({ userDetails }) => {
+const TemplateForm = () => {
+
   const { register, handleSubmit, control, reset } = useForm();
-
+  const navigate = useNavigate();
+  const[isChecker, setIsChecker] = useState(false);
   const [errorPayload, setErrorPayload] = useState("");
   const [errorQuery, setErrorQuery] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
   const [selectedOption, setSelectedOption] = useState("");
   const [selectedTemplate, setSelectedTemplate] = useState("");
+  const[alertDetail, setAlertDetail] = useState({message: "", isWarn:false})
+  const[showAlert, setShowAlert] = useState(false);
+
+  useEffect(() => {
+    const userDetails = JSON.parse(sessionStorage.getItem("user"))
+    userDetails !== null ? setIsChecker(userDetails.role === "CHECKER") : navigate("/login")
+  }, [])
 
   const templateJSON = {
     title: "Nudge Notification",
@@ -16,10 +27,11 @@ const TemplateForm = ({ userDetails }) => {
     comment: ""
   };
 
-  const isChecker = userDetails.role === "CHECKER";
+  
 
   const handleRadioChange = (event) => {
     setSelectedOption(event.target.value);
+    
     console.log("Clicked Radio");
     console.log(selectedOption);
   };
@@ -75,10 +87,16 @@ const TemplateForm = ({ userDetails }) => {
 
   return (
     <div className="bg-fuchsia-50">
-      <h1 className="mx-auto flex justify-center pt-10 text-2xl font-bold">
+      <div onClick={() => setShowTemplate(false)} className="text-blue-500 underline p-2 hover:cursor-pointer">
+        Back
+      </div>
+      <div className="pt-7">
+        {showAlert && <Alert alertDetail={alertDetail}/>}
+      </div>
+      <h1 className="mx-auto flex justify-center  text-2xl font-bold">
         Nudge Template Creator
       </h1>
-      <div className="mx-auto flex justify-center pt-12 p-4">
+      <div className="mx-auto flex justify-center pt-12 p-4 ">
         <form
           className="p-8 pb-12 outline-none border-[0.22rem] border-blue-500 rounded-lg p-1 space-y-3"
           onSubmit={handleSubmit(onSubmit)}

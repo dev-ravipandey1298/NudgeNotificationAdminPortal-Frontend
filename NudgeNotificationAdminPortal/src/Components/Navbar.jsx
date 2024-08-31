@@ -18,9 +18,9 @@ const Navbar = ({userDetails, handleLogout}) => {
             </div>
 
             <div className="flex items-center space-x-4 px-4">
-            <p className="text-white font-semibold">Welcome, {userDetails.name}</p>
+            {/* <p className="text-white font-semibold">Welcome, {userDetails.name}</p> */}
 
-            <button onClick={handleLogout} className="hover:cursor-pointer hover:text-red-800 text-red-900 text-[1.13rem] font-bold underline">Logout</button>
+            {/* <button onClick={handleLogout} className="hover:cursor-pointer hover:text-red-800 text-red-900 text-[1.13rem] font-bold underline">Logout</button> */}
             </div>
 
             

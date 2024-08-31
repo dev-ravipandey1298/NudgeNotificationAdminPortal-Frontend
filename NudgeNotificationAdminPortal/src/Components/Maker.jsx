@@ -6,12 +6,12 @@ import template from "/icons/template.png";
 import TemplateForm from "./TemplateForm";
 import DraftTable from "./DraftTable";
 import ShowAllMakerTable from "./ShowAllMakerTable";
+import { useNavigate } from "react-router-dom";
 
-const Maker = ({userDetails}) => {
-  const count = 10;
-  const title = "MAKER";
-  const description = "This is a Maker";
-
+const Maker = ({ userDetails }) => {
+  const count = 3;
+  const navigate = useNavigate();
+ 
   const [showTemplate, setShowTemplate] = useState(false);
   const [showDraft, setShowDraft] = useState(false);
   const [showAllRequest, setShowAllRequest] = useState(false);
@@ -72,7 +72,7 @@ const Maker = ({userDetails}) => {
             className="h-60 w-72 rounded-lg p-4 flex flex-col items-center space-y-4 border shadow-lg transition ease-in-out delay-50 hover:-translate-y-1 hover:scale-110 hover:shadow-xl hover:cursor-pointer"
           >
             <span className="text-xl font-bold text-cyan-700 hover:cursor-pointer">
-              Show All Requests
+              Search Requests
             </span>
             <img src={showAll} alt="" />
             <button className="text-blue-600 text-sm font-medium">
@@ -82,16 +82,16 @@ const Maker = ({userDetails}) => {
         </div>
       )}
 
-      {showTemplate && <TemplateForm userDetails={userDetails}/>}
+      {showTemplate && <TemplateForm userDetails={userDetails} setShowTemplate={setShowTemplate}/>}
       {showDraft && (
         <div className="py-5 pt-14 flex justify-center">
-          <DraftTable />
+          <DraftTable setShowDraft={setShowDraft}/>
         </div>
       )}
-      {showAllRequest && 
-      <div className="py-5 pt-14 flex justify-center">
-      <ShowAllMakerTable />
-      </div>
+      {showAllRequest &&
+        <div className="py-5 pt-14 flex justify-center">
+          <ShowAllMakerTable setShowAllRequest={setShowAllRequest}/>
+        </div>
       }
     </>
   );
