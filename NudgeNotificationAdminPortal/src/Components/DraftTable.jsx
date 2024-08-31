@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 const DraftTable = ({setShowDraft}) => {
   const data = [
@@ -23,6 +23,11 @@ const DraftTable = ({setShowDraft}) => {
       updatedOn: "",
     },
   ];
+
+  useEffect(() => {
+    sessionStorage.getItem("user") === null && navigate("/login")
+  }, [])
+
   return (
     <div>
       <div onClick={() => setShowDraft(false)} className="text-blue-500 underline p-2 hover:cursor-pointer">

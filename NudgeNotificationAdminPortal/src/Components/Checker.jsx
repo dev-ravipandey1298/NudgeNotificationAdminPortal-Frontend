@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import pendingApproval from "/icons/pending_approval.png";
 import showAll from "/icons/showAll.png";
 import TemplateForm from "./TemplateForm";
@@ -11,12 +11,12 @@ const Checker = ({ userDetails }) => {
 
   const navigate = useNavigate();
 
-  
-
-  
-
   // const [showPendingRequests, setshowPendingRequests] = useState(false);
   // const [showAllRequests, setShowAllRequests] = useState(false);
+
+  useEffect(() => {
+    sessionStorage.getItem("user") === null && navigate("/login")
+  }, [])
 
   const handlePendingRequests = () => {
     navigate("/checker/pendingRequests")
