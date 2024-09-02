@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 const ShowAllMakerTable = ({setShowAllRequest}) => {
@@ -37,6 +37,12 @@ const ShowAllMakerTable = ({setShowAllRequest}) => {
     },
 
   ];
+
+
+  // useEffect(() => {
+  //   sessionStorage.getItem("user") === null && navigate("/login")
+  // }, [])
+
   return (
     <div>
       <div onClick={() => setShowAllRequest(false)} className="text-blue-500 underline p-2 hover:cursor-pointer">

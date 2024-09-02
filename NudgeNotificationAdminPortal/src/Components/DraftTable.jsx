@@ -24,10 +24,6 @@ const DraftTable = ({setShowDraft}) => {
     },
   ];
 
-  useEffect(() => {
-    sessionStorage.getItem("user") === null && navigate("/login")
-  }, [])
-
   return (
     <div>
       <div onClick={() => setShowDraft(false)} className="text-blue-500 underline p-2 hover:cursor-pointer">

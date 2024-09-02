@@ -25,6 +25,7 @@
   },
   "dependencies": {
     "react-hook-form": "^7.52.2",
+    "react-multi-select-component": "^4.3.4",
     "react-router-dom": "^6.26.0"
   }
 }

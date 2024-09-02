@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import TemplateForm from './TemplateForm';
 
 const PendingRequestTable = () => {
@@ -48,6 +48,10 @@ const PendingRequestTable = () => {
   const handleView = () => {
     setShowTemplateForm(true);
   }
+
+  useEffect(() => {
+    sessionStorage.getItem("user") === null && navigate("/login")
+  }, [])
 
   return (
     <div>

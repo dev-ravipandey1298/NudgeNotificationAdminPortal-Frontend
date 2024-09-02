@@ -2,24 +2,78 @@ import { Controller, useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 import Alert from "./Alert";
 import { useNavigate } from "react-router-dom";
+import { MultiSelect } from "react-multi-select-component";
 
 const TemplateForm = () => {
 
-  const { register, handleSubmit, control, reset } = useForm();
+  const { register, handleSubmit, control, reset } = useForm(
+    {
+      defaultValues: {
+        selectedItems: [] // Default value for multiple selections
+      }
+    }
+  );
+
+
   const navigate = useNavigate();
-  const[isChecker, setIsChecker] = useState(false);
+  const [isChecker, setIsChecker] = useState(false);
   const [errorPayload, setErrorPayload] = useState("");
   const [errorQuery, setErrorQuery] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
   const [selectedOption, setSelectedOption] = useState("");
   const [selectedTemplate, setSelectedTemplate] = useState("");
-  const[alertDetail, setAlertDetail] = useState({message: "", isWarn:false})
-  const[showAlert, setShowAlert] = useState(false);
+  const [alertDetail, setAlertDetail] = useState({ message: "", isWarn: false })
+  const [showAlert, setShowAlert] = useState(false);
 
   useEffect(() => {
     const userDetails = JSON.parse(sessionStorage.getItem("user"))
     userDetails !== null ? setIsChecker(userDetails.role === "CHECKER") : navigate("/login")
   }, [])
+
+
+  const daysOption = [
+    { label: 'Day 1', value: '1' },
+    { label: 'Day 2', value: '2' },
+    { label: 'Day 3', value: '3' },
+    { label: 'Day 4', value: '4' },
+    { label: 'Day 5', value: '5' },
+    { label: 'Day 6', value: '6' },
+    { label: 'Day 7', value: '7' },
+    { label: 'Day 8', value: '8' },
+    { label: 'Day 9', value: '9' },
+    { label: 'Day 10', value: '10' },
+    { label: 'Day 11', value: '11' },
+    { label: 'Day 12', value: '12' },
+    { label: 'Day 13', value: '13' },
+    { label: 'Day 14', value: '14' },
+    { label: 'Day 15', value: '15' },
+    { label: 'Day 16', value: '16' },
+    { label: 'Day 17', value: '17' },
+    { label: 'Day 18', value: '18' },
+    { label: 'Day 19', value: '19' },
+    { label: 'Day 20', value: '20' },
+    { label: 'Day 21', value: '21' },
+    { label: 'Day 22', value: '22' },
+    { label: 'Day 23', value: '23' },
+    { label: 'Day 24', value: '24' },
+    { label: 'Day 25', value: '25' },
+    { label: 'Day 26', value: '26' },
+    { label: 'Day 27', value: '27' },
+    { label: 'Day 28', value: '28' },
+    { label: 'Day 29', value: '29' },
+    { label: 'Day 30', value: '30' },
+    { label: 'Day 31', value: '31' }, 
+  ];
+
+  const weekOption =  [
+    { label: 'Day 1', value: '1' },
+    { label: 'Day 2', value: '2' },
+    { label: 'Day 3', value: '3' },
+    { label: 'Day 4', value: '4' },
+    { label: 'Day 5', value: '5' },
+    { label: 'Day 6', value: '6' },
+    { label: 'Day 7', value: '7' }
+  ]
 
   const templateJSON = {
     title: "Nudge Notification",
@@ -27,11 +81,11 @@ const TemplateForm = () => {
     comment: ""
   };
 
-  
+
 
   const handleRadioChange = (event) => {
     setSelectedOption(event.target.value);
-    
+
     console.log("Clicked Radio");
     console.log(selectedOption);
   };
@@ -46,28 +100,28 @@ const TemplateForm = () => {
     setSelectedFile(event.target.files[0]);
   };
 
-//   const validateSqlQuery = (query) => {
-//     if (query === undefined || query === "") {
-//       setErrorQuery("");
-//       return true;
-//     } else {
-//       const trimmedQuery = query.trim();
-//       // const isSelectQuery = /^SELECT\b/i.test(trimmedQuery);
-//       // /^(?=.*SELECT.*FROM)(?!.*(?:CREATE|DROP|UPDATE|INSERT|ALTER|DELETE|ATTACH|DETACH)).*$/
-//       const isSelectQuery =
-//         /^(?=.*SELECT.*FROM.)(?!.*(?:CREATE|DROP|UPDATE|INSERT|ALTER|DELETE|ATTACH|DETACH)).*$/.test(
-//           trimmedQuery.toUpperCase()
-//         );
-//       // const isSelectQuery =
-//       //     /^SELECT|select\b(?!.*\b(insert|delete|update|INSERT|DELETE|UPDATE)\b).+$/i.test(
-//       //         trimmedQuery,
-//       //     );
-//       isSelectQuery
-//         ? setErrorQuery("")
-//         : setErrorQuery("*Query should be a valid SELECT statement");
-//       return isSelectQuery;
-//     }
-//   };
+  //   const validateSqlQuery = (query) => {
+  //     if (query === undefined || query === "") {
+  //       setErrorQuery("");
+  //       return true;
+  //     } else {
+  //       const trimmedQuery = query.trim();
+  //       // const isSelectQuery = /^SELECT\b/i.test(trimmedQuery);
+  //       // /^(?=.*SELECT.*FROM)(?!.*(?:CREATE|DROP|UPDATE|INSERT|ALTER|DELETE|ATTACH|DETACH)).*$/
+  //       const isSelectQuery =
+  //         /^(?=.*SELECT.*FROM.)(?!.*(?:CREATE|DROP|UPDATE|INSERT|ALTER|DELETE|ATTACH|DETACH)).*$/.test(
+  //           trimmedQuery.toUpperCase()
+  //         );
+  //       // const isSelectQuery =
+  //       //     /^SELECT|select\b(?!.*\b(insert|delete|update|INSERT|DELETE|UPDATE)\b).+$/i.test(
+  //       //         trimmedQuery,
+  //       //     );
+  //       isSelectQuery
+  //         ? setErrorQuery("")
+  //         : setErrorQuery("*Query should be a valid SELECT statement");
+  //       return isSelectQuery;
+  //     }
+  //   };
 
   const validatePayload = (payload) => {
     if (payload === undefined || payload === "") {
@@ -91,7 +145,7 @@ const TemplateForm = () => {
         Back
       </div>
       <div className="pt-7">
-        {showAlert && <Alert alertDetail={alertDetail}/>}
+        {showAlert && <Alert alertDetail={alertDetail} />}
       </div>
       <h1 className="mx-auto flex justify-center  text-2xl font-bold">
         Nudge Template Creator
@@ -137,11 +191,10 @@ const TemplateForm = () => {
             <br />
             {
               <input
-                className={`outline-none border-2 rounded-lg p-1 w-full ${
-                  !isChecker
+                className={`outline-none border-2 rounded-lg p-1 w-full ${!isChecker
                     ? "border-gray-300 focus:border-blue-500 "
                     : "focus:border-grey-500]"
-                }`}
+                  }`}
                 {...register("title")}
                 {...(isChecker && {
                   value: templateJSON.title,
@@ -169,11 +222,10 @@ const TemplateForm = () => {
               }}
               render={({ field: { onChange, value } }) => (
                 <textarea
-                  className={`outline-none border-2 rounded-lg p-1 ${
-                    !isChecker
+                  className={`outline-none border-2 rounded-lg p-1 ${!isChecker
                       ? "border-gray-300 focus:border-blue-500"
                       : "focus:border-grey-500"
-                  }`}
+                    }`}
                   cols={40}
                   placeholder="Body"
                   rows={4}
@@ -214,7 +266,86 @@ const TemplateForm = () => {
               )}
             />
           </div>
+
+
+          <div>
+            <label htmlFor="execution">
+              <p className="inline font-medium">Execution at every</p>
+              <p className="text-red-500 inline">*</p>:
+            </label>
+          </div>
+
+          <div className="flex space-x-3">
+            <div className="space-y-1 flex items-center">
+              <label className="pr-2" htmlFor="selectedDays">
+                <p className="inline font-medium">Month</p>
+                <p className="text-red-500 inline">*</p>:
+              </label>
+              <Controller
+                name="selectedDays"
+                control={control}
+                render={({ field: { onChange, onBlur, value, name } }) => (
+                  <MultiSelect
+                    options={daysOption}
+                    value={value || []}
+                    onChange={onChange}
+                    onBlur={onBlur}
+                    labelledBy="Days"
+                    name={name}
+                  />
+                )}
+              />
+            </div>
+
+            <div className="space-y-1 flex items-center">
+              <label className="pr-2" htmlFor="selectedWeeks">
+                <p className="inline font-medium">Week</p>
+                <p className="text-red-500 inline">*</p>:
+              </label>
+              <Controller
+                name="selectedWeeks"
+                control={control}
+                render={({ field: { onChange, onBlur, value, name } }) => (
+                  <MultiSelect
+                    options={weekOption}
+                    value={value || []}
+                    onChange={onChange}
+                    onBlur={onBlur}
+                    labelledBy="Weeks"
+                    name={name}
+                  />
+                )}
+              />
+            </div>
+
+          </div>
+
           <div className="space-y-1">
+              <label className="pr-2" htmlFor="hours">
+                <p className="inline font-medium">Hours</p>
+                <p className="text-red-500 inline">*</p>:
+              </label>
+              <Controller
+                name="Hours"
+                rules={{ required: "Please select template type" }}
+                control={control}
+                render={({ field }) => (
+                  <select
+                    {...field}
+                    className="outline-none border-2 border-gray-300 focus:border-blue-500 focus:border-blue-500 rounded-lg p-2 "
+                    onClick={(event) =>
+                      setSelectedTemplate(event.target.value)
+                    }
+                  >
+                    <option value="0">0</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                  </select>
+                )}
+              />
+            </div>
+
+          {/* <div className="space-y-1">
             <label htmlFor="execDaysOfWeek">
               <p className="inline font-medium">Execution By</p>
               <p className="text-red-500 inline">*</p>:
@@ -249,10 +380,10 @@ const TemplateForm = () => {
               />
               both
             </label>
-          </div>
+          </div> */}
 
           {/* Execution day of month's */}
-          <div className="space-y-1">
+          {/* <div className="space-y-1">
             {(selectedOption === "daysOfMonth" ||
               selectedOption === "both") && (
               <div>
@@ -268,9 +399,10 @@ const TemplateForm = () => {
                 />
               </div>
             )}
-          </div>
-          <div className="space-y-1">
-            {/* Execution week of month's */}
+          </div> */}
+          {/* Execution week of month's */}
+          {/* <div className="space-y-1">
+            
             {(selectedOption === "daysOfWeek" || selectedOption === "both") && (
               <div>
                 <label htmlFor="execDaysOfWeek">
@@ -285,8 +417,8 @@ const TemplateForm = () => {
                 />
               </div>
             )}
-          </div>
-          <div className="space-y-1">
+          </div> */}
+          {/* <div className="space-y-1">
             {(selectedOption === "daysOfWeek" ||
               selectedOption === "both" ||
               selectedOption === "daysOfMonth") && (
@@ -305,7 +437,9 @@ const TemplateForm = () => {
                 />
               </div>
             )}
-          </div>
+          </div> */}
+
+
           <div className="space-y-1">
             {/* Image URL */}
             <label htmlFor="img">

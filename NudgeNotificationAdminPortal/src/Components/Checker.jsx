@@ -14,9 +14,9 @@ const Checker = ({ userDetails }) => {
   // const [showPendingRequests, setshowPendingRequests] = useState(false);
   // const [showAllRequests, setShowAllRequests] = useState(false);
 
-  useEffect(() => {
-    sessionStorage.getItem("user") === null && navigate("/login")
-  }, [])
+  // useEffect(() => {
+  //   sessionStorage.getItem("user") === null && navigate("/login")
+  // }, [])
 
   const handlePendingRequests = () => {
     navigate("/checker/pendingRequests")

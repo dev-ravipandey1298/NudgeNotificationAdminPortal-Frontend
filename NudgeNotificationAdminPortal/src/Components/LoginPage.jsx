@@ -15,7 +15,7 @@ const LoginPage = ({setUserDetails}) => {
 
     const onSubmit = (data) => {
       const loggedInUser = userDetails.find(user => user.userId === data.userId);
-      if (loggedInUser !== undefined) {
+      if (loggedInUser !== undefined && loggedInUser.password === data.password) {
         // setUserDetails(loggedInUser);
         loggedInUser.role === "CHECKER" ? navigate("/checker") : navigate("/maker")
         loggedInUser.password = "";
@@ -27,6 +27,10 @@ const LoginPage = ({setUserDetails}) => {
         alert('Invalid credentials');
       }
     };
+
+    useEffect(() => {
+      sessionStorage.getItem("user") === null && navigate("/login")
+    }, [])
 
     return (
         <div className="flex items-center justify-center h-screen w-full px-5 sm:px-0">

@@ -1,6 +1,10 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 const ShowAllMakerTable = () => {
+
+  useEffect(() => {
+    sessionStorage.getItem("user") === null && navigate("/login")
+  }, [])
 
   const showAllRequestData = [
     {
