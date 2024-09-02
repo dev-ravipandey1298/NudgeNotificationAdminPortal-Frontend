@@ -1,43 +1,29 @@
 import React, { useState } from "react";
-import pendingApproval from "/icons/pending_approval.png";
 import showAll from "/icons/showAll.png";
 import draft from "/icons/draft.png";
+import approval_status from "/icons/approval_status.png";
 import template from "/icons/template.png";
-import TemplateForm from "./TemplateForm";
-import DraftTable from "./DraftTable";
-import ShowAllMakerTable from "./ShowAllMakerTable";
 import { useNavigate } from "react-router-dom";
 
 const Maker = ({ userDetails }) => {
   const count = 3;
   const navigate = useNavigate();
- 
-  const [showTemplate, setShowTemplate] = useState(false);
-  const [showDraft, setShowDraft] = useState(false);
-  const [showAllRequest, setShowAllRequest] = useState(false);
 
   const handleCreateTemplate = () => {
-    setShowDraft(false);
-    setShowAllRequest(false);
-    setShowTemplate(true);
+    navigate("/maker/createNudgeTemplate")
   };
 
   const handleDraft = () => {
-    setShowTemplate(false);
-    setShowAllRequest(false);
-    setShowDraft(true);
+    navigate("/maker/drafts")
   };
 
   const handleShowAllRequest = () => {
-    setShowDraft(false);
-    setShowTemplate(false);
-    setShowAllRequest(true);
+    navigate("/maker/showAll")
   };
 
   return (
     <>
-      {!(showTemplate || showDraft || showAllRequest) && (
-        <div className="flex justify-center items-center h-[90vh] space-x-10">
+        <div className="flex justify-center items-center h-[90vh] space-x-6 px-6">
           <div
             onClick={handleCreateTemplate}
             className="h-60 w-72 rounded-lg p-4 flex flex-col items-center space-y-4 border shadow-lg transition ease-in-out delay-50 hover:-translate-y-1 hover:scale-110 hover:shadow-xl hover:cursor-pointer"
@@ -68,6 +54,18 @@ const Maker = ({ userDetails }) => {
             </button>
           </div>
           <div
+            onClick={() => navigate("/maker/cug_approval_status")}
+            className="h-60 w-72 rounded-lg p-4 flex flex-col items-center space-y-4 border shadow-lg transition ease-in-out delay-50 hover:-translate-y-1 hover:scale-110 hover:shadow-xl hover:cursor-pointer"
+          >
+            <span className="text-xl font-bold text-cyan-700 hover:cursor-pointer">
+              CUG Approval Status
+            </span>
+            <img src={approval_status} alt="" />
+            <button className="text-blue-600 text-sm font-medium">
+              Click Here!{" "}
+            </button>
+          </div>
+          <div
             onClick={handleShowAllRequest}
             className="h-60 w-72 rounded-lg p-4 flex flex-col items-center space-y-4 border shadow-lg transition ease-in-out delay-50 hover:-translate-y-1 hover:scale-110 hover:shadow-xl hover:cursor-pointer"
           >
@@ -80,19 +78,6 @@ const Maker = ({ userDetails }) => {
             </button>
           </div>
         </div>
-      )}
-
-      {showTemplate && <TemplateForm userDetails={userDetails} setShowTemplate={setShowTemplate}/>}
-      {showDraft && (
-        <div className="py-5 pt-14 flex justify-center">
-          <DraftTable setShowDraft={setShowDraft}/>
-        </div>
-      )}
-      {showAllRequest &&
-        <div className="py-5 pt-14 flex justify-center">
-          <ShowAllMakerTable setShowAllRequest={setShowAllRequest}/>
-        </div>
-      }
     </>
   );
 };

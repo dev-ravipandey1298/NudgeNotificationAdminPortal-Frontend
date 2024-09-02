@@ -12,6 +12,7 @@ import PendingRequestTable from "./Components/PendingRequestTable";
 import ShowAllCheckerTable from "./Components/ShowAllCheckerTable";
 import DraftTable from "./Components/DraftTable";
 import ShowAllMakerTable from "./Components/ShowAllMakerTable";
+import CUGTable from "./Components/CUGTable";
 
 
 const router = createBrowserRouter(
@@ -25,6 +26,7 @@ const router = createBrowserRouter(
 			<Route path="maker/createNudgeTemplate" element={<TemplateForm />} />
 			<Route path="maker/drafts" element={<DraftTable />} />
 			<Route path="maker/showAll" element={<ShowAllMakerTable />} />
+			<Route path="maker/cug_approval_status" element={<CUGTable />} />
 		</Route>
 	)
 )
