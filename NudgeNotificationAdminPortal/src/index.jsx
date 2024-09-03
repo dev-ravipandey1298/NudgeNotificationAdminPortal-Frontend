@@ -21,11 +21,12 @@ const router = createBrowserRouter(
 			<Route path="login" element={<LoginPage />} />
 			<Route path="maker" element={<Maker />} />
 			<Route path="checker" element={<Checker />} />
-			<Route path="checker/pendingRequests" element={<PendingRequestTable />} />
-			<Route path="checker/showAll" element={<ShowAllCheckerTable />} />
-			<Route path="maker/createNudgeTemplate" element={<TemplateForm />} />
+			<Route path="checker/pending-requests" element={<PendingRequestTable />} />
+			<Route path="checker/show-all" element={<ShowAllCheckerTable />} />
+			<Route path="checker/show/nudge-template-form" element={<TemplateForm />} />
+			<Route path="maker/create/nudge-template-form" element={<TemplateForm />} />
 			<Route path="maker/drafts" element={<DraftTable />} />
-			<Route path="maker/showAll" element={<ShowAllMakerTable />} />
+			<Route path="maker/show-all" element={<ShowAllMakerTable />} />
 			<Route path="maker/cug_approval_status" element={<CUGTable />} />
 		</Route>
 	)

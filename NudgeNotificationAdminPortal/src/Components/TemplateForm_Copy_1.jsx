@@ -3,12 +3,6 @@ import { useEffect, useState } from "react";
 import Alert from "./Alert";
 import { useNavigate } from "react-router-dom";
 import { MultiSelect } from "react-multi-select-component";
-import { DateRangePicker } from "react-date-range";
-import calendar from "/icons/calendar.png"
-import "react-date-range/dist/styles.css"; // main style file
-import "react-date-range/dist/theme/default.css"; // theme css file
-
-
 
 const TemplateForm = () => {
 
@@ -22,7 +16,7 @@ const TemplateForm = () => {
 
 
   const navigate = useNavigate();
-  const [isChecker, setIsChecker] = useState(null);
+  const [isChecker, setIsChecker] = useState(false);
   const [errorPayload, setErrorPayload] = useState("");
   const [errorQuery, setErrorQuery] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
@@ -30,16 +24,12 @@ const TemplateForm = () => {
   const [selectedTemplate, setSelectedTemplate] = useState("");
   const [alertDetail, setAlertDetail] = useState({ message: "", isWarn: false })
   const [showAlert, setShowAlert] = useState(false);
-  const [showCalendar, setShowCalendar] = useState(false);
 
   useEffect(() => {
     const userDetails = JSON.parse(sessionStorage.getItem("user"))
-    userDetails !== null ? userDetails.role === "CHECKER" ? setIsChecker(true) : setIsChecker(false) : navigate("/login")
+    userDetails !== null ? setIsChecker(userDetails.role === "CHECKER") : navigate("/login")
   }, [])
 
-  // const [dateRange, setDateRange] = useState();
-
-  const dateRangePreview = { startDate: new Date(), endDate: new Date("2025-03-25"), color: String };
 
   const daysOption = [
     { label: 'Day 1', value: '1' },
@@ -72,10 +62,10 @@ const TemplateForm = () => {
     { label: 'Day 28', value: '28' },
     { label: 'Day 29', value: '29' },
     { label: 'Day 30', value: '30' },
-    { label: 'Day 31', value: '31' },
+    { label: 'Day 31', value: '31' }, 
   ];
 
-  const weekOption = [
+  const weekOption =  [
     { label: 'Day 1', value: '1' },
     { label: 'Day 2', value: '2' },
     { label: 'Day 3', value: '3' },
@@ -110,6 +100,28 @@ const TemplateForm = () => {
     setSelectedFile(event.target.files[0]);
   };
 
+  //   const validateSqlQuery = (query) => {
+  //     if (query === undefined || query === "") {
+  //       setErrorQuery("");
+  //       return true;
+  //     } else {
+  //       const trimmedQuery = query.trim();
+  //       // const isSelectQuery = /^SELECT\b/i.test(trimmedQuery);
+  //       // /^(?=.*SELECT.*FROM)(?!.*(?:CREATE|DROP|UPDATE|INSERT|ALTER|DELETE|ATTACH|DETACH)).*$/
+  //       const isSelectQuery =
+  //         /^(?=.*SELECT.*FROM.)(?!.*(?:CREATE|DROP|UPDATE|INSERT|ALTER|DELETE|ATTACH|DETACH)).*$/.test(
+  //           trimmedQuery.toUpperCase()
+  //         );
+  //       // const isSelectQuery =
+  //       //     /^SELECT|select\b(?!.*\b(insert|delete|update|INSERT|DELETE|UPDATE)\b).+$/i.test(
+  //       //         trimmedQuery,
+  //       //     );
+  //       isSelectQuery
+  //         ? setErrorQuery("")
+  //         : setErrorQuery("*Query should be a valid SELECT statement");
+  //       return isSelectQuery;
+  //     }
+  //   };
 
   const validatePayload = (payload) => {
     if (payload === undefined || payload === "") {
@@ -129,6 +141,9 @@ const TemplateForm = () => {
 
   return (
     <div className="bg-fuchsia-50">
+      {/* <div onClick={() => setShowTemplate(false)} className="text-blue-500 underline p-2 hover:cursor-pointer">
+        Back
+      </div> */}
       <div className="pt-7">
         {showAlert && <Alert alertDetail={alertDetail} />}
       </div>
@@ -140,6 +155,32 @@ const TemplateForm = () => {
           className="p-8 pb-12 outline-none border-[0.22rem] border-blue-500 rounded-lg p-1 space-y-3"
           onSubmit={handleSubmit(onSubmit)}
         >
+          {/* Template Type Select Box  */}
+          {/* <div className="space-y-1">
+                        <label className="pr-2" htmlFor="templateType">
+                            <p className="inline font-medium">Template Type</p>
+                            <p className="text-red-500 inline">*</p>:
+                        </label>
+                        <Controller
+                            name="Template Type"
+                            rules={{ required: "Please select template type" }}
+                            control={control}
+                            render={({ field }) => (
+                                <select
+                                    {...field}
+                                    className="outline-none border-2 border-gray-300 focus:border-blue-500 focus:border-blue-500 rounded-lg p-2 "
+                                    onClick={(event) =>
+                                        setSelectedTemplate(event.target.value)
+                                    }
+                                >
+                                    <option value="">Select Type</option>
+                                    <option value="All">All</option>
+                                    <option value="Common">Common</option>
+                                    <option value="Parameter">Parameter</option>
+                                </select>
+                            )}
+                        />
+                    </div> */}
 
           {/* Title box */}
           <div className="space-y-1">
@@ -151,8 +192,8 @@ const TemplateForm = () => {
             {
               <input
                 className={`outline-none border-2 rounded-lg p-1 w-full ${!isChecker
-                  ? "border-gray-300 focus:border-blue-500 "
-                  : "focus:border-grey-500]"
+                    ? "border-gray-300 focus:border-blue-500 "
+                    : "focus:border-grey-500]"
                   }`}
                 {...register("title")}
                 {...(isChecker && {
@@ -182,8 +223,8 @@ const TemplateForm = () => {
               render={({ field: { onChange, value } }) => (
                 <textarea
                   className={`outline-none border-2 rounded-lg p-1 ${!isChecker
-                    ? "border-gray-300 focus:border-blue-500"
-                    : "focus:border-grey-500"
+                      ? "border-gray-300 focus:border-blue-500"
+                      : "focus:border-grey-500"
                     }`}
                   cols={40}
                   placeholder="Body"
@@ -226,41 +267,10 @@ const TemplateForm = () => {
             />
           </div>
 
-          <div>
-            <div className="flex space-x-2">
-            <label htmlFor="startEndDate">
-              <p className="inline font-medium">Start - End Date</p>
-              <p className="text-red-500 inline">*</p>:
-            </label>
-            <img onClick={() => showCalendar ? setShowCalendar(false) : setShowCalendar(true) } className="h-7 w-7" src={calendar} alt="" />
-            </div>
-            {showCalendar && <div>
-            <Controller
-              control={control}
-              name="dateRange"
-              render={({ field }) => (
-                <DateRangePicker
-                  className="border shadow-lg rounded-xl"
-                  ranges={field.value || [{
-                    startDate: new Date(),
-                    endDate: new Date("2025-03-25"),
-                    key: 'selection'
-                  }]}
-                  // onChange={item => field.onChange([item.selection])}
-                  onChange={item => item}
-                  preview={dateRangePreview}
-                  // dragSelectionEnabled={false}
-                  // editableDateInputs={false}
-                />
-              )}
-            />
-            </div>}
-          </div>
-
 
           <div>
             <label htmlFor="execution">
-              <p className="inline font-medium">Reouccurance</p>
+              <p className="inline font-medium">Execution at every</p>
               <p className="text-red-500 inline">*</p>:
             </label>
           </div>
@@ -311,29 +321,184 @@ const TemplateForm = () => {
           </div>
 
           <div className="space-y-1">
-            <label className="pr-2" htmlFor="hours">
-              <p className="inline font-medium">Hours</p>
+              <label className="pr-2" htmlFor="hours">
+                <p className="inline font-medium">Hours</p>
+                <p className="text-red-500 inline">*</p>:
+              </label>
+              <Controller
+                name="Hours"
+                rules={{ required: "Please select template type" }}
+                control={control}
+                render={({ field }) => (
+                  <select
+                    {...field}
+                    className="outline-none border-2 border-gray-300 focus:border-blue-500 focus:border-blue-500 rounded-lg p-2 "
+                    onClick={(event) =>
+                      setSelectedTemplate(event.target.value)
+                    }
+                  >
+                    <option value="0">0</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                  </select>
+                )}
+              />
+            </div>
+
+          {/* <div className="space-y-1">
+            <label htmlFor="execDaysOfWeek">
+              <p className="inline font-medium">Execution By</p>
               <p className="text-red-500 inline">*</p>:
             </label>
-            <Controller
-              name="Hours"
-              rules={{ required: "Hours not selected." }}
-              control={control}
-              render={({ field }) => (
-                <select
-                  {...field}
-                  className="outline-none border-2 border-gray-300 focus:border-blue-500 rounded-lg p-2 "
-                  onClick={(event) =>
-                    setSelectedTemplate(event.target.value)
-                  }
-                >
-                  <option value="0">0</option>
-                  <option value="1">1</option>
-                  <option value="2">2</option>
-                </select>
-              )}
+            <label>
+              <input
+                type="radio"
+                className="m-1 ml-2"
+                value="daysOfMonth"
+                onClick={handleRadioChange}
+                {...register("radioOption", { required: true })}
+              />
+              day's of month
+            </label>
+            <label>
+              <input
+                type="radio"
+                value="daysOfWeek"
+                className="m-1 ml-2"
+                onClick={handleRadioChange}
+                {...register("radioOption", { required: true })}
+              />
+              day's of week
+            </label>
+            <label>
+              <input
+                type="radio"
+                value="both"
+                className="m-1 ml-2"
+                onClick={handleRadioChange}
+                {...register("radioOption", { required: true })}
+              />
+              both
+            </label>
+          </div> */}
+
+          {/* Execution day of month's */}
+          {/* <div className="space-y-1">
+            {(selectedOption === "daysOfMonth" ||
+              selectedOption === "both") && (
+              <div>
+                <label htmlFor="execDaysOfMonth">
+                  <p className="inline font-medium">Execution days of month</p>
+                  <p className="text-red-500 inline">*</p>:
+                </label>
+
+                <input
+                  className="outline-none border-2 border-gray-300 focus:border-blue-500 rounded-lg p-1"
+                  placeholder="Use , to seprate value"
+                  {...register("execDaysOfMonth")}
+                />
+              </div>
+            )}
+          </div> */}
+          {/* Execution week of month's */}
+          {/* <div className="space-y-1">
+            
+            {(selectedOption === "daysOfWeek" || selectedOption === "both") && (
+              <div>
+                <label htmlFor="execDaysOfWeek">
+                  <p className="inline font-medium">Execution days of week</p>
+                  <p className="text-red-500 inline">*</p>:
+                </label>
+                <br />
+                <input
+                  className="outline-none border-2 border-gray-300 focus:border-blue-500 rounded-lg p-1"
+                  placeholder="Use , to seprate value"
+                  {...register("execDaysOfWeek")}
+                />
+              </div>
+            )}
+          </div> */}
+          {/* <div className="space-y-1">
+            {(selectedOption === "daysOfWeek" ||
+              selectedOption === "both" ||
+              selectedOption === "daysOfMonth") && (
+              <div>
+                <label htmlFor="execTime">
+                  <p className="inline font-medium">Execution Time</p>
+                  <p className="text-red-500 inline">*</p>:
+                </label>
+
+                <br />
+
+                <input
+                  className="outline-none border-2 border-gray-300 focus:border-blue-500 rounded-lg p-1"
+                  placeholder="Use , to seprate value"
+                  {...register("execTime")}
+                />
+              </div>
+            )}
+          </div> */}
+
+
+          <div className="space-y-1">
+            {/* Image URL */}
+            <label htmlFor="img">
+              <p className="inline font-medium">Image</p>
+              <p className="text-red-500 inline">*</p>:
+            </label>
+            <br />
+            <input
+              type="file"
+              onChange={handleFileChange}
+              className="outline-none border-2 border-gray-300 focus:border-blue-500 rounded-lg p-1"
+              {...register("img")}
             />
           </div>
+
+          {/* Query */}
+          {/* <div className="space-y-1">
+            <label htmlFor="query">
+              <p className="inline font-medium">Query</p>:
+            </label>
+            <br />
+            <Controller
+              name="query"
+              control={control}
+              rules={{
+                validate: validateSqlQuery,
+              }}
+              render={({ field: { onChange, value } }) => (
+                <div>
+                  <textarea
+                    className="outline-none border-2 border-gray-300 focus:border-blue-500 rounded-lg p-1"
+                    cols={50}
+                    placeholder="Provide your SQL Query that should be an SELECT Query"
+                    rows={5}
+                    onChange={onChange}
+                    value={value}
+                  />
+                  {errorQuery !== "" && (
+                    <p className="text-red-500 font-medium">{errorQuery}</p>
+                  )}
+                </div>
+              )}
+            />
+          </div> */}
+
+          {/* Auto Scheduled */}
+          {/* <div className="space-y-1">
+            {selectedTemplate === "All" && (
+              <label className="flex w-fit" htmlFor="autoScheduled">
+                Auto Scheduled:
+                <input
+                  className="m-1 mt-[7.5px]"
+                  type="checkbox"
+                  id="autoScheduled"
+                  {...register("autoScheduled")}
+                />
+              </label>
+            )}
+          </div> */}
 
           {/* Comment */}
           {isChecker && (
@@ -377,6 +542,12 @@ const TemplateForm = () => {
               </div>
             ) : (
               <div className="flex justify-between space-x-2">
+                <button
+                  className="mt-4 w-fit p-2 px-4 bg-blue-700 hover:bg-blue-600 rounded flex justify-center text-white font-semibold"
+                  type="submit"
+                >
+                  {templateJSON.comment.length > 0 ? 'Update Your Comment' : 'Post a Comment'}
+                </button>
                 <button
                   className="mt-4 w-[5.5rem] p-2 px-4 bg-green-700 hover:bg-green-600 rounded flex justify-center text-white font-semibold"
                   type="submit"

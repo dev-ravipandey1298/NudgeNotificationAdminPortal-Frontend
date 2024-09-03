@@ -9,11 +9,11 @@ const Checker = ({ userDetails }) => {
   const navigate = useNavigate();
 
   const handlePendingRequests = () => {
-    navigate("/checker/pendingRequests")
+    navigate("/checker/pending-requests")
   };
 
   const handleShowAllRequests = () => {
-    navigate("/checker/showAll")
+    navigate("/checker/show-all")
   };
 
   return (

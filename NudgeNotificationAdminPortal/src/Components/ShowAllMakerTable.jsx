@@ -1,13 +1,13 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-const ShowAllMakerTable = ({setShowAllRequest}) => {
+const ShowAllMakerTable = ({ setShowAllRequest }) => {
   const data = [
     {
       templateId: "10234599",
       createdOn: new Date().toLocaleString(),
       requestSentOn: new Date().toLocaleString(),
-      approvedOn: "",
+      approversComment: "",
       approvedBy: "",
       status: "pending_approval"
     },
@@ -15,7 +15,7 @@ const ShowAllMakerTable = ({setShowAllRequest}) => {
       templateId: "10234599",
       createdOn: new Date().toLocaleString(),
       requestSentOn: new Date().toLocaleString(),
-      approvedOn: new Date().toLocaleString(),
+      approversComment: `Verified`,
       approvedBy: "user1_checker",
       status: "approved"
     },
@@ -23,7 +23,7 @@ const ShowAllMakerTable = ({setShowAllRequest}) => {
       templateId: "10234599",
       createdOn: new Date().toLocaleString(),
       requestSentOn: new Date().toLocaleString(),
-      approvedOn: "",
+      approversComment: "",
       approvedBy: "",
       status: "pending_approval"
     },
@@ -31,7 +31,7 @@ const ShowAllMakerTable = ({setShowAllRequest}) => {
       templateId: "10234599",
       createdOn: new Date().toLocaleString(),
       requestSentOn: new Date().toLocaleString(),
-      approvedOn: "",
+      approversComment: "",
       approvedBy: "",
       status: "pending_approval"
     },
@@ -45,10 +45,7 @@ const ShowAllMakerTable = ({setShowAllRequest}) => {
 
   return (
     <div>
-      <div onClick={() => setShowAllRequest(false)} className="text-blue-500 underline p-2 hover:cursor-pointer">
-        Back
-      </div>
-      <table className="shadow-lg bg-white">
+      <table className="shadow-lg bg-white mx-auto mt-10">
         <tr>
           <th className="bg-blue-100 border text-left px-8 py-4">
             Template Id
@@ -64,9 +61,22 @@ const ShowAllMakerTable = ({setShowAllRequest}) => {
           return (
             <tr key={key}>
               <td className="border px-8 py-4">{val.templateId}</td>
-              <td className="border px-8 py-4">{val.createdOn}</td>
-              <td className="border px-8 py-4">{val.requestSentOn}</td>
-              <td className="border px-8 py-4">{val.approvedOn}</td>
+              {/* <td className="border px-8 py-4">{val.createdOn}</td> */}
+              <td className="border px-8 py-4">
+                <span className="flex flex-col items-center">
+                  <p>{val.createdOn.substring(0, val.createdOn.indexOf(",") + 1)}</p>
+                  <p>{val.createdOn.substring(val.createdOn.indexOf(",") + 1)}</p>
+                </span>
+              </td>
+              {/* <td className="border px-8 py-4">{val.requestSentOn}</td> */}
+              <td className="border px-8 py-4">
+                <span className="flex flex-col items-center">
+                  <p>{val.requestSentOn.substring(0, val.requestSentOn.indexOf(",") + 1)}</p>
+                  <p>{val.requestSentOn.substring(val.requestSentOn.indexOf(",") + 1)}</p>
+                </span>
+              </td>
+
+              <td className="border px-8 py-4">{val.approversComment}</td>
               <td className="border px-8 py-4">{val.approvedBy}</td>
               <td className="border px-8 py-4">{val.status}</td>
               <td className="border px-8 py-4 space-x-1">

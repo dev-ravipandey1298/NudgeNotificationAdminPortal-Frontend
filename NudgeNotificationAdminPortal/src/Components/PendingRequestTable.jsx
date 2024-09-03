@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import TemplateForm from './TemplateForm';
+import { useNavigate } from 'react-router-dom';
 
 const PendingRequestTable = () => {
 
   const [showTemplateForm, setShowTemplateForm] = useState(false);
+  const navigate = useNavigate();
 
   const pendingRequestData = [
     {
@@ -46,7 +48,8 @@ const PendingRequestTable = () => {
   ];
 
   const handleView = () => {
-    setShowTemplateForm(true);
+    // setShowTemplateForm(true);
+    navigate("/checker/show/nudge-template-form")
   }
 
   useEffect(() => {
@@ -54,51 +57,47 @@ const PendingRequestTable = () => {
   }, [])
 
   return (
-    <div>
-      {!showTemplateForm ? 
-      <>
-    <div  className="text-blue-500 underline p-2 hover:cursor-pointer">
-        Back
-      </div>
-      
-        <table className="shadow-lg bg-white">
-          <thead>
-            <tr>
-              <th key={crypto.randomUUID()} className="bg-blue-100 border text-left px-8 py-4">
-                Template Id
-              </th>
-              <th key={crypto.randomUUID()} className="bg-blue-100 border text-left px-8 py-4">Requested On</th>
-              <th key={crypto.randomUUID()} className="bg-blue-100 border text-left px-8 py-4">Requested By</th>
-              <th key={crypto.randomUUID()} className="bg-blue-100 border text-left px-8 py-4">Status</th>
-              <th key={crypto.randomUUID()} className="bg-blue-100 border text-left px-8 py-4">Action</th>
-            </tr>
-          </thead>
-          {pendingRequestData.map((val, key) => {
-            return (
-              <tbody>
-                <tr key={key}>
-                  <td className="border px-8 py-4">{val.templateId}</td>
-                  <td className="border px-8 py-4">{val.requestedOn}</td>
-                  <td className="border px-8 py-4">{val.requestedBy}</td>
-                  <td className="border px-8 py-4">{val.status}</td>
-                  <td className="border px-8 py-4 space-x-1">
-                    <button onClick={handleView} className="text-blue-500 hover:underline">View</button>
-                    {/* <span>|</span> */}
-                    {/* <button className="text-blue-500 hover:underline">Edit</button>
+    // <div>
+    //   {!showTemplateForm ?
+        <>
+          <table className="shadow-lg bg-white  mx-auto mt-10">
+            <thead>
+              <tr>
+                <th key={crypto.randomUUID()} className="bg-blue-100 border text-left px-8 py-4">
+                  Template Id
+                </th>
+                <th key={crypto.randomUUID()} className="bg-blue-100 border text-left px-8 py-4">Requested On</th>
+                <th key={crypto.randomUUID()} className="bg-blue-100 border text-left px-8 py-4">Requested By</th>
+                <th key={crypto.randomUUID()} className="bg-blue-100 border text-left px-8 py-4">Status</th>
+                <th key={crypto.randomUUID()} className="bg-blue-100 border text-left px-8 py-4">Action</th>
+              </tr>
+            </thead>
+            {pendingRequestData.map((val, key) => {
+              return (
+                <tbody>
+                  <tr key={key}>
+                    <td className="border px-8 py-4">{val.templateId}</td>
+                    <td className="border px-8 py-4">{val.requestedOn}</td>
+                    <td className="border px-8 py-4">{val.requestedBy}</td>
+                    <td className="border px-8 py-4">{val.status}</td>
+                    <td className="border px-8 py-4 space-x-1">
+                      <button onClick={handleView} className="text-blue-500 hover:underline">View</button>
+                      {/* <span>|</span> */}
+                      {/* <button className="text-blue-500 hover:underline">Edit</button>
                     <span>|</span>
                     <button className="text-blue-500 hover:underline">
                       Delete
                     </button> */}
-                  </td>
-                </tr>
-              </tbody>
-            );
-          })}
-        </table>
+                    </td>
+                  </tr>
+                </tbody>
+              );
+            })}
+          </table>
         </>
-        :
-        <TemplateForm />}
-    </div>
+        // :
+        // <TemplateForm />}
+    // </div>
   );
 }
 

@@ -1,2 +1,6 @@
 main {
 }
+
+.rdrDefinedRangesWrapper {
+    display: none;
+  }
