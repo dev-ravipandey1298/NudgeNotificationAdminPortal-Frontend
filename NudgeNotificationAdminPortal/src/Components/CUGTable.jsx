@@ -1,4 +1,5 @@
 import React from 'react'
+import PageHeader from './PageHeader';
 
 const CUGTable = () => {
 
@@ -27,10 +28,8 @@ const CUGTable = () => {
 
   return (
     <div>
-      <div onClick={() => setShowDraft(false)} className="text-blue-500 underline p-2 hover:cursor-pointer">
-        Back
-      </div>
-      <table className="shadow-lg bg-white">
+      <PageHeader heading={"CUG Approval status"}/>
+      <table className="shadow-lg bg-white mx-auto mt-5">
         <tr>
           <th className="bg-blue-100 border text-left px-8 py-4">
             Template Id

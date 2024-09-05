@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import PageHeader from "./PageHeader";
 
 const DraftTable = ({setShowDraft}) => {
   const data = [
@@ -26,10 +27,8 @@ const DraftTable = ({setShowDraft}) => {
 
   return (
     <div>
-      <div onClick={() => setShowDraft(false)} className="text-blue-500 underline p-2 hover:cursor-pointer">
-        Back
-      </div>
-      <table className="shadow-lg bg-white">
+      <PageHeader heading={"Drafts"}/>
+      <table className="shadow-lg bg-white mx-auto mt-5">
         <tr>
           <th className="bg-blue-100 border text-left px-8 py-4">
             Template Id

@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import PageHeader from "./PageHeader";
 
 const ShowAllMakerTable = ({ setShowAllRequest }) => {
   const data = [
@@ -45,7 +46,8 @@ const ShowAllMakerTable = ({ setShowAllRequest }) => {
 
   return (
     <div>
-      <table className="shadow-lg bg-white mx-auto mt-10">
+      <PageHeader heading={"Search Nudge Template"}/>
+      <table className="shadow-lg bg-white mx-auto mt-5 w-[95%]">
         <tr>
           <th className="bg-blue-100 border text-left px-8 py-4">
             Template Id

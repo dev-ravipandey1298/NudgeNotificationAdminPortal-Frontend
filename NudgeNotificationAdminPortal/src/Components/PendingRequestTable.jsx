@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import TemplateForm from './TemplateForm';
 import { useNavigate } from 'react-router-dom';
+import PageHeader from './PageHeader';
 
 const PendingRequestTable = () => {
 
@@ -57,10 +58,9 @@ const PendingRequestTable = () => {
   }, [])
 
   return (
-    // <div>
-    //   {!showTemplateForm ?
         <>
-          <table className="shadow-lg bg-white  mx-auto mt-10">
+        <PageHeader heading={"Pending Requests"}/>
+          <table className="shadow-lg bg-white  mx-auto mt-5">
             <thead>
               <tr>
                 <th key={crypto.randomUUID()} className="bg-blue-100 border text-left px-8 py-4">
@@ -95,9 +95,6 @@ const PendingRequestTable = () => {
             })}
           </table>
         </>
-        // :
-        // <TemplateForm />}
-    // </div>
   );
 }
 

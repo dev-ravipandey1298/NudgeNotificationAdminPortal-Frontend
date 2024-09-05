@@ -10,7 +10,7 @@ const Maker = ({ userDetails }) => {
   const navigate = useNavigate();
 
   const handleCreateTemplate = () => {
-    navigate("/maker/test/nudge-template-form")
+    navigate("/maker/create/nudge-template-form")
   };
 
   const handleDraft = () => {

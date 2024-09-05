@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import PageHeader from "./PageHeader";
 
 const ShowAllMakerTable = () => {
 
@@ -48,9 +49,7 @@ const ShowAllMakerTable = () => {
   
   return (
     <div>
-      <div className="text-blue-500 underline p-2 hover:cursor-pointer">
-        Back
-      </div>
+      <PageHeader heading={"Search Requests"}/>
       <table className="shadow-lg bg-white">
         <thead>
           <tr key={crypto.randomUUID()}>

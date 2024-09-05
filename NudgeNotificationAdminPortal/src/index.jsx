@@ -5,7 +5,7 @@ import "./index.css";
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from "react-router-dom";
 import Layout from "./Layout";
 import TemplateForm from "./Components/TemplateForm";
-import TemplateForm_v1 from "./Components/TemplateForm_v1";
+import TemplateForm_v1 from "./Components/TemplateForm";
 import LoginPage from "./Components/LoginPage";
 import Maker from "./Components/Maker";
 import Checker from "./Components/Checker";
@@ -29,7 +29,6 @@ const router = createBrowserRouter(
 			<Route path="maker/drafts" element={<DraftTable />} />
 			<Route path="maker/show-all" element={<ShowAllMakerTable />} />
 			<Route path="maker/cug_approval_status" element={<CUGTable />} />
-			<Route path="maker/test/nudge-template-form" element={<TemplateForm_v1 />} />
 		</Route>
 	)
 )
