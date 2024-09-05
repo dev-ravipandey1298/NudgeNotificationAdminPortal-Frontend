@@ -16,7 +16,7 @@ const Navbar = () => {
             <div className="m-1 p-1 pb-1 mb-[0.4rem] flex items-center bg-blue-600 space-x-3">
                 <img
                     src={hdfc_logo}
-                    className="h-10 w-9 pt-1 bg-blue-600"
+                    className="h-[1.85rem] w-7 pt-1 bg-blue-600"
                     alt=""
                 />
             
@@ -27,9 +27,9 @@ const Navbar = () => {
             </div>
 
             {sessionStorage.getItem("user") !== null && <div className="flex items-center space-x-4 px-4">
-            <p className="text-white font-semibold">Welcome, {JSON.parse(sessionStorage.getItem("user")).name}</p>
+            <p className="text-white font-medium">Welcome, {JSON.parse(sessionStorage.getItem("user")).name}</p>
 
-            <button onClick={handleLogout} className="hover:cursor-pointer hover:text-red-800 text-red-900 text-[1.13rem] font-bold underline">Logout</button>
+            <button onClick={handleLogout} className="hover:cursor-pointer  hover:underline text-red-100 hover:text-red-300 font-medium ">Logout</button>
             </div>}
 
             
