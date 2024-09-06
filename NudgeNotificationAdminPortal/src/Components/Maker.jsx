@@ -58,7 +58,7 @@ const Maker = ({ userDetails }) => {
             className="h-60 w-72 rounded-lg p-4 flex flex-col items-center space-y-4 border shadow-lg transition ease-in-out delay-50 hover:-translate-y-1 hover:scale-110 hover:shadow-xl hover:cursor-pointer"
           >
             <span className="text-xl font-bold text-cyan-700 hover:cursor-pointer">
-              CUG Approval Status
+              Action Templates
             </span>
             <img src={approval_status} alt="" />
             <button className="text-blue-600 text-sm font-medium">

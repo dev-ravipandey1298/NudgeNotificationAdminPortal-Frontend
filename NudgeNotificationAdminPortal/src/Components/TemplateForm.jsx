@@ -42,15 +42,30 @@ const TemplateForm = () => {
     document.getElementsByClassName("dropdown-container")[0].style.backgroundColor = '#f9fafb'
     document.getElementsByClassName("dropdown-container")[1].style.backgroundColor = '#f9fafb'
     document.getElementsByClassName("dropdown-container")[2].style.backgroundColor = '#f9fafb'
-    document.getElementsByClassName("gray")[0].textContent = "Day..."
-    document.getElementsByClassName("gray")[2].textContent = "Day..."
-    document.getElementsByClassName("gray")[4].textContent = "Hrs..."
-    // userDetails !== null ? userDetails.role === "CHECKER" ? setIsChecker(true) : setIsChecker(false) : navigate("/login")
+    document.getElementsByClassName("dropdown-container")[3].style.backgroundColor = '#f9fafb'
+    document.getElementsByClassName("gray")[0].textContent = "Period..."
+    document.getElementsByClassName("gray")[2].textContent = "Duration..."
+    document.getElementsByClassName("gray")[4].textContent = "Day..."
+    document.getElementsByClassName("gray")[6].textContent = "Hrs..."
+    userDetails !== null ? userDetails.role === "CHECKER" ? setIsChecker(true) : setIsChecker(false) : navigate("/login")
   }, [])
 
-  // const [dateRange, setDateRange] = useState();
-
   const dateRangePreview = { startDate: new Date(), endDate: new Date("2025-03-25"), color: String };
+
+  const monthOption = [
+    { label: '1', value: '1' },
+    { label: '2', value: '2' },
+    { label: '3', value: '3' },
+    { label: '4', value: '4' },
+    { label: '5', value: '5' },
+    { label: '6', value: '6' },
+    { label: '7', value: '7' },
+    { label: '8', value: '8' },
+    { label: '9', value: '9' },
+    { label: '10', value: '10' },
+    { label: '11', value: '11' },
+    { label: '12', value: '12' }
+  ]
 
   const daysOption = [
     { label: '1', value: '1' },
@@ -96,6 +111,11 @@ const TemplateForm = () => {
     { label: '7', value: '7' }
   ]
 
+  const durationOption = [
+    { label: 'Week', value: 'Week' },
+    { label: 'Month', value: 'Month' }
+  ]
+
   const hoursOption = [
     { label: '00:00', value: '00:00' },
     { label: '01:00', value: '01:00' },
@@ -130,50 +150,61 @@ const TemplateForm = () => {
     comment: ""
   };
 
-
-
-  const handleRadioChange = (event) => {
-    setSelectedOption(event.target.value);
-
-    console.log("Clicked Radio");
-    console.log(selectedOption);
-  };
-
   const onSubmit = (data) => {
     // Handle form submission
     console.log("submit clicked === :");
     console.log(data);
+    data.environment = "CUG"
   };
+
+  const handleReset = () => {
+    reset({
+      templateName: '',
+      title: '',
+      body: '',
+      comment: ''
+    });
+  }
 
   const handleFileChange = (event) => {
     setSelectedFile(event.target.files[0]);
   };
 
-
-  const validatePayload = (payload) => {
-    if (payload === undefined || payload === "") {
-      setErrorPayload("");
-      return true;
-    } else {
-      try {
-        setErrorPayload("");
-        JSON.parse(payload);
-      } catch (e) {
-        setErrorPayload("Payload should be in JSON format.");
-        return false;
-      }
-      return true;
-    }
-  };
-
   return (
     <div className="">
-      <PageHeader heading={"Nudge Template"}/>
+      <PageHeader heading={"Nudge Template"} />
       <form
         className=" flex  mx-auto justify-center"
         onSubmit={handleSubmit(onSubmit)}
       >
-        <div className="space-y-2  w-[42%]">
+        <div className="space-y-3  w-[42%]">
+
+          {/* Template Name */}
+          <div className="flex space-x-2 items-center">
+            <label htmlFor="templateName">
+              <p className="inline font-medium">Template Name</p>
+              <p className="text-red-500 inline">*</p>:
+            </label>
+            {
+              <div className="h-8 ">
+                <input
+                  className={`outline-none border-[0.03rem] bg-gray-50 rounded-[0.250rem] p-1 w-full ${!isChecker
+                    ? "border-gray-400 focus:border-blue-500 focus:border-[0.100rem] focus:shadow-md"
+                    : "focus:border-grey-500]"
+                    }`}
+                  {...register("templateName")}
+                  // {...(isChecker && {
+                  //   value: templateJSON.title,
+                  //   readOnly: "readOnly",
+                  // })}
+                  defaultValue=""
+                  readOnly={isChecker}
+                  value={isChecker ? templateJSON.title : register.value}
+                />
+              </div>
+            }
+          </div>
+
           {/* Title box */}
           <div className="flex space-x-2 items-center">
             <label htmlFor="title">
@@ -197,75 +228,41 @@ const TemplateForm = () => {
             }
           </div>
 
-          <div className="flex justify-between">
-            {/* Body Text Filed */}
-            <div className="">
+          {/* <div className=""> */}
+          {/* Body Text Filed */}
+          <div className="flex space-x-1">
+            <div>
               <label htmlFor="body">
                 <p className="inline font-medium">Body</p>
                 <p className="text-red-500 inline">*</p>:
               </label>
+            </div >
+            <Controller
+              name="body"
+              control={control}
+              rules={{
+                required: true,
+                validate: {
+                  maxLength: (value) => value.length >= 1,
+                },
+              }}
+              render={({ field: { onChange, value } }) => (
+                <textarea
+                  className={`outline-none bg-gray-50 border-[0.03rem] rounded-[0.250rem] p-1 ${!isChecker
+                    ? "border-gray-400 focus:border-blue-500 focus:border-[0.100rem] focus:shadow-md"
+                    : "focus:border-grey-500]"
+                    }`}
+                  cols={60}
+                  placeholder="Provide your Nudge description here .."
+                  rows={3}
+                  onChange={onChange}
+                  readOnly={isChecker}
+                  value={!isChecker ? value : templateJSON.body}
+                />
+              )}
+            />
 
-              <Controller
-                name="Body"
-                control={control}
-                rules={{
-                  required: true,
-                  validate: {
-                    maxLength: (value) => value.length >= 1,
-                  },
-                }}
-                render={({ field: { onChange, value } }) => (
-                  <textarea
-                    className={`outline-none bg-gray-50 border-[0.03rem] rounded-[0.250rem] p-1 ${!isChecker
-                      ? "border-gray-400 focus:border-blue-500 focus:border-[0.100rem] focus:shadow-md"
-                      : "focus:border-grey-500]"
-                      }`}
-                    cols={36}
-                    placeholder="Provide your Nudge description here .."
-                    rows={4}
-                    onChange={onChange}
-                    readOnly={isChecker}
-                    value={!isChecker ? value : templateJSON.body}
-                  />
-                )}
-              />
-
-            </div>
-
-            {/* Payload */}
-            <div className="">
-              <label className="" htmlFor="payload">
-                <p className="inline font-medium">Payload</p>:
-              </label>
-              <Controller
-                name="Payload"
-                control={control}
-                rules={{
-                  validate: validatePayload,
-                }}
-                render={({ field: { onChange, value } }) => (
-                  <div>
-                    <textarea
-                      className={`outline-none bg-gray-50 border-[0.03rem] rounded-[0.250rem] p-1 ${!isChecker
-                        ? "border-gray-400 focus:border-blue-500 focus:border-[0.100rem] focus:shadow-md"
-                        : "focus:border-grey-500]"
-                        }`}
-                      placeholder="Payload should be in JSON format"
-                      cols={25}
-                      rows={4}
-                      onChange={onChange}
-                      value={value}
-                    />
-                    {errorPayload !== "" && (
-                      <p className="text-red-500 font-medium">{errorPayload}</p>
-                    )}
-                  </div>
-                )}
-              />
-            </div>
           </div>
-
-
 
           <div className="flex justify-between">
 
@@ -273,8 +270,6 @@ const TemplateForm = () => {
               <p className="inline font-medium">Start - End Date</p>
               <p className="text-red-500 inline">*</p>:
             </label>
-
-
             <Controller
               control={control}
               name="dateRange"
@@ -283,25 +278,21 @@ const TemplateForm = () => {
                   className="border shadow-lg rounded-xl"
                   ranges={field.value || [{
                     startDate: new Date(),
-                    endDate: new Date("2025-03-25"),
+                    endDate: new Date(),
                     key: 'selection'
                   }]}
                   // onChange={item => field.onChange([item.selection])}
-                  onChange={item => item}
-                  preview={dateRangePreview}
+                  onChange={isChecker ? item => item : item => field.onChange([item.selection])}
+                // preview={dateRangePreview}
                 // dragSelectionEnabled={false}
                 // editableDateInputs={false}
                 />
               )}
             />
-
           </div>
         </div>
         <div className="border border-grey-500 mx-10 my-20 rounded-xl"></div>
         <div className=" w-[42%] space-y-3">
-
-
-
           <div>
             <label htmlFor="execution">
               <p className="inline font-medium">Reouccurance</p>
@@ -311,16 +302,54 @@ const TemplateForm = () => {
 
           <div className="flex space-x-3">
             <div className="space-y-1 flex items-center">
+              <label className="pr-2" htmlFor="selectedMonth">
+                <p className="inline font-medium">Every</p>
+              </label>
+              <Controller
+                name="selectedMonth"
+                control={control}
+                render={({ field: { onChange, onBlur, value, name } }) => (
+                  <MultiSelect
+                    className="w-16"
+                    options={monthOption}
+                    value={value || []}
+                    onChange={onChange}
+                    onBlur={onBlur}
+                    labelledBy="Month"
+                    name={name}
+                  />
+                )}
+              />
+            </div>
+
+            <div className="space-y-1 mt-1 flex items-center">
+              <Controller
+                name="selectedDuration"
+                control={control}
+                render={({ field: { onChange, onBlur, value, name } }) => (
+                  <MultiSelect
+                    className="w-20"
+                    options={durationOption}
+                    value={value || []}
+                    onChange={onChange}
+                    onBlur={onBlur}
+                    labelledBy="Duration"
+                    name={name}
+                  />
+                )}
+              />
+            </div>
+
+            <div className="space-y-1 flex items-center">
               <label className="pr-2" htmlFor="selectedDays">
-                <p className="inline font-medium">Month</p>
-                <p className="text-red-500 inline">*</p>:
+                <p className="inline font-medium">on</p>
               </label>
               <Controller
                 name="selectedDays"
                 control={control}
                 render={({ field: { onChange, onBlur, value, name } }) => (
                   <MultiSelect
-                    className="w-24"
+                    className="w-16"
                     options={daysOption}
                     value={value || []}
                     onChange={onChange}
@@ -330,34 +359,14 @@ const TemplateForm = () => {
                   />
                 )}
               />
-            </div>
-
-            <div className="space-y-1 flex items-center">
-              <label className="pr-2" htmlFor="selectedWeeks">
-                <p className="inline font-medium">Week</p>
-                <p className="text-red-500 inline">*</p>:
+              <label className="pl-2" htmlFor="selectedHours">
+                <p className="inline font-medium">day</p>
               </label>
-              <Controller
-                name="selectedWeeks"
-                control={control}
-                render={({ field: { onChange, onBlur, value, name } }) => (
-                  <MultiSelect
-                    className="w-24"
-                    options={weekOption}
-                    value={value || []}
-                    onChange={onChange}
-                    onBlur={onBlur}
-                    labelledBy="Weeks"
-                    name={name}
-                  />
-                )}
-              />
             </div>
 
             <div className="space-y-1 flex items-center">
-              <label className="pr-2" htmlFor="selectedHours">
-                <p className="inline font-medium">Hours</p>
-                <p className="text-red-500 inline">*</p>:
+              <label className="mt-1 pr-2" htmlFor="selectedHours">
+                <p className="inline font-medium">at</p>
               </label>
               <Controller
                 name="selectedHours"
@@ -374,11 +383,11 @@ const TemplateForm = () => {
                   />
                 )}
               />
+              <label className="pl-2" htmlFor="selectedHours">
+                <p className="inline font-medium">hrs</p>
+              </label>
             </div>
-
           </div>
-
-
 
           {/* Comment */}
           <div className="space-y-1">
@@ -411,7 +420,8 @@ const TemplateForm = () => {
               <p className="text-red-500 inline">*</p>:
             </label>
             <Controller
-              name="Environment"
+              name="environment"
+              disabled={true}
               rules={{ required: "Environment should be select" }}
               control={control}
               render={({ field }) => (
@@ -419,7 +429,8 @@ const TemplateForm = () => {
                   {...field}
                   className="bg-gray-50 outline-none border-[0.03rem] rounded-[0.250rem] p-1  border-gray-400 focus:border-blue-500 focus:border-[0.100rem] focus:shadow-md"
                   onClick={(event) =>
-                    setSelectedTemplate(event.target.value)
+                    {field.onChange(event)
+                    setSelectedTemplate(event.target.value)}
                   }
                 >
                   <option value="CUG">CUG</option>
@@ -435,14 +446,15 @@ const TemplateForm = () => {
                 <button
                   className="mt-4 w-[5.5rem] p-2 px-4 bg-red-700 hover:bg-red-600 rounded flex justify-center text-white font-semibold"
                   type="button"
-                  onClick={reset}
+                  onClick={handleReset}
                 >
                   Reset
                 </button>
-                <input
+                <button
                   className="mt-4 w-[5.5rem] p-2 px-4 bg-blue-700 hover:bg-blue-600 rounded flex justify-center text-white font-semibold"
-                  type="submit"
-                />
+                  type="submit">
+                  Save
+                </button>
               </div>
             ) : (
               <div className="flex justify-between space-x-2">
@@ -463,7 +475,6 @@ const TemplateForm = () => {
           </div>
         </div>
       </form>
-
     </div>
   );
 };
