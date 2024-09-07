@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import showAll from "/icons/showAll.png";
 import draft from "/icons/draft.png";
 import approval_status from "/icons/approval_status.png";
 import template from "/icons/template.png";
 import { useNavigate } from "react-router-dom";
+import { setDataInLocalStorage } from "../Services/nudgeTemplateService";
 
 const Maker = ({ userDetails }) => {
   const count = 3;
@@ -20,6 +21,11 @@ const Maker = ({ userDetails }) => {
   const handleShowAllRequest = () => {
     navigate("/maker/show-all")
   };
+
+  useEffect(() => {
+      setDataInLocalStorage()
+  }, [])
+  
 
   return (
     <>

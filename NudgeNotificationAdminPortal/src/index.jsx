@@ -4,16 +4,16 @@ import App from "./App";
 import "./index.css";
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from "react-router-dom";
 import Layout from "./Layout";
-import TemplateForm from "./Components/TemplateForm";
-import TemplateForm_v1 from "./Components/TemplateForm";
-import LoginPage from "./Components/LoginPage";
-import Maker from "./Components/Maker";
-import Checker from "./Components/Checker";
-import PendingRequestTable from "./Components/PendingRequestTable";
-import ShowAllCheckerTable from "./Components/ShowAllCheckerTable";
-import DraftTable from "./Components/DraftTable";
-import ShowAllMakerTable from "./Components/ShowAllMakerTable";
-import CUGTable from "./Components/CUGTable";
+import TemplateForm from "./components/TemplateForm";
+import TemplateForm_v1 from "./components/TemplateForm";
+import LoginPage from "./components/LoginPage";
+import Maker from "./components/Maker";
+import Checker from "./components/Checker";
+import PendingRequestTable from "./components/PendingRequestTable";
+import ShowAllCheckerTable from "./components/ShowAllCheckerTable";
+import DraftTable from "./components/DraftTable";
+import ShowAllMakerTable from "./components/ShowAllMakerTable";
+import CUGTable from "./components/CUGTable";
 
 
 const router = createBrowserRouter(

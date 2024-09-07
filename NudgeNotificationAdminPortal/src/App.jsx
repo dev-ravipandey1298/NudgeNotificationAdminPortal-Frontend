@@ -1,8 +1,8 @@
 import "./App.css";
-import LoginPage from "./Components/LoginPage";
+import LoginPage from "./components/LoginPage";
 import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom";
 import { useEffect, useState } from "react";
-import Home from "./Components/Home";
+import Home from "./components/Home";
 
 export default function App() {
 

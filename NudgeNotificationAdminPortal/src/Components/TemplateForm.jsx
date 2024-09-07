@@ -8,6 +8,7 @@ import calendar from "/icons/calendar.png"
 import "react-date-range/dist/styles.css"; // main style file
 import "react-date-range/dist/theme/default.css"; // theme css file
 import PageHeader from "./PageHeader";
+import { createNudgeTemplateData, genrateNewTemplateId, getNudgeTemplateData } from "../Services/nudgeTemplateService";
 
 
 
@@ -21,11 +22,6 @@ const TemplateForm = () => {
     }
   );
 
-  const dropdownStyle = {
-    backgroundColor: 'f9fafb',
-  };
-
-
   const navigate = useNavigate();
   const [isChecker, setIsChecker] = useState(false);
   const [errorPayload, setErrorPayload] = useState("");
@@ -36,6 +32,7 @@ const TemplateForm = () => {
   const [alertDetail, setAlertDetail] = useState({ message: "", isWarn: false })
   const [showAlert, setShowAlert] = useState(false);
   const [showCalendar, setShowCalendar] = useState(false);
+  const [newTempId, setNewTempId] = useState('');
 
   useEffect(() => {
     const userDetails = JSON.parse(sessionStorage.getItem("user"))
@@ -48,6 +45,9 @@ const TemplateForm = () => {
     document.getElementsByClassName("gray")[4].textContent = "Day..."
     document.getElementsByClassName("gray")[6].textContent = "Hrs..."
     userDetails !== null ? userDetails.role === "CHECKER" ? setIsChecker(true) : setIsChecker(false) : navigate("/login")
+
+    newTemplateIdPromise()
+
   }, [])
 
   const dateRangePreview = { startDate: new Date(), endDate: new Date("2025-03-25"), color: String };
@@ -101,15 +101,6 @@ const TemplateForm = () => {
     { label: '31', value: '31' },
   ];
 
-  const weekOption = [
-    { label: '1', value: '1' },
-    { label: '2', value: '2' },
-    { label: '3', value: '3' },
-    { label: '4', value: '4' },
-    { label: '5', value: '5' },
-    { label: '6', value: '6' },
-    { label: '7', value: '7' }
-  ]
 
   const durationOption = [
     { label: 'Week', value: 'Week' },
@@ -150,11 +141,44 @@ const TemplateForm = () => {
     comment: ""
   };
 
+  const newTemplateIdPromise = async () => {
+    const newTemplateId = await new Promise((resolve, reject) => {
+      setTimeout(() => {
+        resolve(setNewTempId(genrateNewTemplateId()));
+      }, 1000);
+    });
+    return newTemplateId
+  }
+
+  let setNudgeData =(data) => {
+    const nudgeData = {
+      "templateId" : newTempId,
+      "templateName" : data.templateName,
+      "title": data.title,
+      "body": data.body,
+      "startDate": '',
+      "endDate": '',
+      "occurrenceFrequency": '',
+      "occurrenceUnit": '',
+      "occurrenceDays": [],
+      "createdBy": JSON.parse(sessionStorage.getItem("user")).name,
+      "createdOn": new Date().toLocaleDateString(),
+      "approvedBy": '',
+      "status" : 'draft' 
+    }
+    return nudgeData;
+  }
+  
+
   const onSubmit = (data) => {
     // Handle form submission
     console.log("submit clicked === :");
     console.log(data);
     data.environment = "CUG"
+    const msg = createNudgeTemplateData(setNudgeData(data))
+    console.log(msg)
+    console.log(getNudgeTemplateData())
+
   };
 
   const handleReset = () => {

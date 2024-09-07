@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import pendingApproval from "/icons/pending_approval.png";
 import showAll from "/icons/showAll.png";
 import { Link, useNavigate } from "react-router-dom";
+import { getAllPendingNudgeTemplatesForApproval } from "../Services/nudgeTemplateService";
 
 const Checker = ({ userDetails }) => {
   const count = 1;
@@ -26,7 +27,7 @@ const Checker = ({ userDetails }) => {
 
           <span className="absolute -top-5 -right-5 h-12 w-12 rounded-full bg-red-400 flex justify-center items-center items">
             <span className="text-white font-semibold text-lg">
-              {count}
+              {getAllPendingNudgeTemplatesForApproval().length}
             </span>
           </span>
 
