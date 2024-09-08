@@ -1,37 +1,12 @@
 import React, { useEffect, useState } from "react";
 import PageHeader from "./PageHeader";
 import { getAllDraftNudgeTemplate } from "../Services/nudgeTemplateService";
+import { useNavigate } from "react-router-dom";
 
 const DraftTable = ({setShowDraft}) => {
 
   const [draftData, setDraftData] = useState([]);
-
-  // const data = [
-  //   {
-  //     templateId: "10234599",
-  //     templateName: "Salary Credited",
-  //     createdOn: new Date().toLocaleString(),
-  //     status: "approved",
-  //   },
-  //   {
-  //     templateId: "10234600",
-  //     templateName: "Salary Credited",
-  //     createdOn: new Date().toLocaleString(),
-  //     status: "approved",
-  //   },
-  //   {
-  //     templateId: "10234601",
-  //     templateName: "Salary Credited",
-  //     createdOn: new Date().toLocaleString(),
-  //     status: "approved",
-  //   },
-  //   {
-  //     templateId: "10234602",
-  //     templateName: "Salary Credited",
-  //     createdOn: new Date().toLocaleString(),
-  //     status: "approved",
-  //   },
-  // ];
+  const navigate = useNavigate()
 
   useEffect(() => {
       setDraftData(getAllDraftNudgeTemplate())
@@ -58,7 +33,7 @@ const DraftTable = ({setShowDraft}) => {
               <td className="border px-3 py-2">{val.createdOn}</td>
               <td className="border px-3 py-2">{val.status}</td>
               <td className="border px-3 py-2 space-x-1">
-                <button className="text-blue-500 hover:underline">Edit</button>
+                <button onClick={() => navigate(`/maker/drafts/nudge-template-form/templateId/${val.templateId}`)} className="text-blue-500 hover:underline">Edit</button>
                 <span>|</span>
                 <button className="text-blue-500 hover:underline">Delete</button>
               </td>

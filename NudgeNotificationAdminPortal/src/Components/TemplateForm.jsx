@@ -1,38 +1,32 @@
 import { Controller, useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 import Alert from "./Alert";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { MultiSelect } from "react-multi-select-component";
 import { DateRangePicker } from "react-date-range";
 import calendar from "/icons/calendar.png"
 import "react-date-range/dist/styles.css"; // main style file
 import "react-date-range/dist/theme/default.css"; // theme css file
 import PageHeader from "./PageHeader";
-import { createNudgeTemplateData, genrateNewTemplateId, getNudgeTemplateData } from "../Services/nudgeTemplateService";
+import { createNudgeTemplateData, genrateNewTemplateId, getNudgeTemplateData, getNudgeTemplateDataById } from "../Services/nudgeTemplateService";
+import { occurrenceDaysOption, occurrenceFrequencyOption, occurrenceHoursOption, occurrenceUnitOption } from "../constants/reoccuranceValue";
 
 
 
 const TemplateForm = () => {
 
-  const { register, handleSubmit, control, reset } = useForm(
-    {
-      defaultValues: {
-        selectedItems: [] // Default value for multiple selections
-      }
-    }
-  );
-
+  const templateId = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const { register, handleSubmit, control, reset } = useForm();
+
   const [isChecker, setIsChecker] = useState(false);
-  const [errorPayload, setErrorPayload] = useState("");
-  const [errorQuery, setErrorQuery] = useState("");
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [selectedOption, setSelectedOption] = useState("");
-  const [selectedTemplate, setSelectedTemplate] = useState("");
-  const [alertDetail, setAlertDetail] = useState({ message: "", isWarn: false })
-  const [showAlert, setShowAlert] = useState(false);
-  const [showCalendar, setShowCalendar] = useState(false);
+  const [readOnly, setReadOnly] = useState(false);
   const [newTempId, setNewTempId] = useState('');
+  const [templateDetails, setTemplateDetails] = useState({});
+  const [isCheckedFinalSubmit, setIsCheckedFinalSubmit] = useState(false);
+  const [dateRangePreview, setDateRangePreview] = useState({});
 
   useEffect(() => {
     const userDetails = JSON.parse(sessionStorage.getItem("user"))
@@ -40,106 +34,41 @@ const TemplateForm = () => {
     document.getElementsByClassName("dropdown-container")[1].style.backgroundColor = '#f9fafb'
     document.getElementsByClassName("dropdown-container")[2].style.backgroundColor = '#f9fafb'
     document.getElementsByClassName("dropdown-container")[3].style.backgroundColor = '#f9fafb'
-    document.getElementsByClassName("gray")[0].textContent = "Period..."
-    document.getElementsByClassName("gray")[2].textContent = "Duration..."
-    document.getElementsByClassName("gray")[4].textContent = "Day..."
-    document.getElementsByClassName("gray")[6].textContent = "Hrs..."
+    // document.getElementsByClassName("gray")[0].textContent = "Period..."
+    // document.getElementsByClassName("gray")[2].textContent = "Duration..."
+    // document.getElementsByClassName("gray")[4].textContent = "Day..."
+    // document.getElementsByClassName("gray")[6].textContent = "Hrs..."
+    userDetails !== null ? userDetails.role === "CHECKER" ? setReadOnly(true) : setReadOnly(false) : navigate("/login")
     userDetails !== null ? userDetails.role === "CHECKER" ? setIsChecker(true) : setIsChecker(false) : navigate("/login")
-
+    userDetails !== null && (setTemplateDetails(getNudgeTemplateDataById(templateId.templateId)[0]))
     newTemplateIdPromise()
-
+    if(location.pathname.includes("drafts")){
+      setReadOnly(false);
+      setTemplateDataInEditableForm
+    }
+    
+    userDetails !== null && userDetails.role === "CHECKER" && setDateRangeWithFormattedValue()
+    
+  
   }, [])
 
-  const dateRangePreview = { startDate: new Date(), endDate: new Date("2025-03-25"), color: String };
+  const convertDateFormat = (dateString) => {
+    const [day, month, year] = dateString.split('-');
+    return `${year}-${month}-${day}`;
+  }
 
-  const monthOption = [
-    { label: '1', value: '1' },
-    { label: '2', value: '2' },
-    { label: '3', value: '3' },
-    { label: '4', value: '4' },
-    { label: '5', value: '5' },
-    { label: '6', value: '6' },
-    { label: '7', value: '7' },
-    { label: '8', value: '8' },
-    { label: '9', value: '9' },
-    { label: '10', value: '10' },
-    { label: '11', value: '11' },
-    { label: '12', value: '12' }
-  ]
+  const setDateRangeWithFormattedValue = () => {
+    const startDateToConvert = convertDateFormat(getNudgeTemplateDataById(templateId.templateId)[0].startDate)
+    const endDateToConvert = convertDateFormat(getNudgeTemplateDataById(templateId.templateId)[0].endDate)
+    // dateFormatShouldBe (yyyy-dd-MM)
+    setDateRangePreview({ startDate: new Date(startDateToConvert), endDate: new Date(endDateToConvert), color: String })    
+  } 
 
-  const daysOption = [
-    { label: '1', value: '1' },
-    { label: '2', value: '2' },
-    { label: '3', value: '3' },
-    { label: '4', value: '4' },
-    { label: '5', value: '5' },
-    { label: '6', value: '6' },
-    { label: '7', value: '7' },
-    { label: '8', value: '8' },
-    { label: '9', value: '9' },
-    { label: '10', value: '10' },
-    { label: '11', value: '11' },
-    { label: '12', value: '12' },
-    { label: '13', value: '13' },
-    { label: '14', value: '14' },
-    { label: '15', value: '15' },
-    { label: '16', value: '16' },
-    { label: '17', value: '17' },
-    { label: '18', value: '18' },
-    { label: '19', value: '19' },
-    { label: '20', value: '20' },
-    { label: '21', value: '21' },
-    { label: '22', value: '22' },
-    { label: '23', value: '23' },
-    { label: '24', value: '24' },
-    { label: '25', value: '25' },
-    { label: '26', value: '26' },
-    { label: '27', value: '27' },
-    { label: '28', value: '28' },
-    { label: '29', value: '29' },
-    { label: '30', value: '30' },
-    { label: '31', value: '31' },
-  ];
-
-
-  const durationOption = [
-    { label: 'Week', value: 'Week' },
-    { label: 'Month', value: 'Month' }
-  ]
-
-  const hoursOption = [
-    { label: '00:00', value: '00:00' },
-    { label: '01:00', value: '01:00' },
-    { label: '02:00', value: '02:00' },
-    { label: '03:00', value: '03:00' },
-    { label: '04:00', value: '04:00' },
-    { label: '05:00', value: '05:00' },
-    { label: '06:00', value: '06:00' },
-    { label: '07:00', value: '07:00' },
-    { label: '08:00', value: '08:00' },
-    { label: '09:00', value: '09:00' },
-    { label: '10:00', value: '10:00' },
-    { label: '11:00', value: '11:00' },
-    { label: '12:00', value: '12:00' },
-    { label: '13:00', value: '13:00' },
-    { label: '14:00', value: '14:00' },
-    { label: '15:00', value: '15:00' },
-    { label: '16:00', value: '16:00' },
-    { label: '17:00', value: '17:00' },
-    { label: '18:00', value: '18:00' },
-    { label: '19:00', value: '19:00' },
-    { label: '20:00', value: '20:00' },
-    { label: '21:00', value: '21:00' },
-    { label: '22:00', value: '22:00' },
-    { label: '23:00', value: '23:00' },
-    { label: '24:00', value: '24:00' }
-  ]
-
-  const templateJSON = {
-    title: "Nudge Notification",
-    body: "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Suscipit, repudiandae illo ullam rem cum soluta iste vero autem at tempora!",
-    comment: ""
-  };
+  const setTemplateDataInEditableForm = () => {
+    document.getElementById("templateName").value = getNudgeTemplateDataById(templateId.templateId)[0].templateName;
+    document.getElementById("title").value = getNudgeTemplateDataById(templateId.templateId)[0].title;
+    document.getElementById("body").value = getNudgeTemplateDataById(templateId.templateId)[0].body;
+  }
 
   const newTemplateIdPromise = async () => {
     const newTemplateId = await new Promise((resolve, reject) => {
@@ -150,33 +79,37 @@ const TemplateForm = () => {
     return newTemplateId
   }
 
-  let setNudgeData =(data) => {
+  let setNudgeData = (data) => {
     const nudgeData = {
-      "templateId" : newTempId,
-      "templateName" : data.templateName,
+      "templateId": newTempId,
+      "templateName": data.templateName,
       "title": data.title,
       "body": data.body,
-      "startDate": '',
-      "endDate": '',
-      "occurrenceFrequency": '',
-      "occurrenceUnit": '',
+      "startDate": new Date(data.dateRange[0].startDate).toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric'}).replace(/\//g, '-'),
+      "endDate": new Date(data.dateRange[0].endDate).toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric'}).replace(/\//g, '-'),
+      "occurrenceFrequency": [],
+      "occurrenceUnit": [],
       "occurrenceDays": [],
       "createdBy": JSON.parse(sessionStorage.getItem("user")).name,
       "createdOn": new Date().toLocaleDateString(),
       "approvedBy": '',
-      "status" : 'draft' 
+      "status": 'draft'
     }
     return nudgeData;
   }
-  
+
+
+
 
   const onSubmit = (data) => {
     // Handle form submission
     console.log("submit clicked === :");
     console.log(data);
+    
+    console.log(data.dateRange[0].endDate);
     data.environment = "CUG"
     const msg = createNudgeTemplateData(setNudgeData(data))
-    console.log(msg)
+    // console.log(msg)
     console.log(getNudgeTemplateData())
 
   };
@@ -202,33 +135,56 @@ const TemplateForm = () => {
         onSubmit={handleSubmit(onSubmit)}
       >
         <div className="space-y-3  w-[42%]">
+          <div className="flex justify-between">
 
-          {/* Template Name */}
-          <div className="flex space-x-2 items-center">
-            <label htmlFor="templateName">
-              <p className="inline font-medium">Template Name</p>
-              <p className="text-red-500 inline">*</p>:
-            </label>
-            {
-              <div className="h-8 ">
-                <input
-                  className={`outline-none border-[0.03rem] bg-gray-50 rounded-[0.250rem] p-1 w-full ${!isChecker
-                    ? "border-gray-400 focus:border-blue-500 focus:border-[0.100rem] focus:shadow-md"
-                    : "focus:border-grey-500]"
-                    }`}
-                  {...register("templateName")}
-                  // {...(isChecker && {
-                  //   value: templateJSON.title,
-                  //   readOnly: "readOnly",
-                  // })}
-                  defaultValue=""
-                  readOnly={isChecker}
-                  value={isChecker ? templateJSON.title : register.value}
-                />
-              </div>
-            }
+            {/* Template Id */}
+            <div className="flex space-x-2 items-center">
+              <label htmlFor="templateId">
+                <p className="inline font-medium">Template Id</p>
+                <p className="text-red-500 inline">*</p>:
+              </label>
+              {
+                <div className="h-8 w-20 flex">
+                  <input
+                    className={`font-medium text-red-800 outline-none border-[0.03rem] bg-gray-50 rounded-[0.250rem] p-1 w-full ${!isChecker
+                      ? "border-gray-400 focus:border-blue-500 focus:border-[0.100rem] focus:shadow-md"
+                      : "focus:border-grey-500]"
+                      }`}
+                    {...register("templateId")}
+                    disabled={true}
+                    value={templateId.templateId}
+                  />
+                </div>
+              }
+            </div>
+
+            {/* Template Name */}
+            <div className="flex space-x-2 items-center">
+              <label htmlFor="templateName">
+                <p className="inline font-medium">Template Name</p>
+                <p className="text-red-500 inline">*</p>:
+              </label>
+              {
+                <div className="h-8 ">
+                  <input
+                    id="templateName"
+                    className={`outline-none border-[0.03rem] bg-gray-50 rounded-[0.250rem] p-1 w-full ${!isChecker
+                      ? "border-gray-400 focus:border-blue-500 focus:border-[0.100rem] focus:shadow-md"
+                      : "focus:border-grey-500]"
+                      }`}
+                    {...register("templateName")}
+                    // {...(isChecker && {
+                    //   value: templateJSON.title,
+                    //   readOnly: "readOnly",
+                    // })}
+                    readOnly={readOnly}
+                    value={isChecker ? templateDetails.templateName : register.value }
+                   
+                  />
+                </div>
+              }
+            </div>
           </div>
-
           {/* Title box */}
           <div className="flex space-x-2 items-center">
             <label htmlFor="title">
@@ -238,13 +194,14 @@ const TemplateForm = () => {
             {
               <div className="h-8 w-full">
                 <input
+                  id="title"
                   className={`outline-none border-[0.03rem] bg-gray-50 rounded-[0.250rem] p-1 w-full ${!isChecker
                     ? "border-gray-400 focus:border-blue-500 focus:border-[0.100rem] focus:shadow-md"
                     : "focus:border-grey-500]"
                     }`}
                   {...register("title")}
                   {...(isChecker && {
-                    value: templateJSON.title,
+                    value: templateDetails.title,
                     readOnly: "readOnly",
                   })}
                 />
@@ -272,6 +229,7 @@ const TemplateForm = () => {
               }}
               render={({ field: { onChange, value } }) => (
                 <textarea
+                  id="body"
                   className={`outline-none bg-gray-50 border-[0.03rem] rounded-[0.250rem] p-1 ${!isChecker
                     ? "border-gray-400 focus:border-blue-500 focus:border-[0.100rem] focus:shadow-md"
                     : "focus:border-grey-500]"
@@ -281,7 +239,7 @@ const TemplateForm = () => {
                   rows={3}
                   onChange={onChange}
                   readOnly={isChecker}
-                  value={!isChecker ? value : templateJSON.body}
+                  value={!isChecker ? value : templateDetails.body}
                 />
               )}
             />
@@ -301,15 +259,14 @@ const TemplateForm = () => {
                 <DateRangePicker
                   className="border shadow-lg rounded-xl"
                   ranges={field.value || [{
-                    startDate: new Date(),
-                    endDate: new Date(),
+                    startDate: isChecker ? dateRangePreview.startDate : new Date(), 
+                    endDate: isChecker ? dateRangePreview.endDate : new Date(),
                     key: 'selection'
                   }]}
                   // onChange={item => field.onChange([item.selection])}
                   onChange={isChecker ? item => item : item => field.onChange([item.selection])}
-                // preview={dateRangePreview}
-                // dragSelectionEnabled={false}
-                // editableDateInputs={false}
+                  {...(isChecker && { preview: dateRangePreview })}
+                  dragSelectionEnabled={!isChecker}
                 />
               )}
             />
@@ -326,20 +283,21 @@ const TemplateForm = () => {
 
           <div className="flex space-x-3">
             <div className="space-y-1 flex items-center">
-              <label className="pr-2" htmlFor="selectedMonth">
+              <label className="pr-2" htmlFor="selectedFrequency">
                 <p className="inline font-medium">Every</p>
               </label>
               <Controller
-                name="selectedMonth"
+                name="selectedFrequency"
                 control={control}
                 render={({ field: { onChange, onBlur, value, name } }) => (
                   <MultiSelect
+                    id="frequency"
                     className="w-16"
-                    options={monthOption}
-                    value={value || []}
-                    onChange={onChange}
+                    options={occurrenceFrequencyOption}
+                    value={isChecker ? getNudgeTemplateDataById(templateId.templateId)[0].occurrenceFrequency : (value || [])}
+                    onChange={isChecker ? {} : onChange}
                     onBlur={onBlur}
-                    labelledBy="Month"
+                    labelledBy="Frequency"
                     name={name}
                   />
                 )}
@@ -348,16 +306,16 @@ const TemplateForm = () => {
 
             <div className="space-y-1 mt-1 flex items-center">
               <Controller
-                name="selectedDuration"
+                name="selectedUnit"
                 control={control}
                 render={({ field: { onChange, onBlur, value, name } }) => (
                   <MultiSelect
                     className="w-20"
-                    options={durationOption}
-                    value={value || []}
-                    onChange={onChange}
+                    options={occurrenceUnitOption}
+                    value={isChecker ? getNudgeTemplateDataById(templateId.templateId)[0].occurrenceUnit : (value || [])}
+                    onChange={isChecker ? {} : onChange}
                     onBlur={onBlur}
-                    labelledBy="Duration"
+                    labelledBy="Unit"
                     name={name}
                   />
                 )}
@@ -374,9 +332,9 @@ const TemplateForm = () => {
                 render={({ field: { onChange, onBlur, value, name } }) => (
                   <MultiSelect
                     className="w-16"
-                    options={daysOption}
-                    value={value || []}
-                    onChange={onChange}
+                    options={occurrenceDaysOption}
+                    value={isChecker ? getNudgeTemplateDataById(templateId.templateId)[0].occurrenceDays : (value || [])}
+                    onChange={isChecker ? {} : onChange}
                     onBlur={onBlur}
                     labelledBy="Days"
                     name={name}
@@ -398,9 +356,9 @@ const TemplateForm = () => {
                 render={({ field: { onChange, onBlur, value, name } }) => (
                   <MultiSelect
                     className="w-24"
-                    options={hoursOption}
-                    value={value || []}
-                    onChange={onChange}
+                    options={occurrenceHoursOption}
+                    value={isChecker ? getNudgeTemplateDataById(templateId.templateId)[0].occurrenceHours : (value || [])}
+                    onChange={isChecker ? {} : onChange}
                     onBlur={onBlur}
                     labelledBy="Hours"
                     name={name}
@@ -413,29 +371,19 @@ const TemplateForm = () => {
             </div>
           </div>
 
-          {/* Comment */}
-          <div className="space-y-1">
-            <label htmlFor="comment">
-              <p className="inline font-medium">Comment</p>:
+          {/* CUG Evidence */}
+          {isChecker && templateDetails.status === "pending_approval_prod" && <div className="space-y-1 space-x-2 flex items-center">
+            <label htmlFor="img">
+              <p className="inline font-medium">CUG Evidence</p>
+              <p className="text-red-500 inline">*</p>:
             </label>
-            <br />
-            <Controller
-              name="comment"
-              control={control}
-              render={({ field: { onChange, value } }) => (
-                <div>
-                  <textarea
-                    className="bg-gray-50 outline-none border-[0.03rem] rounded-[0.250rem] p-1 w-full border-gray-400 focus:border-blue-500 focus:border-[0.100rem] focus:shadow-md"
-                    cols={50}
-                    placeholder="Add Comment here..."
-                    rows={3}
-                    onChange={onChange}
-                    value={value}
-                  />
-                </div>
-              )}
+            <input
+              type="file"
+              onChange={handleFileChange}
+              className="outline-none border-2 border-gray-300 focus:border-blue-500 rounded-lg p-1"
+              {...register("img")}
             />
-          </div>
+          </div>}
 
           {/* Template Type Select Box  */}
           <div className="space-y-1">
@@ -452,9 +400,10 @@ const TemplateForm = () => {
                 <select
                   {...field}
                   className="bg-gray-50 outline-none border-[0.03rem] rounded-[0.250rem] p-1  border-gray-400 focus:border-blue-500 focus:border-[0.100rem] focus:shadow-md"
-                  onClick={(event) =>
-                    {field.onChange(event)
-                    setSelectedTemplate(event.target.value)}
+                  onClick={(event) => {
+                    field.onChange(event)
+                    setSelectedTemplate(event.target.value)
+                  }
                   }
                 >
                   <option value="CUG">CUG</option>
@@ -464,23 +413,60 @@ const TemplateForm = () => {
             />
           </div>
 
+          {/* Comment */}
+          {(isCheckedFinalSubmit || isChecker) && <div className="space-y-1 space-x-2 flex">
+            <label htmlFor="comment">
+              <p className="inline font-medium">Comment</p>:
+            </label>
+            <Controller
+              name="comment"
+              control={control}
+              render={({ field: { onChange, value } }) => (
+                <div>
+                  <textarea
+                    className="bg-gray-50 outline-none border-[0.03rem] rounded-[0.250rem] p-1 w-full border-gray-400 focus:border-blue-500 focus:border-[0.100rem] focus:shadow-md"
+                    cols={50}
+                    placeholder="Add Comment here..."
+                    rows={3}
+                    onChange={onChange}
+                    value={value}
+                  />
+                </div>
+              )}
+            />
+          </div>}
+          
+          {!isChecker && <div className=""> 
+            <input onClick={() => isCheckedFinalSubmit ? setIsCheckedFinalSubmit(false) : setIsCheckedFinalSubmit(true)} type="checkbox" id="finalSubmit" className="h-[0.60rem] w-[0.60rem]" name="finalSubmit" value="submitted"/>
+            <label className="font-medium text-red-700 text-sm font-mono" for="finalSubmit"> Submit for CUG approval</label>
+          </div>  }  
+
+
           <div className=" flex justify-end">
-            {!isChecker ? (
+            {!isChecker ? !isCheckedFinalSubmit  ? (
               <div className="flex justify-between space-x-2">
                 <button
-                  className="mt-4 w-[5.5rem] p-2 px-4 bg-red-700 hover:bg-red-600 rounded flex justify-center text-white font-semibold"
+                  className="mt-4 w-[5.5rem] p-2 px-4 bg-red-600 hover:bg-red-500 rounded flex justify-center text-white font-semibold"
                   type="button"
                   onClick={handleReset}
                 >
                   Reset
                 </button>
                 <button
-                  className="mt-4 w-[5.5rem] p-2 px-4 bg-blue-700 hover:bg-blue-600 rounded flex justify-center text-white font-semibold"
+                  className="mt-4 w-[5.5rem] p-2 px-4 bg-blue-600 hover:bg-blue-500 rounded flex justify-center text-white font-semibold"
                   type="submit">
                   Save
                 </button>
               </div>
-            ) : (
+            ) :
+            <div>
+              <button
+                  className="mt-4 w-[5.5rem] p-2 px-4 bg-green-700 hover:bg-green-600 rounded flex justify-center text-white font-semibold"
+                  type="button">
+                  Submit
+                </button>
+              </div>
+            : (
               <div className="flex justify-between space-x-2">
                 <button
                   className="mt-4 w-[5.5rem] p-2 px-4 bg-green-700 hover:bg-green-600 rounded flex justify-center text-white font-semibold"

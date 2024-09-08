@@ -1,3 +1,4 @@
+import { occurrenceHoursOption } from "../constants/reoccuranceValue";
 
 let nudgeTemplateData = [
     {   
@@ -7,9 +8,10 @@ let nudgeTemplateData = [
         body: "Wish you a very Happy Birthday",
         startDate: "2024-08-01",
         endDate: "2025-08-01",
-        occurrenceFrequency: 2,
-        occurrenceUnit: "Weekly",
-        occurrenceDays: [1, 2],
+        occurrenceFrequency: [],
+        occurrenceUnit: [],
+        occurrenceDays: [],
+        occurrenceHours : [],
         createdBy: '',
         createdOn: '',
         approvedBy: '',
@@ -28,7 +30,7 @@ export const getNudgeTemplateData = () => {
 }
 
 export const getNudgeTemplateDataById = (templateId) => {
-    return getNudgeTemplateData().filter(template => template.templateId === templateId);
+    return getNudgeTemplateData().filter(template => template.templateId == templateId);
 }
 
 export const createNudgeTemplateData = (nudgeData) => {
@@ -42,7 +44,7 @@ export const createNudgeTemplateData = (nudgeData) => {
 export const genrateNewTemplateId =  () => {
     let newTemplateId = null;
     if (nudgeTemplateData.length > 0) {
-        const lastTemplateId = getNudgeTemplateData()[nudgeTemplateData.length - 1].templateId;
+        const lastTemplateId = getNudgeTemplateData()[getNudgeTemplateData().length - 1].templateId;
         newTemplateId = lastTemplateId + 1;
         // Your logic here
     } else {
