@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+import { setDataInLocalStorage } from "../Services/nudgeTemplateService";
 
 const LoginPage = ({setUserDetails}) => {
     const { register, handleSubmit } = useForm();
@@ -21,7 +22,7 @@ const LoginPage = ({setUserDetails}) => {
         loggedInUser.password = "";
         sessionStorage.setItem("user", JSON.stringify(loggedInUser))
         console.log(loggedInUser)
-
+        setDataInLocalStorage()
         // Redirect to home after successful login
       } else {
         alert('Invalid credentials');

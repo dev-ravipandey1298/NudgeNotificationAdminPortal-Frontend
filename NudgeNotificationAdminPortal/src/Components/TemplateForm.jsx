@@ -8,25 +8,41 @@ import calendar from "/icons/calendar.png"
 import "react-date-range/dist/styles.css"; // main style file
 import "react-date-range/dist/theme/default.css"; // theme css file
 import PageHeader from "./PageHeader";
-import { createNudgeTemplateData, genrateNewTemplateId, getNudgeTemplateData, getNudgeTemplateDataById } from "../Services/nudgeTemplateService";
+import { createNudgeTemplateData, genrateNewTemplateId, getNudgeTemplateData, getNudgeTemplateDataById, updateNudgeTemplates } from "../Services/nudgeTemplateService";
 import { occurrenceDaysOption, occurrenceFrequencyOption, occurrenceHoursOption, occurrenceUnitOption } from "../constants/reoccuranceValue";
+import { validateLocaleAndSetLanguage } from "typescript";
+import Warning from "./Warning";
 
 
 
 const TemplateForm = () => {
-
+  const warningMessage = "Do you want to proceed with submitting the nudge template for review?"
   const templateId = useParams();
   const navigate = useNavigate();
   const location = useLocation();
 
-  const { register, handleSubmit, control, reset } = useForm();
+  const { register, handleSubmit, control, reset} = useForm();
 
   const [isChecker, setIsChecker] = useState(false);
   const [readOnly, setReadOnly] = useState(false);
+  const [onEditScreen, setOnEditScreen] = useState(false);
   const [newTempId, setNewTempId] = useState('');
   const [templateDetails, setTemplateDetails] = useState({});
   const [isCheckedFinalSubmit, setIsCheckedFinalSubmit] = useState(false);
   const [dateRangePreview, setDateRangePreview] = useState({});
+  const [submitStatus, setSubmitStatus] = useState('');
+  const [selectedFrequency, setSelectedFrequency] = useState([]);
+  const [selectedUnit, setSelectedUnit] = useState([]);
+  const [selectedDays, setSelectedDays] = useState([]);
+  const [selectedHours, setSelectedHours] = useState([]);
+  const [showWarning, setShowWarning] = useState(false);
+  const [showReoccuranceError, setShowReoccuranceError] = useState(false);
+
+
+  const isReoccuranceSelected = (selectedFrequency.length == 0
+  || selectedUnit.length == 0
+  || selectedDays.length == 0
+  || selectedHours.length == 0)
 
   useEffect(() => {
     const userDetails = JSON.parse(sessionStorage.getItem("user"))
@@ -42,14 +58,16 @@ const TemplateForm = () => {
     userDetails !== null ? userDetails.role === "CHECKER" ? setIsChecker(true) : setIsChecker(false) : navigate("/login")
     userDetails !== null && (setTemplateDetails(getNudgeTemplateDataById(templateId.templateId)[0]))
     newTemplateIdPromise()
-    if(location.pathname.includes("drafts")){
+    if (location.pathname.includes("drafts")) {
       setReadOnly(false);
-      setTemplateDataInEditableForm
+      setOnEditScreen(true);
+      setOuccuranceData()
+      setTemplateDataInEditableForm()
+      setDateRangeWithFormattedValue()
     }
-    
+    userDetails !== null && userDetails.role === "CHECKER" && setOuccuranceData();
     userDetails !== null && userDetails.role === "CHECKER" && setDateRangeWithFormattedValue()
-    
-  
+
   }, [])
 
   const convertDateFormat = (dateString) => {
@@ -57,17 +75,26 @@ const TemplateForm = () => {
     return `${year}-${month}-${day}`;
   }
 
+  const setOuccuranceData = () => {
+    setSelectedFrequency(getNudgeTemplateDataById(templateId.templateId)[0].occurrenceFrequency)
+    setSelectedUnit(getNudgeTemplateDataById(templateId.templateId)[0].occurrenceUnit)
+    setSelectedDays(getNudgeTemplateDataById(templateId.templateId)[0].occurrenceDays)
+    setSelectedHours(getNudgeTemplateDataById(templateId.templateId)[0].occurrenceHours)
+  }
+
   const setDateRangeWithFormattedValue = () => {
     const startDateToConvert = convertDateFormat(getNudgeTemplateDataById(templateId.templateId)[0].startDate)
     const endDateToConvert = convertDateFormat(getNudgeTemplateDataById(templateId.templateId)[0].endDate)
     // dateFormatShouldBe (yyyy-dd-MM)
-    setDateRangePreview({ startDate: new Date(startDateToConvert), endDate: new Date(endDateToConvert), color: String })    
-  } 
+    setDateRangePreview({ startDate: new Date(startDateToConvert), endDate: new Date(endDateToConvert), color: String })
+  }
 
   const setTemplateDataInEditableForm = () => {
-    document.getElementById("templateName").value = getNudgeTemplateDataById(templateId.templateId)[0].templateName;
+    // document.getElementById("templateName").value = getNudgeTemplateDataById(templateId.templateId)[0].templateName;
     document.getElementById("title").value = getNudgeTemplateDataById(templateId.templateId)[0].title;
     document.getElementById("body").value = getNudgeTemplateDataById(templateId.templateId)[0].body;
+    // document.getElementById("frequency").value = getNudgeTemplateDataById(templateId.templateId)[0].occurrenceFrequency;
+
   }
 
   const newTemplateIdPromise = async () => {
@@ -85,15 +112,38 @@ const TemplateForm = () => {
       "templateName": data.templateName,
       "title": data.title,
       "body": data.body,
-      "startDate": new Date(data.dateRange[0].startDate).toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric'}).replace(/\//g, '-'),
-      "endDate": new Date(data.dateRange[0].endDate).toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric'}).replace(/\//g, '-'),
-      "occurrenceFrequency": [],
-      "occurrenceUnit": [],
-      "occurrenceDays": [],
+      "startDate": new Date(data.dateRange[0].startDate).toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric' }).replace(/\//g, '-'),
+      "endDate": new Date(data.dateRange[0].endDate).toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric' }).replace(/\//g, '-'),
+      "occurrenceFrequency": data.selectedFrequency,
+      "occurrenceUnit": data.selectedUnit,
+      "occurrenceDays": data.selectedDays,
+      "occurrenceHours": data.selectedHours,
       "createdBy": JSON.parse(sessionStorage.getItem("user")).name,
       "createdOn": new Date().toLocaleDateString(),
       "approvedBy": '',
+      "comment": data.comment,
       "status": 'draft'
+    }
+    return nudgeData;
+  }
+
+  let updateNudgeData = (data) => {
+    const nudgeData = {
+      "templateId": newTempId,
+      "templateName": data.templateName,
+      "title": data.title,
+      "body": data.body,
+      "startDate": new Date(data.dateRange[0].startDate).toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric' }).replace(/\//g, '-'),
+      "endDate": new Date(data.dateRange[0].endDate).toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric' }).replace(/\//g, '-'),
+      "occurrenceFrequency": data.selectedFrequency,
+      "occurrenceUnit": data.selectedUnit,
+      "occurrenceDays": data.selectedDays,
+      "occurrenceHours": data.selectedHours,
+      "createdBy": JSON.parse(sessionStorage.getItem("user")).name,
+      "createdOn": new Date().toLocaleDateString(),
+      "approvedBy": '',
+      "comment": data.comment,
+      "status": 'pending_approval_cug'
     }
     return nudgeData;
   }
@@ -105,10 +155,18 @@ const TemplateForm = () => {
     // Handle form submission
     console.log("submit clicked === :");
     console.log(data);
-    
-    console.log(data.dateRange[0].endDate);
     data.environment = "CUG"
-    const msg = createNudgeTemplateData(setNudgeData(data))
+    setShowWarning(true)
+
+    if (isCheckedFinalSubmit) {
+      setSubmitStatus('pending_approval_cug')
+      console.log("Final click");
+      console.log(submitStatus)
+      updateNudgeTemplates(updateNudgeData(data))
+    } else {
+      setSubmitStatus('draft')
+      const msg = createNudgeTemplateData(setNudgeData(data))
+    }
     // console.log(msg)
     console.log(getNudgeTemplateData())
 
@@ -123,6 +181,14 @@ const TemplateForm = () => {
     });
   }
 
+  const handleConfirmWarning = () => {
+    setShowWarning(false)
+  }
+
+  const handleCloseWarning = () => {
+    setShowWarning(false)
+  }
+
   const handleFileChange = (event) => {
     setSelectedFile(event.target.files[0]);
   };
@@ -135,6 +201,7 @@ const TemplateForm = () => {
         onSubmit={handleSubmit(onSubmit)}
       >
         <div className="space-y-3  w-[42%]">
+          
           <div className="flex justify-between">
 
             {/* Template Id */}
@@ -165,11 +232,12 @@ const TemplateForm = () => {
                 <p className="text-red-500 inline">*</p>:
               </label>
               {
-                <div className="h-8 ">
+
+                <div className="">
                   <input
                     id="templateName"
                     className={`outline-none border-[0.03rem] bg-gray-50 rounded-[0.250rem] p-1 w-full ${!isChecker
-                      ? "border-gray-400 focus:border-blue-500 focus:border-[0.100rem] focus:shadow-md"
+                      ? `border-gray-400 focus:border-blue-500  focus:border-[0.100rem] focus:shadow-md`
                       : "focus:border-grey-500]"
                       }`}
                     {...register("templateName")}
@@ -178,14 +246,16 @@ const TemplateForm = () => {
                     //   readOnly: "readOnly",
                     // })}
                     readOnly={readOnly}
-                    value={isChecker ? templateDetails.templateName : register.value }
-                   
+                    value={isChecker || onEditScreen ? templateDetails.templateName : register.value}
+
                   />
                 </div>
               }
             </div>
+
           </div>
           {/* Title box */}
+          
           <div className="flex space-x-2 items-center">
             <label htmlFor="title">
               <p className="inline font-medium">Title</p>
@@ -211,7 +281,9 @@ const TemplateForm = () => {
 
           {/* <div className=""> */}
           {/* Body Text Filed */}
+          
           <div className="flex space-x-1">
+
             <div>
               <label htmlFor="body">
                 <p className="inline font-medium">Body</p>
@@ -222,7 +294,6 @@ const TemplateForm = () => {
               name="body"
               control={control}
               rules={{
-                required: true,
                 validate: {
                   maxLength: (value) => value.length >= 1,
                 },
@@ -246,6 +317,8 @@ const TemplateForm = () => {
 
           </div>
 
+          {/* Start -End Date */}
+          
           <div className="flex justify-between">
 
             <label htmlFor="startEndDate" className="">
@@ -259,13 +332,13 @@ const TemplateForm = () => {
                 <DateRangePicker
                   className="border shadow-lg rounded-xl"
                   ranges={field.value || [{
-                    startDate: isChecker ? dateRangePreview.startDate : new Date(), 
-                    endDate: isChecker ? dateRangePreview.endDate : new Date(),
+                    startDate: isChecker || onEditScreen ? dateRangePreview.startDate : new Date(),
+                    endDate: isChecker || onEditScreen ? dateRangePreview.endDate : new Date(),
                     key: 'selection'
                   }]}
                   // onChange={item => field.onChange([item.selection])}
                   onChange={isChecker ? item => item : item => field.onChange([item.selection])}
-                  {...(isChecker && { preview: dateRangePreview })}
+                  {...((isChecker || onEditScreen) && { preview: dateRangePreview })}
                   dragSelectionEnabled={!isChecker}
                 />
               )}
@@ -273,7 +346,13 @@ const TemplateForm = () => {
           </div>
         </div>
         <div className="border border-grey-500 mx-10 my-20 rounded-xl"></div>
+
+        {/* Left Side */}
         <div className=" w-[42%] space-y-3">
+          {(isReoccuranceSelected) && (
+              <p className="text-red-500 text-xs font-medium mt-1">**All fields in reoccurance are required to schedule notification.</p>
+            )}
+
           <div>
             <label htmlFor="execution">
               <p className="inline font-medium">Reouccurance</p>
@@ -288,14 +367,14 @@ const TemplateForm = () => {
               </label>
               <Controller
                 name="selectedFrequency"
+              
                 control={control}
                 render={({ field: { onChange, onBlur, value, name } }) => (
                   <MultiSelect
-                    id="frequency"
                     className="w-16"
                     options={occurrenceFrequencyOption}
-                    value={isChecker ? getNudgeTemplateDataById(templateId.templateId)[0].occurrenceFrequency : (value || [])}
-                    onChange={isChecker ? {} : onChange}
+                    value={selectedFrequency}
+                    onChange={isChecker ? {} : setSelectedFrequency}
                     onBlur={onBlur}
                     labelledBy="Frequency"
                     name={name}
@@ -312,8 +391,8 @@ const TemplateForm = () => {
                   <MultiSelect
                     className="w-20"
                     options={occurrenceUnitOption}
-                    value={isChecker ? getNudgeTemplateDataById(templateId.templateId)[0].occurrenceUnit : (value || [])}
-                    onChange={isChecker ? {} : onChange}
+                    value={selectedUnit}
+                    onChange={isChecker ? {} : setSelectedUnit}
                     onBlur={onBlur}
                     labelledBy="Unit"
                     name={name}
@@ -333,8 +412,8 @@ const TemplateForm = () => {
                   <MultiSelect
                     className="w-16"
                     options={occurrenceDaysOption}
-                    value={isChecker ? getNudgeTemplateDataById(templateId.templateId)[0].occurrenceDays : (value || [])}
-                    onChange={isChecker ? {} : onChange}
+                    value={selectedDays}
+                    onChange={isChecker ? {} : setSelectedDays}
                     onBlur={onBlur}
                     labelledBy="Days"
                     name={name}
@@ -357,8 +436,8 @@ const TemplateForm = () => {
                   <MultiSelect
                     className="w-24"
                     options={occurrenceHoursOption}
-                    value={isChecker ? getNudgeTemplateDataById(templateId.templateId)[0].occurrenceHours : (value || [])}
-                    onChange={isChecker ? {} : onChange}
+                    value={selectedHours}
+                    onChange={isChecker ? {} : setSelectedHours}
                     onBlur={onBlur}
                     labelledBy="Hours"
                     name={name}
@@ -394,7 +473,6 @@ const TemplateForm = () => {
             <Controller
               name="environment"
               disabled={true}
-              rules={{ required: "Environment should be select" }}
               control={control}
               render={({ field }) => (
                 <select
@@ -435,15 +513,15 @@ const TemplateForm = () => {
               )}
             />
           </div>}
-          
-          {!isChecker && <div className=""> 
-            <input onClick={() => isCheckedFinalSubmit ? setIsCheckedFinalSubmit(false) : setIsCheckedFinalSubmit(true)} type="checkbox" id="finalSubmit" className="h-[0.60rem] w-[0.60rem]" name="finalSubmit" value="submitted"/>
+
+          {!isChecker && <div className="">
+            <input onClick={() => isCheckedFinalSubmit ? setIsCheckedFinalSubmit(false) : setIsCheckedFinalSubmit(true)} type="checkbox" id="finalSubmit" className="h-[0.60rem] w-[0.60rem]" name="finalSubmit" value="submitted" />
             <label className="font-medium text-red-700 text-sm font-mono" for="finalSubmit"> Submit for CUG approval</label>
-          </div>  }  
+          </div>}
 
 
           <div className=" flex justify-end">
-            {!isChecker ? !isCheckedFinalSubmit  ? (
+            {!isChecker ? !isCheckedFinalSubmit ? (
               <div className="flex justify-between space-x-2">
                 <button
                   className="mt-4 w-[5.5rem] p-2 px-4 bg-red-600 hover:bg-red-500 rounded flex justify-center text-white font-semibold"
@@ -459,32 +537,33 @@ const TemplateForm = () => {
                 </button>
               </div>
             ) :
-            <div>
-              <button
+              <div>
+                <button
                   className="mt-4 w-[5.5rem] p-2 px-4 bg-green-700 hover:bg-green-600 rounded flex justify-center text-white font-semibold"
-                  type="button">
+                  type="submit">
                   Submit
                 </button>
               </div>
-            : (
-              <div className="flex justify-between space-x-2">
-                <button
-                  className="mt-4 w-[5.5rem] p-2 px-4 bg-green-700 hover:bg-green-600 rounded flex justify-center text-white font-semibold"
-                  type="submit"
-                >
-                  Approve
-                </button>
-                <button
-                  className="mt-4 w-[5.5rem] p-2 px-4 bg-red-700 hover:bg-red-600 rounded flex justify-center text-white font-semibold"
-                  type="submit"
-                >
-                  Reject
-                </button>
-              </div>
-            )}
+              : (
+                <div className="flex justify-between space-x-2">
+                  <button
+                    className="mt-4 w-[5.5rem] p-2 px-4 bg-green-700 hover:bg-green-600 rounded flex justify-center text-white font-semibold"
+                    type="submit"
+                  >
+                    Approve
+                  </button>
+                  <button
+                    className="mt-4 w-[5.5rem] p-2 px-4 bg-red-700 hover:bg-red-600 rounded flex justify-center text-white font-semibold"
+                    type="submit"
+                  >
+                    Reject
+                  </button>
+                </div>
+              )}
           </div>
         </div>
       </form>
+      {showWarning && <Warning message={warningMessage} handleConfirmWarning={handleConfirmWarning} handleCloseWarning={handleCloseWarning} />}
     </div>
   );
 };

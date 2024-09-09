@@ -61,3 +61,21 @@ export const getAllDraftNudgeTemplate = () => {
 export const getAllPendingNudgeTemplatesForApproval = () => {
     return getNudgeTemplateData().filter(template => (template.status === 'pending_approval_cug' || template.status === 'pending_approval_prod'));
 }
+
+export const getAllProdPendingNudgeTemplatesForApproval = () => {
+    return getNudgeTemplateData().filter(template => (template.status === 'pending_approval_prod'));
+}
+
+export const getAllCugPendingNudgeTemplatesForApproval = () => {
+    return getNudgeTemplateData().filter(template => (template.status === 'pending_approval_cug'));
+}
+
+export const updateNudgeTemplates = (nudgeData) => {
+    nudgeTemplateData = getNudgeTemplateData();
+    const index = nudgeTemplateData.findIndex(template => template.templateId == nudgeData.templateId)
+    if(index !== -1){
+        nudgeTemplateData[index] = nudgeData;
+        localStorage.setItem('nudgeTempDataLocal', JSON.stringify(nudgeTemplateData))
+    }
+    createNudgeTemplateData(nudgeData)
+}
