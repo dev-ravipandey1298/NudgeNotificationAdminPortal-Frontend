@@ -21,7 +21,7 @@ const TemplateForm = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const { register, handleSubmit, control, reset} = useForm();
+  const { register, handleSubmit, control, reset, formState: { errors }} = useForm();
 
   const [isChecker, setIsChecker] = useState(false);
   const [readOnly, setReadOnly] = useState(false);
@@ -201,7 +201,9 @@ const TemplateForm = () => {
         onSubmit={handleSubmit(onSubmit)}
       >
         <div className="space-y-3  w-[42%]">
-          
+        {errors.templateName && (
+            <p className="text-red-500 text-xs font-medium mt-1">**{errors.templateName.message}</p>
+          )}
           <div className="flex justify-between">
 
             {/* Template Id */}
@@ -240,7 +242,7 @@ const TemplateForm = () => {
                       ? `border-gray-400 focus:border-blue-500  focus:border-[0.100rem] focus:shadow-md`
                       : "focus:border-grey-500]"
                       }`}
-                    {...register("templateName")}
+                    {...register("templateName", { required: "Template Name is required" })}
                     // {...(isChecker && {
                     //   value: templateJSON.title,
                     //   readOnly: "readOnly",
@@ -255,7 +257,9 @@ const TemplateForm = () => {
 
           </div>
           {/* Title box */}
-          
+          {errors.title && (
+            <p className="text-red-500 text-xs font-medium mt-1">**{errors.title.message}</p>
+          )}
           <div className="flex space-x-2 items-center">
             <label htmlFor="title">
               <p className="inline font-medium">Title</p>
@@ -269,7 +273,7 @@ const TemplateForm = () => {
                     ? "border-gray-400 focus:border-blue-500 focus:border-[0.100rem] focus:shadow-md"
                     : "focus:border-grey-500]"
                     }`}
-                  {...register("title")}
+                  {...register("title", { required: "Title is required" })}
                   {...(isChecker && {
                     value: templateDetails.title,
                     readOnly: "readOnly",
@@ -281,7 +285,9 @@ const TemplateForm = () => {
 
           {/* <div className=""> */}
           {/* Body Text Filed */}
-          
+          {errors.body && (
+            <p className="text-red-500 text-xs font-medium mt-1">**{errors.body.message}</p>
+          )}
           <div className="flex space-x-1">
 
             <div>
@@ -293,11 +299,7 @@ const TemplateForm = () => {
             <Controller
               name="body"
               control={control}
-              rules={{
-                validate: {
-                  maxLength: (value) => value.length >= 1,
-                },
-              }}
+              rules={{required: "Body is required"}}
               render={({ field: { onChange, value } }) => (
                 <textarea
                   id="body"
@@ -318,7 +320,9 @@ const TemplateForm = () => {
           </div>
 
           {/* Start -End Date */}
-          
+          {errors.dateRange && (
+            <p className="text-red-500 text-xs font-medium mt-1">**{errors.dateRange.message}</p>
+          )}
           <div className="flex justify-between">
 
             <label htmlFor="startEndDate" className="">
@@ -328,6 +332,7 @@ const TemplateForm = () => {
             <Controller
               control={control}
               name="dateRange"
+              rules={{ required: "Start - End Date is required." }}
               render={({ field }) => (
                 <DateRangePicker
                   className="border shadow-lg rounded-xl"
