@@ -39,13 +39,14 @@ const TemplateForm = () => {
   const [showReoccuranceError, setShowReoccuranceError] = useState(false);
   const [showAlert, setshowAlert] = useState(false);
 
-
-  const isReoccuranceSelected = (selectedFrequency.length == 0
-    || selectedUnit.length == 0
-    || selectedDays.length == 0
-    || selectedHours.length == 0)
+  const isReoccuranceSelected = false;
+  // const isReoccuranceSelected = (selectedFrequency.length == 0
+  //   || selectedUnit.length == 0
+  //   || selectedDays.length == 0
+  //   || selectedHours.length == 0)
 
   useEffect(() => {
+    console.log(selectedFrequency)
     const userDetails = JSON.parse(sessionStorage.getItem("user"))
     document.getElementsByClassName("dropdown-container")[0].style.backgroundColor = '#f9fafb'
     document.getElementsByClassName("dropdown-container")[1].style.backgroundColor = '#f9fafb'
@@ -66,9 +67,9 @@ const TemplateForm = () => {
       setTemplateDataInEditableForm()
       setDateRangeWithFormattedValue()
     }
-    userDetails !== null && userDetails.role === "CHECKER" && setOuccuranceData();
+    userDetails !== null && (userDetails.role === "CHECKER") && setOuccuranceData();
     userDetails !== null && userDetails.role === "CHECKER" && setDateRangeWithFormattedValue()
-
+   
   }, [])
 
   const convertDateFormat = (dateString) => {
@@ -95,7 +96,6 @@ const TemplateForm = () => {
     document.getElementById("title").value = getNudgeTemplateDataById(templateId.templateId)[0].title;
     document.getElementById("body").value = getNudgeTemplateDataById(templateId.templateId)[0].body;
     // document.getElementById("frequency").value = getNudgeTemplateDataById(templateId.templateId)[0].occurrenceFrequency;
-
   }
 
   const newTemplateIdPromise = async () => {
@@ -115,10 +115,10 @@ const TemplateForm = () => {
       "body": data.body,
       "startDate": new Date(data.dateRange[0].startDate).toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric' }).replace(/\//g, '-'),
       "endDate": new Date(data.dateRange[0].endDate).toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric' }).replace(/\//g, '-'),
-      "occurrenceFrequency": data.selectedFrequency,
-      "occurrenceUnit": data.selectedUnit,
-      "occurrenceDays": data.selectedDays,
-      "occurrenceHours": data.selectedHours,
+      "occurrenceFrequency": selectedFrequency,
+      "occurrenceUnit": selectedUnit,
+      "occurrenceDays": selectedDays,
+      "occurrenceHours": selectedHours,
       "createdBy": JSON.parse(sessionStorage.getItem("user")).name,
       "createdOn": new Date().toLocaleDateString(),
       "approvedBy": '',
@@ -368,7 +368,7 @@ const TemplateForm = () => {
 
         {/* Left Side */}
         <div className=" w-[42%] space-y-3">
-          {(showReoccuranceError && isReoccuranceSelected) && (
+          {(showReoccuranceError) && (
             <p className="text-red-500 text-xs font-medium mt-1">**All fields in reoccurance are required to schedule notification.</p>
           )}
 
@@ -511,7 +511,7 @@ const TemplateForm = () => {
           </div>
 
           {/* Comment */}
-          {(isCheckedFinalSubmit || isChecker) && <div className="space-y-1 space-x-2 flex">
+          {(isChecker) && <div className="space-y-1 space-x-2 flex">
             <label htmlFor="comment">
               <p className="inline font-medium">Comment</p>:
             </label>
@@ -552,7 +552,7 @@ const TemplateForm = () => {
                 <button
                   className="mt-4 w-[5.5rem] p-2 px-4 bg-blue-600 hover:bg-blue-500 rounded flex justify-center text-white font-semibold"
                   type="submit">
-                  Save
+                  Draft
                 </button>
               </div>
             ) :
