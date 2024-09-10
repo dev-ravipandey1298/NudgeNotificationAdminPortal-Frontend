@@ -21,7 +21,7 @@ const TemplateForm = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const { register, handleSubmit, control, reset, formState: { errors }} = useForm();
+  const { register, handleSubmit, control, reset, formState: { errors } } = useForm();
 
   const [isChecker, setIsChecker] = useState(false);
   const [readOnly, setReadOnly] = useState(false);
@@ -37,12 +37,13 @@ const TemplateForm = () => {
   const [selectedHours, setSelectedHours] = useState([]);
   const [showWarning, setShowWarning] = useState(false);
   const [showReoccuranceError, setShowReoccuranceError] = useState(false);
+  const [showAlert, setshowAlert] = useState(false);
 
 
   const isReoccuranceSelected = (selectedFrequency.length == 0
-  || selectedUnit.length == 0
-  || selectedDays.length == 0
-  || selectedHours.length == 0)
+    || selectedUnit.length == 0
+    || selectedDays.length == 0
+    || selectedHours.length == 0)
 
   useEffect(() => {
     const userDetails = JSON.parse(sessionStorage.getItem("user"))
@@ -156,16 +157,24 @@ const TemplateForm = () => {
     console.log("submit clicked === :");
     console.log(data);
     data.environment = "CUG"
-    setShowWarning(true)
 
-    if (isCheckedFinalSubmit) {
-      setSubmitStatus('pending_approval_cug')
-      console.log("Final click");
-      console.log(submitStatus)
-      updateNudgeTemplates(updateNudgeData(data))
+    if (isReoccuranceSelected) {
+      setShowReoccuranceError(true)
     } else {
-      setSubmitStatus('draft')
-      const msg = createNudgeTemplateData(setNudgeData(data))
+      setShowReoccuranceError(false)
+      if (isCheckedFinalSubmit) {
+        setShowWarning(true)
+        setSubmitStatus('pending_approval_cug')
+        console.log("Final click");
+        console.log(submitStatus)
+        updateNudgeTemplates(updateNudgeData(data))
+      } else {
+        setSubmitStatus('draft')
+        const msg = createNudgeTemplateData(setNudgeData(data))
+        if (msg == true) {
+          setshowAlert(true)
+        }
+      }
     }
     // console.log(msg)
     console.log(getNudgeTemplateData())
@@ -173,11 +182,16 @@ const TemplateForm = () => {
   };
 
   const handleReset = () => {
+    setSelectedFrequency([])
+    setSelectedUnit([])
+    setSelectedDays([])
+    setSelectedHours([])
+    setShowReoccuranceError(false)
     reset({
       templateName: '',
       title: '',
       body: '',
-      comment: ''
+      comment: '',
     });
   }
 
@@ -201,7 +215,7 @@ const TemplateForm = () => {
         onSubmit={handleSubmit(onSubmit)}
       >
         <div className="space-y-3  w-[42%]">
-        {errors.templateName && (
+          {errors.templateName && (
             <p className="text-red-500 text-xs font-medium mt-1">**{errors.templateName.message}</p>
           )}
           <div className="flex justify-between">
@@ -299,7 +313,7 @@ const TemplateForm = () => {
             <Controller
               name="body"
               control={control}
-              rules={{required: "Body is required"}}
+              rules={{ required: "Body is required" }}
               render={({ field: { onChange, value } }) => (
                 <textarea
                   id="body"
@@ -354,9 +368,9 @@ const TemplateForm = () => {
 
         {/* Left Side */}
         <div className=" w-[42%] space-y-3">
-          {(isReoccuranceSelected) && (
-              <p className="text-red-500 text-xs font-medium mt-1">**All fields in reoccurance are required to schedule notification.</p>
-            )}
+          {(showReoccuranceError && isReoccuranceSelected) && (
+            <p className="text-red-500 text-xs font-medium mt-1">**All fields in reoccurance are required to schedule notification.</p>
+          )}
 
           <div>
             <label htmlFor="execution">
@@ -372,7 +386,7 @@ const TemplateForm = () => {
               </label>
               <Controller
                 name="selectedFrequency"
-              
+
                 control={control}
                 render={({ field: { onChange, onBlur, value, name } }) => (
                   <MultiSelect
@@ -568,6 +582,7 @@ const TemplateForm = () => {
           </div>
         </div>
       </form>
+      {showAlert && <Alert alertDetail={{ success: true, message: "Nudge Template Saved Successfully." }} handleCloseAlert={() => setshowAlert(false)} />}
       {showWarning && <Warning message={warningMessage} handleConfirmWarning={handleConfirmWarning} handleCloseWarning={handleCloseWarning} />}
     </div>
   );

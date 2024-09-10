@@ -38,7 +38,7 @@ export const createNudgeTemplateData = (nudgeData) => {
     nudgeTemplateData = getNudgeTemplateData();
     nudgeTemplateData.push(nudgeData)
     localStorage.setItem('nudgeTempDataLocal', JSON.stringify(nudgeTemplateData))
-    return "Template Created Sucessfully."
+    return true;
 }
 
 export const genrateNewTemplateId =  () => {
