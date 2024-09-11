@@ -4,3 +4,7 @@ main {
 .rdrDefinedRangesWrapper {
     display: none;
   }
+
+  .bg-clip-padding {
+    background-clip: padding-box;
+}

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import pendingApproval from "/icons/pending_approval.png";
 import showAll from "/icons/showAll.png";
 import { Link, useNavigate } from "react-router-dom";
-import { getAllPendingNudgeTemplatesForApproval, setDataInLocalStorage } from "../Services/nudgeTemplateService";
+import { getAllPendingNudgeTemplatesForApproval, setDataInLocalStorage } from "../services/nudgeTemplateService";
 
 const Checker = ({ userDetails }) => {
   const count = 1;

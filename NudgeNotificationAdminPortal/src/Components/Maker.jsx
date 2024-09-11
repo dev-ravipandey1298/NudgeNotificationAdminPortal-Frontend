@@ -4,7 +4,7 @@ import draft from "/icons/draft.png";
 import approval_status from "/icons/approval_status.png";
 import template from "/icons/template.png";
 import { useNavigate } from "react-router-dom";
-import { getAllDraftNudgeTemplate, setDataInLocalStorage } from "../Services/nudgeTemplateService";
+import { getAllDraftNudgeTemplate, setDataInLocalStorage } from "../services/nudgeTemplateService";
 
 const Maker = ({ userDetails }) => {
   const count = 3;

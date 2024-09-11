@@ -1,7 +1,8 @@
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { setDataInLocalStorage } from "../Services/nudgeTemplateService";
+import { setDataInLocalStorage } from "../services/nudgeTemplateService";
+import hdfcBankImageBG from "/icons/hdfcBankImageBG.jpg"
 
 const LoginPage = ({setUserDetails}) => {
     const { register, handleSubmit } = useForm();
@@ -38,8 +39,9 @@ const LoginPage = ({setUserDetails}) => {
             <div className="flex bg-white rounded-lg shadow-lg border overflow-hidden max-w-sm lg:max-w-4xl w-full">
                 <div
                     className="hidden md:block lg:w-1/2 bg-cover bg-blue-700"
+                    // source : https://static.vecteezy.com/system/resources/previews/020/336/703/original/hdfc-logo-hdfc-icon-free-free-vector.jpg
                     style={{
-                        backgroundImage: `url(https://static.vecteezy.com/system/resources/previews/020/336/703/original/hdfc-logo-hdfc-icon-free-free-vector.jpg)`,
+                        backgroundImage: `url(${hdfcBankImageBG})`,
                     }}
                 ></div>
                 <form
