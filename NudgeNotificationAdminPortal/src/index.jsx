@@ -19,6 +19,7 @@ import CUGTable from "./components/CUGTable";
 const router = createBrowserRouter(
 	createRoutesFromElements(
 		<Route path="/" element={<Layout />}>
+			<Route path="health" element={<h3>Application is UP and running</h3>} />
 			<Route path="login" element={<LoginPage />} />
 			<Route path="maker" element={<Maker />} />
 			<Route path="checker" element={<Checker />} />
