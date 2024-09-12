@@ -8,7 +8,7 @@ import calendar from "/icons/calendar.png"
 import "react-date-range/dist/styles.css"; // main style file
 import "react-date-range/dist/theme/default.css"; // theme css file
 import PageHeader from "./PageHeader";
-import { createNudgeTemplateData, genrateNewTemplateId, getNudgeTemplateData, getNudgeTemplateDataById, updateNudgeTemplates } from "../Services/nudgeTemplateService";
+import { createNudgeTemplateData, genrateNewTemplateId, getNudgeTemplateData, getNudgeTemplateDataById, updateNudgeTemplates } from "../services/nudgeTemplateService";
 import { occurrenceDaysOption, occurrenceFrequencyOption, occurrenceHoursOption, occurrenceUnitOption } from "../constants/reoccuranceValue";
 import { validateLocaleAndSetLanguage } from "typescript";
 import Warning from "./Warning";
