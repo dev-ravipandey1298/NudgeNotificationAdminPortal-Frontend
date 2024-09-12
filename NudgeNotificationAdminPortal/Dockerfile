@@ -1,13 +1,14 @@
-FROM node:22.8-alpine3.20 as nodework
+#  Node.js 
+FROM node:22.8-alpine3.20 as buildstage
 WORKDIR /myapp
-COPY package.json .
+COPY package.json ./
 RUN npm install
-COPY . .
-RUN npm build
+COPY . . 
+RUN npm run build
 
-
-FROM ngnix:stable-alpine3.20-perl
-WORKDIR /usr/share/ngnix/html
+#  Nginx
+FROM nginx:stable-alpine3.20
+WORKDIR /usr/share/nginx/html
 RUN rm -rf ./*
-COPY --from=nodework /myapp/build .
-ENTRYPOINT [ "ngnix", "-g", "daemon off;" ]
+COPY --from=buildstage /myapp/build ./
+CMD ["nginx", "-g", "daemon off;"]
