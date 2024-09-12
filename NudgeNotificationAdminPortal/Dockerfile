@@ -5,4 +5,4 @@ COPY ./package.json  /myapp
 RUN npm install
 COPY . /myapp 
 
-RUN npm run dev
+CMD ["npm", "run", "dev"]
