@@ -12,6 +12,7 @@ import { createNudgeTemplateData, genrateNewTemplateId, getNudgeTemplateData, ge
 import { occurrenceDaysOption, occurrenceFrequencyOption, occurrenceHoursOption, occurrenceUnitOption } from "../constants/reoccuranceValue";
 import { validateLocaleAndSetLanguage } from "typescript";
 import Warning from "./Warning";
+import { createTemplate, getTemplateById, updateTemplate } from "../services/templateService";
 
 
 
@@ -21,7 +22,7 @@ const TemplateForm = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const { register, handleSubmit, control, reset, formState: { errors } } = useForm();
+  const { register, handleSubmit, control, reset} = useForm();
 
   const [isChecker, setIsChecker] = useState(false);
   const [readOnly, setReadOnly] = useState(false);
@@ -35,9 +36,23 @@ const TemplateForm = () => {
   const [selectedUnit, setSelectedUnit] = useState([]);
   const [selectedDays, setSelectedDays] = useState([]);
   const [selectedHours, setSelectedHours] = useState([]);
+  const [templateNameValue, setTemplateNameValue] = useState('');
+  const [titleValue, setTitleValue] = useState('');
+  const [bodyValue, setBodyValue] = useState('');
   const [showWarning, setShowWarning] = useState(false);
   const [showReoccuranceError, setShowReoccuranceError] = useState(false);
   const [showAlert, setshowAlert] = useState(false);
+  const [submitMessage, setSubmitMessage] = useState('');
+  const [formData, setFormData] = useState({
+    templateName: '',
+    title: '',
+    body: '',
+    startDate: '',
+    endDate: '',
+    occurrenceFrequency: [],
+    occurrenceUnit: [],
+    occurrenceDays: []
+  });
 
   const isReoccuranceSelected = false;
   // const isReoccuranceSelected = (selectedFrequency.length == 0
@@ -46,138 +61,147 @@ const TemplateForm = () => {
   //   || selectedHours.length == 0)
 
   useEffect(() => {
-    console.log(selectedFrequency)
+    getTemplateByIdBackend(templateId.templateId);
     const userDetails = JSON.parse(sessionStorage.getItem("user"))
     document.getElementsByClassName("dropdown-container")[0].style.backgroundColor = '#f9fafb'
     document.getElementsByClassName("dropdown-container")[1].style.backgroundColor = '#f9fafb'
     document.getElementsByClassName("dropdown-container")[2].style.backgroundColor = '#f9fafb'
-    document.getElementsByClassName("dropdown-container")[3].style.backgroundColor = '#f9fafb'
+    // document.getElementsByClassName("dropdown-container")[3].style.backgroundColor = '#f9fafb'
     // document.getElementsByClassName("gray")[0].textContent = "Period..."
     // document.getElementsByClassName("gray")[2].textContent = "Duration..."
     // document.getElementsByClassName("gray")[4].textContent = "Day..."
     // document.getElementsByClassName("gray")[6].textContent = "Hrs..."
     userDetails !== null ? userDetails.role === "CHECKER" ? setReadOnly(true) : setReadOnly(false) : navigate("/login")
     userDetails !== null ? userDetails.role === "CHECKER" ? setIsChecker(true) : setIsChecker(false) : navigate("/login")
-    userDetails !== null && (setTemplateDetails(getNudgeTemplateDataById(templateId.templateId)[0]))
-    newTemplateIdPromise()
     if (location.pathname.includes("drafts")) {
+      console.log("Is Here")
       setReadOnly(false);
       setOnEditScreen(true);
-      setOuccuranceData()
-      setTemplateDataInEditableForm()
-      setDateRangeWithFormattedValue()
+      // setOuccuranceData()
+      // setDateRangeWithFormattedValue()
     }
-    userDetails !== null && (userDetails.role === "CHECKER") && setOuccuranceData();
-    userDetails !== null && userDetails.role === "CHECKER" && setDateRangeWithFormattedValue()
+    // userDetails !== null && (userDetails.role === "CHECKER") && setOuccuranceData();
+    // userDetails !== null && userDetails.role === "CHECKER" && setDateRangeWithFormattedValue()
    
   }, [])
+
+
 
   const convertDateFormat = (dateString) => {
     const [day, month, year] = dateString.split('-');
     return `${year}-${month}-${day}`;
   }
 
-  const setOuccuranceData = () => {
-    setSelectedFrequency(getNudgeTemplateDataById(templateId.templateId)[0].occurrenceFrequency)
-    setSelectedUnit(getNudgeTemplateDataById(templateId.templateId)[0].occurrenceUnit)
-    setSelectedDays(getNudgeTemplateDataById(templateId.templateId)[0].occurrenceDays)
-    setSelectedHours(getNudgeTemplateDataById(templateId.templateId)[0].occurrenceHours)
-  }
+  // const setOuccuranceData = () => {
+  //   setSelectedFrequency(formData.occurrenceFrequency)
+  //   setSelectedUnit(formData.occurrenceUnit)
+  //   setSelectedDays(formData.occurrenceDays)
+  //   // setSelectedHours(getNudgeTemplateDataById(templateId.templateId)[0].occurrenceHours)
+  // }
 
-  const setDateRangeWithFormattedValue = () => {
-    const startDateToConvert = convertDateFormat(getNudgeTemplateDataById(templateId.templateId)[0].startDate)
-    const endDateToConvert = convertDateFormat(getNudgeTemplateDataById(templateId.templateId)[0].endDate)
-    // dateFormatShouldBe (yyyy-dd-MM)
-    setDateRangePreview({ startDate: new Date(startDateToConvert), endDate: new Date(endDateToConvert), color: String })
-  }
-
-  const setTemplateDataInEditableForm = () => {
-    // document.getElementById("templateName").value = getNudgeTemplateDataById(templateId.templateId)[0].templateName;
-    document.getElementById("title").value = getNudgeTemplateDataById(templateId.templateId)[0].title;
-    document.getElementById("body").value = getNudgeTemplateDataById(templateId.templateId)[0].body;
-    // document.getElementById("frequency").value = getNudgeTemplateDataById(templateId.templateId)[0].occurrenceFrequency;
-  }
-
-  const newTemplateIdPromise = async () => {
-    const newTemplateId = await new Promise((resolve, reject) => {
-      setTimeout(() => {
-        resolve(setNewTempId(genrateNewTemplateId()));
-      }, 1000);
-    });
-    return newTemplateId
-  }
+  // const setDateRangeWithFormattedValue = () => {
+  //   const startDateToConvert = convertDateFormat(formData.startDate).toString
+  //   const endDateToConvert = convertDateFormat(formData.endDate).toString
+  //   setDateRangePreview({ startDate: new Date(startDateToConvert), endDate: new Date(endDateToConvert), color: String })
+  // }
 
   let setNudgeData = (data) => {
     const nudgeData = {
-      "templateId": newTempId,
-      "templateName": data.templateName,
-      "title": data.title,
-      "body": data.body,
-      "startDate": new Date(data.dateRange[0].startDate).toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric' }).replace(/\//g, '-'),
-      "endDate": new Date(data.dateRange[0].endDate).toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric' }).replace(/\//g, '-'),
-      "occurrenceFrequency": selectedFrequency,
-      "occurrenceUnit": selectedUnit,
-      "occurrenceDays": selectedDays,
-      "occurrenceHours": selectedHours,
-      "createdBy": JSON.parse(sessionStorage.getItem("user")).name,
-      "createdOn": new Date().toLocaleDateString(),
-      "approvedBy": '',
-      "comment": data.comment,
-      "status": 'draft'
+      "templateName": templateNameValue,
+      "title": titleValue,
+      "body": bodyValue,
+      "startDate": new Date(data.dateRange[0].startDate).toLocaleDateString('en-IN', { year: 'numeric', month: '2-digit', day: '2-digit'}).replace(/\//g, '-'),
+      "endDate": new Date(data.dateRange[0].endDate).toLocaleDateString('en-IN', {year: 'numeric', month: '2-digit',  day: '2-digit'}).replace(/\//g, '-'),
+      "occurrenceFrequency": selectedFrequency.map(item => item.value)[0],
+      "occurrenceUnit":selectedUnit.map(item => item.value)[0],
+      "occurrenceDays": selectedDays.map(item => item.value)
     }
-    return nudgeData;
-  }
-
-  let updateNudgeData = (data) => {
-    const nudgeData = {
-      "templateId": newTempId,
-      "templateName": data.templateName,
-      "title": data.title,
-      "body": data.body,
-      "startDate": new Date(data.dateRange[0].startDate).toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric' }).replace(/\//g, '-'),
-      "endDate": new Date(data.dateRange[0].endDate).toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric' }).replace(/\//g, '-'),
-      "occurrenceFrequency": data.selectedFrequency,
-      "occurrenceUnit": data.selectedUnit,
-      "occurrenceDays": data.selectedDays,
-      "occurrenceHours": data.selectedHours,
-      "createdBy": JSON.parse(sessionStorage.getItem("user")).name,
-      "createdOn": new Date().toLocaleDateString(),
-      "approvedBy": '',
-      "comment": data.comment,
-      "status": 'pending_approval_cug'
-    }
-    return nudgeData;
+    return JSON.stringify(nudgeData);
   }
 
 
-
-
-  const onSubmit = (data) => {
-    // Handle form submission
-    console.log("submit clicked === :");
-    console.log(data);
-    data.environment = "CUG"
-
-    if (isReoccuranceSelected) {
-      setShowReoccuranceError(true)
-    } else {
-      setShowReoccuranceError(false)
-      if (isCheckedFinalSubmit) {
-        setShowWarning(true)
-        setSubmitStatus('pending_approval_cug')
-        console.log("Final click");
-        console.log(submitStatus)
-        updateNudgeTemplates(updateNudgeData(data))
-      } else {
-        setSubmitStatus('draft')
-        const msg = createNudgeTemplateData(setNudgeData(data))
-        if (msg == true) {
-          setshowAlert(true)
-        }
+  const createTemplateBackend = async (data) => {
+    try {
+      const response = await createTemplate(setNudgeData(data))
+      if(response.status == 201){
+        setSubmitMessage("Template saved to Draft successfully with ID: " + response.data.payload.templateId)
+        setshowAlert(true)
       }
+    } catch (error) {
+      
     }
-    // console.log(msg)
-    console.log(getNudgeTemplateData())
+  }
+
+  const updateTemplateBackend = async (templateId, data) => {
+    try {
+      const response = await updateTemplate(templateId, setNudgeData(data));
+      setSubmitMessage("Template Updated successfully with ID: " + templateId)
+      setshowAlert(true)
+    } catch (error) {
+      
+    }
+  }
+
+  const getTemplateByIdBackend = async (templateId) => {
+    try {
+      const response = await getTemplateById(templateId);
+      
+      if(response.status == 200){
+        const data = response.data.payload;
+        setFormData({
+          templateName : data.templateName,
+          title : data.title,
+          body : data.body,
+          // startDate : data.startDate,
+          // endDate : data.endDate,
+          // occurrenceFrequency : [ { label: data.occurrenceFrequency, value: data.occurrenceFrequency } ],
+          // occurrenceUnit : [ { label: data.occurrenceUnit, value: data.occurrenceUnit } ],
+          // occurrenceDays :  data.occurrenceDays.map(num => ({label: num.toString(), value: num.toString()}))
+        })
+        setTemplateNameValue(data.templateName)
+        setTitleValue(data.title)
+        setBodyValue(data.body)
+        setDateRangePreview({ startDate: new Date(data.startDate), endDate: new Date(data.endDate), color: String })
+        setSelectedFrequency( [ { label: data.occurrenceFrequency, value: data.occurrenceFrequency } ])
+        setSelectedUnit([ { label: data.occurrenceUnit, value: data.occurrenceUnit } ])
+        setSelectedDays(data.occurrenceDays.map(num => ({label: num.toString(), value: num.toString()})))
+       
+      }
+    } catch (error) {
+      
+    }
+  }
+
+
+  const onSubmit = async (data) => {
+    
+    if(!onEditScreen){
+    createTemplateBackend(data)
+    }else{
+      console.log(data)
+      updateTemplateBackend(templateId.templateId, data);
+    }
+
+    // if (isReoccuranceSelected) {
+    //   setShowReoccuranceError(true)
+    // } else {
+    //   setShowReoccuranceError(false)
+    //   if (isCheckedFinalSubmit) {
+    //     setShowWarning(true)
+    //     setSubmitStatus('pending_approval_cug')
+    //     console.log("Final click");
+    //     console.log(submitStatus)
+    //     updateNudgeTemplates(updateNudgeData(data))
+    //   } else {
+    //     setSubmitStatus('draft')
+    //     const msg = createNudgeTemplateData(setNudgeData(data))
+    //     if (msg == true) {
+    //       setshowAlert(true)
+    //     }
+    //   }
+    // }
+    // // console.log(msg)
+    // console.log(getNudgeTemplateData())
 
   };
 
@@ -215,9 +239,9 @@ const TemplateForm = () => {
         onSubmit={handleSubmit(onSubmit)}
       >
         <div className="space-y-3  w-[42%]">
-          {errors.templateName && (
+          {/* {errors.templateName && (
             <p className="text-red-500 text-xs font-medium mt-1">**{errors.templateName.message}</p>
-          )}
+          )} */}
           <div className="flex justify-between">
 
             {/* Template Id */}
@@ -256,13 +280,15 @@ const TemplateForm = () => {
                       ? `border-gray-400 focus:border-blue-500  focus:border-[0.100rem] focus:shadow-md`
                       : "focus:border-grey-500]"
                       }`}
-                    {...register("templateName", { required: "Template Name is required" })}
+                    {...register("templateName")}
+                    // {...register("templateName", { required: "Template Name is required" })}
                     // {...(isChecker && {
                     //   value: templateJSON.title,
                     //   readOnly: "readOnly",
                     // })}
                     readOnly={readOnly}
-                    value={isChecker || onEditScreen ? templateDetails.templateName : register.value}
+                    value={templateNameValue}
+                    onChange={(e) => setTemplateNameValue(e.target.value)}
 
                   />
                 </div>
@@ -271,9 +297,9 @@ const TemplateForm = () => {
 
           </div>
           {/* Title box */}
-          {errors.title && (
+          {/* {errors.title && (
             <p className="text-red-500 text-xs font-medium mt-1">**{errors.title.message}</p>
-          )}
+          )} */}
           <div className="flex space-x-2 items-center">
             <label htmlFor="title">
               <p className="inline font-medium">Title</p>
@@ -287,11 +313,15 @@ const TemplateForm = () => {
                     ? "border-gray-400 focus:border-blue-500 focus:border-[0.100rem] focus:shadow-md"
                     : "focus:border-grey-500]"
                     }`}
-                  {...register("title", { required: "Title is required" })}
-                  {...(isChecker && {
-                    value: templateDetails.title,
-                    readOnly: "readOnly",
-                  })}
+                  {...register("title")}
+                  // {...register("title", { required: "Title is required" })}
+                  // {...(isChecker && {
+                  //   value: formData.title,
+                  //   readOnly: "readOnly",
+                  // })}
+                  readOnly={readOnly}
+                  value={titleValue}
+                  onChange={(e) => setTitleValue(e.target.value)}
                 />
               </div>
             }
@@ -299,9 +329,9 @@ const TemplateForm = () => {
 
           {/* <div className=""> */}
           {/* Body Text Filed */}
-          {errors.body && (
+          {/* {errors.body && (
             <p className="text-red-500 text-xs font-medium mt-1">**{errors.body.message}</p>
-          )}
+          )} */}
           <div className="flex space-x-1">
 
             <div>
@@ -313,7 +343,7 @@ const TemplateForm = () => {
             <Controller
               name="body"
               control={control}
-              rules={{ required: "Body is required" }}
+              // rules={{ required: "Body is required" }}
               render={({ field: { onChange, value } }) => (
                 <textarea
                   id="body"
@@ -324,9 +354,9 @@ const TemplateForm = () => {
                   cols={60}
                   placeholder="Provide your Nudge description here .."
                   rows={3}
-                  onChange={onChange}
+                  onChange={(e) => setBodyValue(e.target.value)}
                   readOnly={isChecker}
-                  value={!isChecker ? value : templateDetails.body}
+                  value={bodyValue}
                 />
               )}
             />
@@ -334,9 +364,9 @@ const TemplateForm = () => {
           </div>
 
           {/* Start -End Date */}
-          {errors.dateRange && (
+          {/* {errors.dateRange && (
             <p className="text-red-500 text-xs font-medium mt-1">**{errors.dateRange.message}</p>
-          )}
+          )} */}
           <div className="flex justify-between">
 
             <label htmlFor="startEndDate" className="">
@@ -346,13 +376,13 @@ const TemplateForm = () => {
             <Controller
               control={control}
               name="dateRange"
-              rules={{ required: "Start - End Date is required." }}
+              // rules={{ required: "Start - End Date is required." }}
               render={({ field }) => (
                 <DateRangePicker
                   className="border shadow-lg rounded-xl"
                   ranges={field.value || [{
-                    startDate: isChecker || onEditScreen ? dateRangePreview.startDate : new Date(),
-                    endDate: isChecker || onEditScreen ? dateRangePreview.endDate : new Date(),
+                    startDate: onEditScreen ? dateRangePreview.startDate : new Date(),
+                    endDate: onEditScreen ? dateRangePreview.endDate : new Date(),
                     key: 'selection'
                   }]}
                   // onChange={item => field.onChange([item.selection])}
@@ -374,7 +404,7 @@ const TemplateForm = () => {
 
           <div>
             <label htmlFor="execution">
-              <p className="inline font-medium">Reouccurance</p>
+              <p className="inline font-medium">Reoccurrence</p>
               <p className="text-red-500 inline">*</p>:
             </label>
           </div>
@@ -444,7 +474,7 @@ const TemplateForm = () => {
               </label>
             </div>
 
-            <div className="space-y-1 flex items-center">
+            {/* <div className="space-y-1 flex items-center">
               <label className="mt-1 pr-2" htmlFor="selectedHours">
                 <p className="inline font-medium">at</p>
               </label>
@@ -466,7 +496,7 @@ const TemplateForm = () => {
               <label className="pl-2" htmlFor="selectedHours">
                 <p className="inline font-medium">hrs</p>
               </label>
-            </div>
+            </div> */}
           </div>
 
           {/* CUG Evidence */}
@@ -582,7 +612,7 @@ const TemplateForm = () => {
           </div>
         </div>
       </form>
-      {showAlert && <Alert alertDetail={{ success: true, message: "Nudge Template Saved Successfully." }} handleCloseAlert={() => setshowAlert(false)} />}
+      {showAlert && <Alert alertDetail={{ success: true, message: submitMessage }} handleCloseAlert={() => setshowAlert(false)} />}
       {showWarning && <Warning message={warningMessage} handleConfirmWarning={handleConfirmWarning} handleCloseWarning={handleCloseWarning} />}
     </div>
   );
