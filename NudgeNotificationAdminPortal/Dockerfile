@@ -10,5 +10,5 @@ RUN npm run build
 FROM nginx:stable-alpine3.20
 WORKDIR /usr/share/nginx/html
 RUN rm -rf ./*
-COPY --from=buildstage /myapp/build ./
+COPY --from=buildstage /myapp/dist ./
 CMD ["nginx", "-g", "daemon off;"]
