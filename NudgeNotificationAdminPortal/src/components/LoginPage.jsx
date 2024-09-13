@@ -17,29 +17,29 @@ const LoginPage = ({setUserDetails}) => {
     ]
 
     const onSubmit = (data) => {
-      // const loggedInUser = userDetails.find(user => user.userId === data.userId);
-      // if (loggedInUser !== undefined && loggedInUser.password === data.password) {
-      //   // setUserDetails(loggedInUser);
-      //   loggedInUser.role === "CHECKER" ? navigate("/checker") : navigate("/maker")
-      //   loggedInUser.password = "";
-      //   sessionStorage.setItem("user", JSON.stringify(loggedInUser))
-      //   console.log(loggedInUser)
-      // } else {
-      //   alert('Invalid credentials');
-      // }
-
-      const loginDetails = {
-        "userId" : data.userId,
-        "password" : data.password 
+      const loggedInUser = userDetails.find(user => user.userId === data.userId);
+      if (loggedInUser !== undefined && loggedInUser.password === data.password) {
+        // setUserDetails(loggedInUser);
+        loggedInUser.role === "CHECKER" ? navigate("/checker") : navigate("/maker")
+        loggedInUser.password = "";
+        sessionStorage.setItem("user", JSON.stringify(loggedInUser))
+        console.log(loggedInUser)
+      } else {
+        alert('Invalid credentials');
       }
 
-      if(data.userId == "manish_checker"){
-         sessionStorage.setItem("user", JSON.stringify({userId:"manish_checker", password:"", role:"CHECKER", name: "manish_checker"}))
-      }
-      if(data.userId == "manish_maker"){
-        sessionStorage.setItem("user", JSON.stringify({userId:"manish_maker", password:"", role:"MAKER", name: "manish_maker"}))
-     }
-      login(loginDetails)
+    //   const loginDetails = {
+    //     "userId" : data.userId,
+    //     "password" : data.password 
+    //   }
+
+    //   if(data.userId == "manish_checker"){
+    //      sessionStorage.setItem("user", JSON.stringify({userId:"manish_checker", password:"", role:"CHECKER", name: "manish_checker"}))
+    //   }
+    //   if(data.userId == "manish_maker"){
+    //     sessionStorage.setItem("user", JSON.stringify({userId:"manish_maker", password:"", role:"MAKER", name: "manish_maker"}))
+    //  }
+    //   login(loginDetails)
 
     };
 

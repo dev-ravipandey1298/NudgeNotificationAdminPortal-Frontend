@@ -3,7 +3,7 @@ import axios from 'axios';
 // Create an Axios instance with default settings
 const apiClient = axios.create({
 //   baseURL: process.env.REACT_APP_API_BASE_URL, // Base URL for your API
-  baseURL: "https://dpuat.wealthapp.hdfcbankuat.com/dp/notification-portal",
+  baseURL: "http://localhost:8080/notification-portal",
   timeout: 10000, // Request timeout in milliseconds
   headers: {
     'Content-Type': 'application/json',
@@ -44,116 +44,62 @@ const apiClient = axios.create({
 
 // Define API request functions
 export const fetchTemplates = () => {
-  return apiClient.get('/v1/templates', {
-    headers: {
-      'X-Auth-Notification-Portal' : `Bearer ${sessionStorage.getItem('authToken')}`,
-    },
-  }); 
+  return apiClient.get('/templates'); 
 };
 
 export const getTemplateById = (templateId) => {
-  return apiClient.get(`/v1/templates/draft/${templateId}`, {
-    headers: {
-      'X-Auth-Notification-Portal' : `Bearer ${sessionStorage.getItem('authToken')}`,
-    },
-  }); 
+  return apiClient.get(`/templates/draft/${templateId}`); 
 };
 
 export const getAllTemplates = () => {
-  return apiClient.get(`/v1/templates/draft`, {
-    headers: {
-      'X-Auth-Notification-Portal' : `Bearer ${sessionStorage.getItem('authToken')}`,
-    },
-  }); 
+  return apiClient.get(`/templates/draft`); 
 };
 export const createTemplate = (templateData) => {
-  return apiClient.post('/v1/templates/draft', templateData, {
-    headers: {
-      'X-Auth-Notification-Portal' : `Bearer ${sessionStorage.getItem('authToken')}`,
-    },
-  }); 
+  return apiClient.post('/templates/draft', templateData); 
 };
 
 export const updateTemplate = (templateId, templateData) => {
-  return apiClient.put(`/v1/templates/draft/${templateId}`, templateData, {
-    headers: {
-      'X-Auth-Notification-Portal' : `Bearer ${sessionStorage.getItem('authToken')}`,
-    },
-  }); 
+  return apiClient.put(`/templates/draft/${templateId}`, templateData); 
 };
 
 export const deleteTemplate = (templateId) => {
-  return apiClient.delete(`/v1/templates/draft/${templateId}`, {
-    headers: {
-      'X-Auth-Notification-Portal' : `Bearer ${sessionStorage.getItem('authToken')}`,
-    },
-  }); 
+  return apiClient.delete(`/templates/draft/${templateId}`); 
 };
 
 export const submitForCUG_Approval_Template = (templateData) => {
-  return apiClient.put(`/v1/templates/template/cug-approval`, templateData, {
-    headers: {
-      'X-Auth-Notification-Portal' : `Bearer ${sessionStorage.getItem('authToken')}`,
-    },
-  }); 
+  return apiClient.put(`/templates/cug-approval`, templateData ); 
 };
 
 export const getAllSearchTemplate = () => {
-  return apiClient.get(`/v1/templates?status=APPROVAL_PENDING_CUG&status=APPROVAL_PENDING_PROD`, {
-    headers: {
-      'X-Auth-Notification-Portal' : `Bearer ${sessionStorage.getItem('authToken')}`,
-    },
-  }); 
+  return apiClient.get(`/templates?status=APPROVAL_PENDING_CUG&status=APPROVAL_PENDING_PROD`); 
 };
 
 export const getAllSearchActionTemplate = () => {
-  return apiClient.get(`/v1/templates?status=CUG_APPROVED&status=REJECTED&status=CUG_FAILED`, {
-    headers: {
-      'X-Auth-Notification-Portal' : `Bearer ${sessionStorage.getItem('authToken')}`,
-    },
-  }); 
+  return apiClient.get(`/templates?status=CUG_APPROVED&status=REJECTED&status=CUG_FAILED`); 
 };
 
 export const markCUGReject = (templateId, comment) => {
-  return apiClient.patch(`/v1/templates/${templateId}/cug-reject`, comment, {
-    headers: {
-      'X-Auth-Notification-Portal' : `Bearer ${sessionStorage.getItem('authToken')}`,
-    },
-  }); 
+  return apiClient.patch(`/templates/${templateId}/cug-reject`, comment); 
 };
 
 export const markCUGApproved = (templateId, comment) => {
-  return apiClient.patch(`/v1/templates/${templateId}/cug-approved`, comment, {
-    headers: {
-      'X-Auth-Notification-Portal' : `Bearer ${sessionStorage.getItem('authToken')}`,
-    },
-  }); 
+  return apiClient.patch(`/templates/${templateId}/cug-approved`, comment); 
 };
 
 export const submitForPRODApproval = (templateId, formData) => {
-  return apiClient.patch(`/v1/templates/${templateId}/final-approval`, formData, {
+  return apiClient.patch(`/templates/${templateId}/final-approval`, formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
-      'X-Auth-Notification-Portal' : `Bearer ${sessionStorage.getItem('authToken')}`,
     },
-  }); 
-
+  });
 };
 
 export const markPRODReject = (templateId, comment) => {
-  return apiClient.patch(`/v1/templates/${templateId}/final-reject`, comment, {
-    headers: {
-      'X-Auth-Notification-Portal' : `Bearer ${sessionStorage.getItem('authToken')}`,
-    },
-  }); 
+  return apiClient.patch(`/templates/${templateId}/final-reject`, comment); 
 };
 
 export const markPRODApproved = (templateId, comment) => {
-  return apiClient.patch(`/v1/templates/${templateId}/final-approved`, comment, {
-    headers: {
-      'X-Auth-Notification-Portal' : `Bearer ${sessionStorage.getItem('authToken')}`,
-    },
-  }); 
+  return apiClient.patch(`/templates/${templateId}/final-approved`, comment); 
 };
 
 // LOGIN API's
