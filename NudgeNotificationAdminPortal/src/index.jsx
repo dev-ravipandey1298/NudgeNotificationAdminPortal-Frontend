@@ -14,12 +14,13 @@ import ShowAllCheckerTable from "./components/ShowAllCheckerTable";
 import DraftTable from "./components/DraftTable";
 import ShowAllMakerTable from "./components/ShowAllMakerTable";
 import CUGTable from "./components/CUGTable";
+import Health from "./components/Health";
 
 
 const router = createBrowserRouter(
 	createRoutesFromElements(
 		<Route path="/" element={<Layout />}>
-			<Route path="health" element={<h3>Application is UP and running</h3>} />
+			<Route path="health" element={<Health/>} />
 			<Route path="login" element={<LoginPage />} />
 			<Route path="maker" element={<Maker />} />
 			<Route path="checker" element={<Checker />} />
