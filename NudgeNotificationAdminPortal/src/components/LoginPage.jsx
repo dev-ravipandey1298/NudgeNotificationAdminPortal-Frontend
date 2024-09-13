@@ -23,8 +23,6 @@ const LoginPage = ({setUserDetails}) => {
         loggedInUser.password = "";
         sessionStorage.setItem("user", JSON.stringify(loggedInUser))
         console.log(loggedInUser)
-        setDataInLocalStorage()
-        // Redirect to home after successful login
       } else {
         alert('Invalid credentials');
       }

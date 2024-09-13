@@ -12,13 +12,13 @@ import { createNudgeTemplateData, genrateNewTemplateId, getNudgeTemplateData, ge
 import { occurrenceDaysOption, occurrenceFrequencyOption, occurrenceHoursOption, occurrenceUnitOption } from "../constants/reoccuranceValue";
 import { validateLocaleAndSetLanguage } from "typescript";
 import Warning from "./Warning";
-import { createTemplate, getTemplateById, updateTemplate } from "../services/templateService";
+import { createTemplate, getTemplateById, markCUGApproved, markCUGReject, markPRODApproved, markPRODReject, submitForCUG_Approval_Template, submitForPRODApproval, updateTemplate } from "../services/templateService";
 
 
 
 const TemplateForm = () => {
   const warningMessage = "Do you want to proceed with submitting the nudge template for review?"
-  const templateId = useParams();
+  const {templateId, status} = useParams();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -39,10 +39,16 @@ const TemplateForm = () => {
   const [templateNameValue, setTemplateNameValue] = useState('');
   const [titleValue, setTitleValue] = useState('');
   const [bodyValue, setBodyValue] = useState('');
+  const [checkerCommentValue, setCheckerCommentValue] = useState('');
+  const [makerCommentValue, setMakerCommentValue] = useState('');
   const [showWarning, setShowWarning] = useState(false);
   const [showReoccuranceError, setShowReoccuranceError] = useState(false);
   const [showAlert, setshowAlert] = useState(false);
   const [submitMessage, setSubmitMessage] = useState('');
+  const [isActionScreen, setIsActionScreen] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const formDataPROD = new FormData();
+  const [isCreatedScreen, setIsCreatedScreen] = useState(false);
   const [formData, setFormData] = useState({
     templateName: '',
     title: '',
@@ -61,7 +67,7 @@ const TemplateForm = () => {
   //   || selectedHours.length == 0)
 
   useEffect(() => {
-    getTemplateByIdBackend(templateId.templateId);
+    getTemplateByIdBackend(templateId);
     const userDetails = JSON.parse(sessionStorage.getItem("user"))
     document.getElementsByClassName("dropdown-container")[0].style.backgroundColor = '#f9fafb'
     document.getElementsByClassName("dropdown-container")[1].style.backgroundColor = '#f9fafb'
@@ -80,6 +86,14 @@ const TemplateForm = () => {
       // setOuccuranceData()
       // setDateRangeWithFormattedValue()
     }
+
+    if (location.pathname.includes("actions")) {
+      setReadOnly(true);
+      setIsActionScreen(true);
+    }
+    if (location.pathname.includes("create")) {
+      setIsCreatedScreen(true)
+    }
     // userDetails !== null && (userDetails.role === "CHECKER") && setOuccuranceData();
     // userDetails !== null && userDetails.role === "CHECKER" && setDateRangeWithFormattedValue()
    
@@ -96,7 +110,7 @@ const TemplateForm = () => {
   //   setSelectedFrequency(formData.occurrenceFrequency)
   //   setSelectedUnit(formData.occurrenceUnit)
   //   setSelectedDays(formData.occurrenceDays)
-  //   // setSelectedHours(getNudgeTemplateDataById(templateId.templateId)[0].occurrenceHours)
+  //   // setSelectedHours(getNudgeTemplateDataById(templateId)[0].occurrenceHours)
   // }
 
   // const setDateRangeWithFormattedValue = () => {
@@ -110,8 +124,8 @@ const TemplateForm = () => {
       "templateName": templateNameValue,
       "title": titleValue,
       "body": bodyValue,
-      "startDate": new Date(data.dateRange[0].startDate).toLocaleDateString('en-IN', { year: 'numeric', month: '2-digit', day: '2-digit'}).replace(/\//g, '-'),
-      "endDate": new Date(data.dateRange[0].endDate).toLocaleDateString('en-IN', {year: 'numeric', month: '2-digit',  day: '2-digit'}).replace(/\//g, '-'),
+      "startDate": new Date(data.dateRange[0].startDate).toISOString().split('T')[0],
+      "endDate": new Date(data.dateRange[0].endDate).toISOString().split('T')[0],
       "occurrenceFrequency": selectedFrequency.map(item => item.value)[0],
       "occurrenceUnit":selectedUnit.map(item => item.value)[0],
       "occurrenceDays": selectedDays.map(item => item.value)
@@ -172,14 +186,130 @@ const TemplateForm = () => {
     }
   }
 
+  let submitNudgeData = () => {
+    const nudgeData = {
+      "templateId" : templateId,
+      "templateName": templateNameValue,
+      "title": titleValue,
+      "body": bodyValue,
+      "startDate": dateRangePreview.startDate.toISOString().split('T')[0],
+      "endDate": dateRangePreview.endDate.toISOString().split('T')[0],
+      // "startDate": new Date(data.dateRange[0].startDate).toISOString().split('T')[0],
+      // "endDate": new Date(data.dateRange[0].endDate).toISOString().split('T')[0],
+      "occurrenceFrequency": selectedFrequency.map(item => item.value)[0],
+      "occurrenceUnit":selectedUnit.map(item => item.value)[0],
+      "occurrenceDays": selectedDays.map(item => item.value),
+    }
+    return JSON.stringify(nudgeData);
+  }
+
+  let submitComment = () => {
+    const commentData = {
+      "comment" : checkerCommentValue
+    }
+    return JSON.stringify(commentData)
+  }
+
+  const submitForCUGApprovalBackend = async () => {
+   try {
+     const response = await submitForCUG_Approval_Template(submitNudgeData());
+     if(response.status == 200){
+      console.log(response.data.message)
+      setSubmitMessage(response.data.message)
+      setshowAlert(true)
+     }
+   } catch (error) {
+    
+   }
+
+  }
+
+  const markCUGRejectBackend = async () => {
+    try {
+      const comment = submitComment()
+      const response = await markCUGReject(templateId, comment)
+      if(response.status == 200){
+        
+        setSubmitMessage("Template rejected successfully.")
+        setshowAlert(true)
+      }
+    } catch (error) {
+      
+    }
+  }
+
+  const markCUGApprovedBackend = async () => {
+    try {
+      const comment = submitComment()
+      const response = await markCUGApproved(templateId, comment)
+      if(response.status == 200){
+        setSubmitMessage("Template approved successfully.")
+        setshowAlert(true)
+      }
+    } catch (error) {
+      
+    }
+  }
+
+  const markPRODRejectBackend = async () => {
+    try {
+      const comment = submitComment()
+      const response = await markPRODReject(templateId, comment)
+      if(response.status == 200){
+        
+        setSubmitMessage("Template rejected for PROD successfully.")
+        setshowAlert(true)
+      }
+    } catch (error) {
+      
+    }
+  }
+
+  const markPRODApprovedBackend = async () => {
+    try {
+      const comment = submitComment()
+      const response = await markPRODApproved(templateId, comment)
+      if(response.status == 200){
+        setSubmitMessage("Template approved for PROD successfully.")
+        setshowAlert(true)
+      }
+    } catch (error) {
+      
+    }
+  }
+
+  const submitForProdApprovalBackend = async (templateId, formDataPROD) => {
+    try {
+     
+      
+      console.log(formDataPROD)
+      const response = await submitForPRODApproval(templateId, formDataPROD);
+
+      if(response.status == 200){
+        setSubmitMessage(response.data.message)
+        setshowAlert(true)
+      }
+    } catch (error) {
+      
+    }
+  }
+
 
   const onSubmit = async (data) => {
-    
-    if(!onEditScreen){
-    createTemplateBackend(data)
-    }else{
+    if(!onEditScreen && !isActionScreen){
+    createTemplateBackend(data) 
+    }else if (!isCheckedFinalSubmit && onEditScreen && !isActionScreen){
       console.log(data)
-      updateTemplateBackend(templateId.templateId, data);
+      updateTemplateBackend(templateId, data);
+    }else if (isCheckedFinalSubmit && onEditScreen && !isActionScreen){
+      submitForCUGApprovalBackend()
+    }else if(isActionScreen){
+      console.log(selectedFile)
+      console.log(makerCommentValue)
+      
+      formDataPROD.append('file', data.img[0]);
+      formDataPROD.append('comment', makerCommentValue);
+      submitForProdApprovalBackend(templateId,formDataPROD);
     }
 
     // if (isReoccuranceSelected) {
@@ -228,7 +358,7 @@ const TemplateForm = () => {
   }
 
   const handleFileChange = (event) => {
-    setSelectedFile(event.target.files[0]);
+    setSelectedFile(event.target.files[0])
   };
 
   return (
@@ -259,7 +389,7 @@ const TemplateForm = () => {
                       }`}
                     {...register("templateId")}
                     disabled={true}
-                    value={templateId.templateId}
+                    value={templateId}
                   />
                 </div>
               }
@@ -381,13 +511,13 @@ const TemplateForm = () => {
                 <DateRangePicker
                   className="border shadow-lg rounded-xl"
                   ranges={field.value || [{
-                    startDate: onEditScreen ? dateRangePreview.startDate : new Date(),
-                    endDate: onEditScreen ? dateRangePreview.endDate : new Date(),
+                    startDate: (onEditScreen || isChecker || isActionScreen) ? dateRangePreview.startDate : new Date(),
+                    endDate: (onEditScreen || isChecker || isActionScreen) ? dateRangePreview.endDate : new Date(),
                     key: 'selection'
                   }]}
                   // onChange={item => field.onChange([item.selection])}
                   onChange={isChecker ? item => item : item => field.onChange([item.selection])}
-                  {...((isChecker || onEditScreen) && { preview: dateRangePreview })}
+                  {...((isChecker || onEditScreen || isActionScreen) && { preview: dateRangePreview })}
                   dragSelectionEnabled={!isChecker}
                 />
               )}
@@ -500,7 +630,7 @@ const TemplateForm = () => {
           </div>
 
           {/* CUG Evidence */}
-          {isChecker && templateDetails.status === "pending_approval_prod" && <div className="space-y-1 space-x-2 flex items-center">
+          {isActionScreen && <div className="space-y-1 space-x-2 flex items-center">
             <label htmlFor="img">
               <p className="inline font-medium">CUG Evidence</p>
               <p className="text-red-500 inline">*</p>:
@@ -531,17 +661,40 @@ const TemplateForm = () => {
                     field.onChange(event)
                     setSelectedTemplate(event.target.value)
                   }
+
                   }
+                  value={(isCreatedScreen || onEditScreen || (!isActionScreen && (status == "CUG_APPROVED" || status == "REJECTED" || status == "APPROVAL_PENDING_CUG"))) ? "CUG" : "PROD"}
                 >
-                  <option value="CUG">CUG</option>
-                  <option value="PROD">PROD</option>
+                  <option value="CUG">CUG</option> 
+                  <option value="PROD">PROD</option> 
                 </select>
               )}
             />
           </div>
 
+          {/* Checker Comment */}
+          {(isActionScreen) && <div className="space-y-1 space-x-2 flex items-center">
+            <label htmlFor="comment">
+              <p className="inline font-medium">Checker's Comment</p>:
+            </label>
+            <div className="flex items-center justify-center pb-1">
+              <p>{checkerCommentValue}</p>
+            </div>
+          </div>}
+
+          {(isChecker && status == "APPROVAL_PENDING_PROD") && <div className="space-y-1 space-x-2 flex items-center">
+            <label htmlFor="comment">
+              <p className="inline font-medium">Maker's Comment</p>:
+            </label>
+            <div className="flex items-center justify-center pb-1">
+              <p>{makerCommentValue}</p>
+            </div>
+          </div>}
+
+          
+
           {/* Comment */}
-          {(isChecker) && <div className="space-y-1 space-x-2 flex">
+          {(isChecker || isActionScreen) && <div className="space-y-1 space-x-2 flex">
             <label htmlFor="comment">
               <p className="inline font-medium">Comment</p>:
             </label>
@@ -555,22 +708,22 @@ const TemplateForm = () => {
                     cols={50}
                     placeholder="Add Comment here..."
                     rows={3}
-                    onChange={onChange}
-                    value={value}
+                    onChange={isChecker ? (e) => setCheckerCommentValue(e.target.value) :(e) => setMakerCommentValue(e.target.value)}
+                    value={isChecker ? checkerCommentValue : makerCommentValue}
                   />
                 </div>
               )}
             />
           </div>}
 
-          {!isChecker && <div className="">
+          {(!isChecker && !isActionScreen) && <div className="">
             <input onClick={() => isCheckedFinalSubmit ? setIsCheckedFinalSubmit(false) : setIsCheckedFinalSubmit(true)} type="checkbox" id="finalSubmit" className="h-[0.60rem] w-[0.60rem]" name="finalSubmit" value="submitted" />
             <label className="font-medium text-red-700 text-sm font-mono" for="finalSubmit"> Submit for CUG approval</label>
           </div>}
 
 
           <div className=" flex justify-end">
-            {!isChecker ? !isCheckedFinalSubmit ? (
+            {!isChecker ? (!isCheckedFinalSubmit && !isActionScreen) ? (
               <div className="flex justify-between space-x-2">
                 <button
                   className="mt-4 w-[5.5rem] p-2 px-4 bg-red-600 hover:bg-red-500 rounded flex justify-center text-white font-semibold"
@@ -596,14 +749,16 @@ const TemplateForm = () => {
               : (
                 <div className="flex justify-between space-x-2">
                   <button
+                    onClick={status == "APPROVAL_PENDING_PROD" ? () => markPRODApprovedBackend() :() => markCUGApprovedBackend()}
                     className="mt-4 w-[5.5rem] p-2 px-4 bg-green-700 hover:bg-green-600 rounded flex justify-center text-white font-semibold"
-                    type="submit"
+                    type="button"
                   >
                     Approve
                   </button>
                   <button
+                    onClick={status == "APPROVAL_PENDING_PROD" ? () => markPRODRejectBackend() : () => markCUGRejectBackend()}
                     className="mt-4 w-[5.5rem] p-2 px-4 bg-red-700 hover:bg-red-600 rounded flex justify-center text-white font-semibold"
-                    type="submit"
+                    type="button"
                   >
                     Reject
                   </button>

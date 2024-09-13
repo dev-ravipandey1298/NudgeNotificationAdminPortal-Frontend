@@ -65,3 +65,41 @@ export const updateTemplate = (templateId, templateData) => {
 export const deleteTemplate = (templateId) => {
   return apiClient.delete(`/notification-portal/templates/draft/${templateId}`); // DELETE request to /templates/:templateId
 };
+
+export const submitForCUG_Approval_Template = (templateData) => {
+  return apiClient.put(`/notification-portal/templates/cug-approval`, templateData); // PUT request to /templates/cug-approval
+};
+
+export const getAllSearchTemplate = () => {
+  return apiClient.get(`/notification-portal/templates?status=APPROVAL_PENDING_CUG&status=APPROVAL_PENDING_PROD`); // GET request to /templates?status=
+};
+
+export const getAllSearchActionTemplate = () => {
+  return apiClient.get(`/notification-portal/templates?status=CUG_APPROVED&status=REJECTED&status=CUG_FAILED`); // GET request to /templates?status=
+};
+
+export const markCUGReject = (templateId, comment) => {
+  return apiClient.patch(`/notification-portal/templates/${templateId}/cug-reject`, comment); // PATCH request to /templates?status=
+};
+
+export const markCUGApproved = (templateId, comment) => {
+  return apiClient.patch(`/notification-portal/templates/${templateId}/cug-approved`, comment); // PATCH request to /templates?status=
+};
+
+
+export const submitForPRODApproval = (templateId, formData) => {
+  return apiClient.patch(`/notification-portal/templates/${templateId}/final-approval`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  }); 
+
+};
+
+export const markPRODReject = (templateId, comment) => {
+  return apiClient.patch(`/notification-portal/templates/${templateId}/final-reject`, comment); // PATCH request to /templates?status=
+};
+
+export const markPRODApproved = (templateId, comment) => {
+  return apiClient.patch(`/notification-portal/templates/${templateId}/final-approved`, comment); // PATCH request to /templates?status=
+};
