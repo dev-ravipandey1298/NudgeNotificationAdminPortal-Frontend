@@ -34,10 +34,10 @@ const LoginPage = ({setUserDetails}) => {
       }
 
       if(data.userId == "manish_checker"){
-         sessionStorage.setItem("user", {userId:"manish_checker", password:"", role:"CHECKER", name: "manish_checker"})
+         sessionStorage.setItem("user", JSON.stringify({userId:"manish_checker", password:"", role:"CHECKER", name: "manish_checker"}))
       }
       if(data.userId == "manish_maker"){
-        sessionStorage.setItem("user", {userId:"manish_maker", password:"", role:"MAKER", name: "manish_maker"})
+        sessionStorage.setItem("user", JSON.stringify({userId:"manish_maker", password:"", role:"MAKER", name: "manish_maker"}))
      }
       login(loginDetails)
 
