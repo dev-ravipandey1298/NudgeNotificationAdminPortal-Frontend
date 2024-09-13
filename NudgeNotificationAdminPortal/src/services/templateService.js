@@ -91,7 +91,7 @@ export const deleteTemplate = (templateId) => {
 };
 
 export const submitForCUG_Approval_Template = (templateData) => {
-  return apiClient.put(`/v1/templates/cug-approval`, templateData, {
+  return apiClient.put(`/v1/templates/template/cug-approval`, templateData, {
     headers: {
       'X-Auth-Notification-Portal' : `Bearer ${sessionStorage.getItem('authToken')}`,
     },
