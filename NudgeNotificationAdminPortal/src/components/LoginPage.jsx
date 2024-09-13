@@ -54,6 +54,12 @@ const LoginPage = ({setUserDetails}) => {
         const response = await userLogin(data);
         if(response.status == 200){
           sessionStorage.setItem("authToken", response.data.payload.authToken)
+          if(data.userId == "manish_checker"){
+            navigate("/checker")
+         }
+         if(data.userId == "manish_maker"){
+           navigate("/maker")
+         }
         }
       } catch (error) {
         
