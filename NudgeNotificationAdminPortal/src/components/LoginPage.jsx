@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { setDataInLocalStorage } from "../services/nudgeTemplateService";
 import hdfcBankImageBG from "/icons/hdfcBankImageBG.jpg"
+import { userLogin } from "../services/templateService";
 
 const LoginPage = ({setUserDetails}) => {
     const { register, handleSubmit } = useForm();
@@ -16,21 +17,48 @@ const LoginPage = ({setUserDetails}) => {
     ]
 
     const onSubmit = (data) => {
-      const loggedInUser = userDetails.find(user => user.userId === data.userId);
-      if (loggedInUser !== undefined && loggedInUser.password === data.password) {
-        // setUserDetails(loggedInUser);
-        loggedInUser.role === "CHECKER" ? navigate("/checker") : navigate("/maker")
-        loggedInUser.password = "";
-        sessionStorage.setItem("user", JSON.stringify(loggedInUser))
-        console.log(loggedInUser)
-      } else {
-        alert('Invalid credentials');
+      // const loggedInUser = userDetails.find(user => user.userId === data.userId);
+      // if (loggedInUser !== undefined && loggedInUser.password === data.password) {
+      //   // setUserDetails(loggedInUser);
+      //   loggedInUser.role === "CHECKER" ? navigate("/checker") : navigate("/maker")
+      //   loggedInUser.password = "";
+      //   sessionStorage.setItem("user", JSON.stringify(loggedInUser))
+      //   console.log(loggedInUser)
+      // } else {
+      //   alert('Invalid credentials');
+      // }
+
+      const loginDetails = {
+        "userId" : data.userId,
+        "password" : data.password 
       }
+
+      if(data.userId == "manish_checker"){
+         sessionStorage.setItem("user", {userId:"manish_checker", password:"", role:"CHECKER", name: "manish_checker"})
+      }
+      if(data.userId == "manish_maker"){
+        sessionStorage.setItem("user", {userId:"manish_maker", password:"", role:"MAKER", name: "manish_maker"})
+     }
+      login(loginDetails)
+
     };
 
     useEffect(() => {
       sessionStorage.getItem("user") === null && navigate("/login")
     }, [])
+
+    
+
+    const login = async (data) => {
+      try {
+        const response = await userLogin(data);
+        if(response.status == 200){
+          sessionStorage.setItem("authToken", response.data.payload.authToken)
+        }
+      } catch (error) {
+        
+      }
+    }
 
     return (
         <div className="flex items-center justify-center h-screen w-full px-5 sm:px-0">

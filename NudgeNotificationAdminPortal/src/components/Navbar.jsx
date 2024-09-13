@@ -22,7 +22,7 @@ const Navbar = () => {
             
 
             <p className="text-base font-bold text-[1.2rem] text-white">
-                Nudge Notification Admin Portal
+                Notification Admin Portal
             </p>
             </div>
 
