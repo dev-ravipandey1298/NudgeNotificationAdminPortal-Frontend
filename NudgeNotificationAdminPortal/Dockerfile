@@ -11,4 +11,5 @@ FROM nginx:stable-alpine3.20
 WORKDIR /usr/share/nginx/html
 RUN rm -rf ./*
 COPY --from=buildstage /myapp/dist ./
+COPY --from=buildstage /myapp/public/health.html ./health.html
 CMD ["nginx", "-g", "daemon off;"]
