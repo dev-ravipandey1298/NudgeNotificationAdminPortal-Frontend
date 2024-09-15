@@ -20,11 +20,13 @@ import FormComponent3 from "./components/FormComponent3";
 import Sidebar from "./components/Sidebar";
 import Popup from "./components/Popup";
 import CUGManagementPage from "./components/CUGManagementPage";
+import CreateTemplateForm from "./components/CreateTemplateForm";
+import DraftTemplateForm from "./components/DraftTemplateForm";
 
 
 const router = createBrowserRouter(
 	createRoutesFromElements(
-		<Route path="/" element={<CUGManagementPage />}>
+		<Route path="/" element={<Layout />}>
 			{/* <Route path="form" element={<FormComponent3 />} /> */}
 			<Route path="login" element={<LoginPage />} />
 			<Route path="maker" element={<Maker />} />
@@ -32,8 +34,8 @@ const router = createBrowserRouter(
 			<Route path="checker/pending-requests" element={<PendingRequestTable />} />
 			<Route path="checker/show-all" element={<ShowAllCheckerTable />} />
 			<Route path="checker/show/nudge-template-form/templateId/:templateId/status/:status" element={<TemplateForm />} />
-			<Route path="maker/create/nudge-template-form/templateId/:templateId" element={<TemplateForm />} />
-			<Route path="maker/drafts/nudge-template-form/templateId/:templateId" element={<TemplateForm />} />
+			<Route path="maker/create/nudge-template-form" element={<CreateTemplateForm />} />
+			<Route path="maker/drafts/nudge-template-form/templateId/:templateId" element={<DraftTemplateForm />} />
 			<Route path="maker/actions/nudge-template-form/templateId/:templateId/status/:status" element={<TemplateForm />} />
 			<Route path="maker/drafts" element={<DraftTable />} />
 			<Route path="maker/show-all" element={<ShowAllMakerTable />} />
