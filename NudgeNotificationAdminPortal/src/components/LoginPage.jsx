@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { setDataInLocalStorage } from "../services/nudgeTemplateService";
 import hdfcBankImageBG from "/icons/hdfcBankImageBG.jpg"
+import { userLogin } from "../services/templateService";
 
 const LoginPage = ({setUserDetails}) => {
     const { register, handleSubmit } = useForm();
@@ -23,16 +24,47 @@ const LoginPage = ({setUserDetails}) => {
         loggedInUser.password = "";
         sessionStorage.setItem("user", JSON.stringify(loggedInUser))
         console.log(loggedInUser)
-        setDataInLocalStorage()
-        // Redirect to home after successful login
       } else {
         alert('Invalid credentials');
       }
+
+    //   const loginDetails = {
+    //     "userId" : data.userId,
+    //     "password" : data.password 
+    //   }
+
+    //   if(data.userId == "manish_checker"){
+    //      sessionStorage.setItem("user", JSON.stringify({userId:"manish_checker", password:"", role:"CHECKER", name: "manish_checker"}))
+    //   }
+    //   if(data.userId == "manish_maker"){
+    //     sessionStorage.setItem("user", JSON.stringify({userId:"manish_maker", password:"", role:"MAKER", name: "manish_maker"}))
+    //  }
+    //   login(loginDetails)
+
     };
 
     useEffect(() => {
       sessionStorage.getItem("user") === null && navigate("/login")
     }, [])
+
+    
+
+    const login = async (data) => {
+      try {
+        const response = await userLogin(data);
+        if(response.status == 200){
+          sessionStorage.setItem("authToken", response.data.payload.authToken)
+          if(data.userId == "manish_checker"){
+            navigate("/checker")
+         }
+         if(data.userId == "manish_maker"){
+           navigate("/maker")
+         }
+        }
+      } catch (error) {
+        
+      }
+    }
 
     return (
         <div className="flex items-center justify-center h-screen w-full px-5 sm:px-0">

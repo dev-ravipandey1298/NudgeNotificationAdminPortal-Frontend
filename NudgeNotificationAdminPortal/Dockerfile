@@ -3,7 +3,7 @@ FROM node:22.8-alpine3.20 as buildstage
 WORKDIR /myapp
 COPY package.json ./
 RUN npm install
-COPY . . 
+COPY . .
 RUN npm run build
 
 #  Nginx
@@ -12,4 +12,7 @@ WORKDIR /usr/share/nginx/html
 RUN rm -rf ./*
 COPY --from=buildstage /myapp/dist ./
 COPY --from=buildstage /myapp/public/health.html ./health.html
+RUN rm /etc/nginx/conf.d/default.conf
+COPY nginx.conf /etc/nginx/conf.d/
+EXPOSE 8080
 CMD ["nginx", "-g", "daemon off;"]

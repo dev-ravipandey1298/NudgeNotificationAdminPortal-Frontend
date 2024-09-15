@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { getAllCugPendingNudgeTemplatesForApproval, getAllPendingNudgeTemplatesForApproval, getAllProdPendingNudgeTemplatesForApproval } from '../services/nudgeTemplateService';
 import filter from '/icons/filter.png'
 import PageHeader from './PageHeader';
+import { getAllSearchTemplate } from '../services/templateService';
 
 const PendingRequestTable = () => {
 
@@ -19,6 +20,15 @@ const PendingRequestTable = () => {
     checkbox3: false
   });
 
+  const getPendingRequest = async () => {
+    try {
+      const response = await getAllSearchTemplate();
+      console.log(response.data.payload)
+      setPendingRequestData(response.data.payload)
+    } catch (error) {
+      
+    }
+  }
 
   const handleCheckboxChange = (event) => {
     const { id, checked } = event.target;
@@ -47,7 +57,8 @@ const PendingRequestTable = () => {
 
   useEffect(() => {
     sessionStorage.getItem("user") === null && navigate("/login")
-    setPendingRequestData(getAllPendingNudgeTemplatesForApproval())
+    getPendingRequest()
+    // setPendingRequestData(getAllPendingNudgeTemplatesForApproval())
     // console.log(selectedValues)
   }, [])
 
@@ -97,7 +108,7 @@ const PendingRequestTable = () => {
                 <td className="border px-3 py-2">{val.createdBy}</td>
                 <td className="border px-3 py-2">{val.status}</td>
                 <td className="border px-3 py-2 space-x-1">
-                  <button onClick={() => navigate(`/checker/show/nudge-template-form/templateId/${val.templateId}`)} className="text-blue-500 hover:underline">Approve/Reject</button>
+                  <button onClick={() => navigate(`/checker/show/nudge-template-form/templateId/${val.templateId}/status/${val.status}`)} className="text-blue-500 hover:underline">Approve/Reject</button>
                 </td>
               </tr>
             </tbody>
