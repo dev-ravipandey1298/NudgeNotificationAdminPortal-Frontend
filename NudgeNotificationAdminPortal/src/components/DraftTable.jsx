@@ -4,6 +4,7 @@ import { getAllDraftNudgeTemplate } from "../services/nudgeTemplateService";
 import { useNavigate } from "react-router-dom";
 import { deleteTemplate, getAllTemplates } from "../services/templateService";
 import Warning from "./Warning";
+import { NAVIGATE_PATH } from "../constants/routeConstant";
 
 const DraftTable = ({ setShowDraft }) => {
 
@@ -58,7 +59,7 @@ const DraftTable = ({ setShowDraft }) => {
               <td className="border px-3 py-2">{val.createdOn}</td>
               <td className="border px-3 py-2">{val.updatedOn}</td>
               <td className="border px-3 py-2 space-x-1">
-                <button onClick={() => navigate(`/maker/drafts/nudge-template-form/templateId/${val.templateId}`)} className="text-blue-500 hover:underline">Edit</button>
+                <button onClick={() => navigate(`${NAVIGATE_PATH.MAKER_DRAFT_TEMPLATE +  val.templateId}`)} className="text-blue-500 hover:underline">Edit</button>
                 <span>|</span>
                 <button onClick={() => deleteDraftData(val.templateId)} className="text-blue-500 hover:underline">Delete</button>
               </td>

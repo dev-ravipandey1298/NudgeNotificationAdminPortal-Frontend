@@ -6,6 +6,7 @@ import { getAllCugPendingNudgeTemplatesForApproval, getAllPendingNudgeTemplatesF
 import filter from '/icons/filter.png'
 import PageHeader from './PageHeader';
 import {getTemplatesBySearchCriteria } from '../services/templateService';
+import { NAVIGATE_PATH } from '../constants/routeConstant';
 
 const PendingRequestTable = () => {
 
@@ -68,11 +69,11 @@ const PendingRequestTable = () => {
 
   const handleView = (templateId) => {
     // setShowTemplateForm(true);
-    navigate(`/checker/show/nudge-template-form/template/${templateId}`)
+    navigate(NAVIGATE_PATH.CHECKER_REVIEW_TEMPLATE + templateId)
   }
 
   useEffect(() => {
-    sessionStorage.getItem("user") === null && navigate("/login")
+    sessionStorage.getItem("user") === null && navigate(NAVIGATE_PATH.LOGIN)
     const searchCriteria = {
       templateId : '',
       templateName : '',
@@ -128,7 +129,7 @@ const PendingRequestTable = () => {
                 <td className="border px-3 py-2">{val.createdBy}</td>
                 <td className="border px-3 py-2">{val.status}</td>
                 <td className="border px-3 py-2 space-x-1">
-                  <button onClick={() => navigate(`/checker/show/nudge-template-form/templateId/${val.templateId}/status/${val.status}`)} className="text-blue-500 hover:underline">Approve/Reject</button>
+                  <button onClick={() => navigate(`${NAVIGATE_PATH.CHECKER_REVIEW_TEMPLATE + val.templateId}/status/${val.status}`)} className="text-blue-500 hover:underline">Approve/Reject</button>
                 </td>
               </tr>
             </tbody>

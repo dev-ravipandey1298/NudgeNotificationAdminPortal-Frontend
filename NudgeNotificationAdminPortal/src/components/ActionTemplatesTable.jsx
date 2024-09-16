@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import PageHeader from './PageHeader';
 import { useNavigate } from 'react-router-dom';
 import { getTemplatesBySearchCriteria } from '../services/templateService';
+import { NAVIGATE_PATH } from '../constants/routeConstant';
 
 const ActionTemplatesTable = () => {
 
@@ -46,7 +47,7 @@ const ActionTemplatesTable = () => {
               <td className="border px-3 py-2">{val.createdOn}</td>
               <td className="border px-3 py-2">{val.status}</td>
               <td className="border px-3 py-2 space-x-1">
-                <button onClick={() => navigate(`/maker/actions/nudge-template-form/templateId/${val.templateId}/status/${val.status}`)} className="text-blue-500 hover:underline">Edit</button>
+                <button onClick={() => navigate(`${NAVIGATE_PATH.MAKER_ACTION_TEMPLATE + val.templateId}/status/${val.status}`)} className="text-blue-500 hover:underline">Edit</button>
                 <span>|</span>
                 <button className="text-blue-500 hover:underline">
                   Delete

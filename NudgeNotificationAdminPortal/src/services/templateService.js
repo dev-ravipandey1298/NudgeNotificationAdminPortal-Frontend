@@ -98,6 +98,14 @@ export const markPRODApproved = (templateId, comment) => {
   return apiClient.patch(`/templates/${templateId}/final-approved`, comment); 
 };
 
+export const getAllCUGUsers = () => {
+  return apiClient.get(`/cug/users`); 
+};
+
+export const deleteSelectedCUGUsers = (selectedUsers) => {
+  return apiClient.delete(`/cug/users`, selectedUsers); 
+};
+
 // LOGIN API's
 
 export const userLogin = (data) => {

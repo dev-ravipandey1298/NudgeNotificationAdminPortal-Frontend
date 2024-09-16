@@ -1,50 +1,65 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import PageHeader from './PageHeader';
+import { deleteSelectedCUGUsers, getAllCUGUsers } from '../services/templateService';
 
 const CUGManagementPage = () => {
   const [activeTab, setActiveTab] = useState(0);
   const [users, setUsers] = useState([]);
   const [selectedUsers, setSelectedUsers] = useState([]); 
   const [newUsers, setNewUsers] = useState([]); 
-  const [userData, setUserData] = useState({ name: '', mobile: '' });
+  const [userData, setUserData] = useState({ name: '', mobileNumber: '' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [deleteMode, setDeleteMode] = useState(false); 
   
   
   useEffect(() => {
-    const fetchUsers = async () => {
-      setLoading(true);
-      try {
-        const response = await axios.get('/api/get-users'); 
-      } catch (err) {
-        setError('Failed to fetch users');
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchUsers();
+    getAllCugUsersFromBackend()
   }, []);
 
+
+  const getAllCugUsersFromBackend = async () => {
+    try {
+      const response = await getAllCUGUsers();
+      if(response.status == 200){
+        console.log(response.data.payload)
+        setUsers(response.data.payload)
+      }
+    } catch (error) {
+      
+    }
+  }
+
   // Handle checkbox toggle
-  const handleCheckboxChange = (name) => {
+  const handleCheckboxChange = (mobileNumber) => {
     setSelectedUsers((prevSelected) =>
-      prevSelected.includes(name)
-        ? prevSelected.filter((userId) => userId !== name)
-        : [...prevSelected, name]
+      prevSelected.includes(mobileNumber)
+        ? prevSelected.filter((userId) => userId !== mobileNumber)
+        : [...prevSelected, mobileNumber]
     );
   };
 
+  const deleteSelectedUserBackend = async (selectedUsers) => {
+    try {
+      const response = await deleteSelectedCUGUsers(selectedUsers);
+      if(response.status == 200){
+        alert("Deleted")
+      }
+    } catch (error) {
+      
+    }
+  }
+
   // Handle deletion of selected users
-  const handleDeleteSelectedUsers = async () => {
+  const handleDeleteSelectedUsers = () => {
     if (selectedUsers.length === 0) return;
 
     setLoading(true);
     try {
-      // await axios.post('/api/delete-users', { userIds: selectedUsers }); 
-      setUsers(users.filter((user) => !selectedUsers.includes(user.name))); 
-      setSelectedUsers([]); // Reset selected users
+      setUsers(users.filter((user) => !selectedUsers.includes(user.mobileNumber))); 
+      deleteSelectedUserBackend(JSON.stringify(selectedUsers));
+      // setSelectedUsers([]); // Reset selected users
     } catch (err) {
       setError('Failed to delete users');
     } finally {
@@ -54,9 +69,9 @@ const CUGManagementPage = () => {
 
   // Handle adding new users to the list
   const handleAddUser = () => {
-    if (userData.name && userData.mobile) {
+    if (userData.name && userData.mobileNumber) {
       setNewUsers([...newUsers, { name: Date.now(), ...userData }]);
-      setUserData({ name: '', mobile: '' });
+      setUserData({ name: '', mobileNumber: '' });
     }
   };
 
@@ -67,6 +82,7 @@ const CUGManagementPage = () => {
       // await axios.post('/api/add-users', { users: newUsers }); 
       
       setUsers([...users, ...newUsers]); 
+      console.log(newUsers)
       setNewUsers([]); 
     } catch (err) {
       setError('Failed to add users');
@@ -86,7 +102,7 @@ const CUGManagementPage = () => {
             <button onClick={() => setActiveTab(0)} className="p-2">All CUG Users</button>
           </li>
           <li className={`mr-2 cursor-pointer ${activeTab === 1 ? 'border-b-2 border-blue-500' : ''}`}>
-            <button onClick={() => { setActiveTab(1); setUserData({ name: '', mobile: '' }); }} className="p-2">Add CUG Users</button>
+            <button onClick={() => { setActiveTab(1); setUserData({ name: '', mobileNumber: '' }); }} className="p-2">Add CUG Users</button>
           </li>
         </ul>
       </div>
@@ -125,18 +141,18 @@ const CUGManagementPage = () => {
                 </thead>
                 <tbody>
                   {users.map((user) => (
-                    <tr key={user.name}>
+                    <tr key={user.mobileNumber}>
                       {deleteMode && (
                         <td className="px-4 py-2 border">
                           <input
                             type="checkbox"
-                            checked={selectedUsers.includes(user.name)}
-                            onChange={() => handleCheckboxChange(user.name)}
+                            checked={selectedUsers.includes(user.mobileNumber)}
+                            onChange={() => handleCheckboxChange(user.mobileNumber)}
                           />
                         </td>
                       )}
                       <td className="px-4 py-2 border">{user.name}</td>
-                      <td className="px-4 py-2 border">{user.mobile}</td>
+                      <td className="px-4 py-2 border">{user.mobileNumber}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -173,8 +189,8 @@ const CUGManagementPage = () => {
             <input
               type="text"
               placeholder="Mobile Number"
-              value={userData.mobile}
-              onChange={(e) => setUserData({ ...userData, mobile: e.target.value })}
+              value={userData.mobileNumber}
+              onChange={(e) => setUserData({ ...userData, mobileNumber: e.target.value })}
               className="px-4 py-2 border rounded w-full"
             />
           
@@ -193,7 +209,7 @@ const CUGManagementPage = () => {
             <ul className="mt-2">
               {newUsers.map((user) => (
                 <li key={user.name} className="flex items-center justify-between px-4 py-2 border-b">
-                  <span>{user.name} - {user.mobile}</span>
+                  <span>{user.name} - {user.mobileNumber}</span>
                 </li>
               ))}
             </ul>

@@ -6,21 +6,22 @@ import template from "/icons/template.png";
 import { useNavigate } from "react-router-dom";
 import { getAllDraftNudgeTemplate, setDataInLocalStorage } from "../services/nudgeTemplateService";
 import Sidebar from "./Sidebar";
+import { NAVIGATE_PATH } from "../constants/routeConstant";
 
 const Maker = ({ userDetails }) => {
   const count = 3;
   const navigate = useNavigate();
 
   const handleCreateTemplate = () => {
-    navigate("/maker/create/nudge-template-form")
+    navigate(NAVIGATE_PATH.MAKER_CREATE_TEMPLATE)
   };
 
   const handleDraft = () => {
-    navigate("/maker/drafts")
+    navigate(NAVIGATE_PATH.MAKER_DRAFTS)
   };
 
   const handleShowAllRequest = () => {
-    navigate("/maker/show-all")
+    navigate(NAVIGATE_PATH.MAKER_SHOW_ALL)
   };
 
   const getAllDraftData = async () => {
@@ -38,7 +39,7 @@ const Maker = ({ userDetails }) => {
   return (
     <>
      <div className="flex justify-end p-2 pl-4">
-        <button onClick={() => navigate("/cug-user")} className="hover:cursor-pointer underline-offset-2 underline text-blue-700 hover:text-blue-900 font-sm flex justify-end ">Go to CUG Screen </button>
+        <button onClick={() => navigate(NAVIGATE_PATH.CUG_USER)} className="hover:cursor-pointer underline-offset-2 underline text-blue-700 hover:text-blue-900 font-sm flex justify-end ">Go to CUG Screen </button>
         </div>
     
     <div className="flex justify-center items-center h-[90vh] space-x-6 px-6">
@@ -72,7 +73,7 @@ const Maker = ({ userDetails }) => {
         </button>
       </div>
       <div
-        onClick={() => navigate("/maker/action-templates")}
+        onClick={() => navigate(NAVIGATE_PATH.MAKER_ACTION_TEMPLATE)}
         className="h-60 w-72 rounded-lg p-4 flex flex-col items-center space-y-4 border shadow-lg transition ease-in-out delay-50 hover:-translate-y-1 hover:scale-110 hover:shadow-xl hover:cursor-pointer"
       >
         <span className="text-xl font-bold text-cyan-700 hover:cursor-pointer">

@@ -23,28 +23,31 @@ import CreateTemplateForm from "./components/CreateTemplateForm";
 import DraftTemplateForm from "./components/DraftTemplateForm";
 import CheckerTempateForm from "./components/CheckerTempateForm";
 import ActionTemplatesTable from "./components/ActionTemplatesTable";
+import {COMMON_ROUTE, CHILD_PATH } from "./constants/routeConstant";
 
 
 const router = createBrowserRouter(
 	createRoutesFromElements(
-		<Route path="/" element={<Layout />}>
+		<Route path={COMMON_ROUTE} element={<Layout />}>
 			{/* <Route path="form" element={<FormComponent3 />} /> */}
-			<Route path="login" element={<LoginPage />} />
-			<Route path="maker" element={<Maker />} />
-			<Route path="checker" element={<Checker />} />
-			<Route path="cug-user" element={<CUGManagementPage />} />
-			<Route path="checker/pending-requests" element={<PendingRequestTable />} />
-			<Route path="checker/show-all" element={<ShowAllCheckerTable />} />
-			<Route path="checker/show/nudge-template-form/templateId/:templateId/status/:status" element={<CheckerTempateForm />} />
-			<Route path="maker/create/nudge-template-form" element={<CreateTemplateForm />} />
-			<Route path="maker/drafts/nudge-template-form/templateId/:templateId" element={<DraftTemplateForm />} />
-			<Route path="maker/actions/nudge-template-form/templateId/:templateId/status/:status" element={<TemplateForm />} />
-			<Route path="maker/drafts" element={<DraftTable />} />
-			<Route path="maker/show-all" element={<ShowAllMakerTable />} />
-			<Route path="maker/action-templates" element={<ActionTemplatesTable />} />
+			<Route path={CHILD_PATH.login} element={<LoginPage />} />
+			<Route path={CHILD_PATH.maker} element={<Maker />} />
+			<Route path={CHILD_PATH.checker} element={<Checker />} />
+			<Route path={CHILD_PATH.cugUser} element={<CUGManagementPage />} />
+			<Route path={CHILD_PATH.checkerPendingRequest} element={<PendingRequestTable />} />
+			<Route path={CHILD_PATH.checkerShowAll} element={<ShowAllCheckerTable />} />
+			<Route path={CHILD_PATH.checkerReviewTemplate} element={<CheckerTempateForm />} />
+			<Route path={CHILD_PATH.makerCreateTemplate} element={<CreateTemplateForm />} />
+			<Route path={CHILD_PATH.makerDraftTemplate} element={<DraftTemplateForm />} />
+			<Route path={CHILD_PATH.makerActionTemplate} element={<TemplateForm />} />
+			<Route path={CHILD_PATH.makerDrafts} element={<DraftTable />} />
+			<Route path={CHILD_PATH.makerShowAll} element={<ShowAllMakerTable />} />
+			<Route path={CHILD_PATH.makerActionTemplatesTable} element={<ActionTemplatesTable />} />
 		</Route>
 	)
 )
+
+
 
 
 ReactDOM.createRoot(document.getElementById("root")).render(

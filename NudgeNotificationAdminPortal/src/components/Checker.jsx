@@ -3,6 +3,7 @@ import pendingApproval from "/icons/pending_approval.png";
 import showAll from "/icons/showAll.png";
 import { Link, useNavigate } from "react-router-dom";
 import { getAllPendingNudgeTemplatesForApproval, setDataInLocalStorage } from "../services/nudgeTemplateService";
+import { NAVIGATE_PATH } from "../constants/routeConstant";
 
 const Checker = ({ userDetails }) => {
   const count = 1;
@@ -10,11 +11,11 @@ const Checker = ({ userDetails }) => {
   const navigate = useNavigate();
 
   const handlePendingRequests = () => {
-    navigate("/checker/pending-requests")
+    navigate(NAVIGATE_PATH.CHECKER_PENDING_REQUEST)
   };
 
   const handleShowAllRequests = () => {
-    navigate("/checker/show-all")
+    navigate(NAVIGATE_PATH.CHECKER_SHOW_ALL)
   };
 
   useEffect(() => {
@@ -25,7 +26,7 @@ const Checker = ({ userDetails }) => {
   return (
     <>
      <div className="flex justify-end p-2 pl-4">
-        <button onClick={() => navigate("/cug-user")} className="hover:cursor-pointer underline-offset-2 underline text-blue-700 hover:text-blue-900 font-sm flex justify-end ">Go to CUG Screen </button>
+        <button onClick={() => navigate(NAVIGATE_PATH.CUG_USER)} className="hover:cursor-pointer underline-offset-2 underline text-blue-700 hover:text-blue-900 font-sm flex justify-end ">Go to CUG Screen </button>
         </div>
       <div className="flex justify-center items-center h-[80vh] space-x-10">
         <div

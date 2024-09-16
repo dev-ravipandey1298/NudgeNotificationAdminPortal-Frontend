@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { setDataInLocalStorage } from "../services/nudgeTemplateService";
 import hdfcBankImageBG from "/icons/hdfcBankImageBG.jpg"
 import { userLogin } from "../services/templateService";
+import { NAVIGATE_PATH } from "../constants/routeConstant";
 
 const LoginPage = ({setUserDetails}) => {
     const { register, handleSubmit } = useForm();
@@ -20,7 +21,7 @@ const LoginPage = ({setUserDetails}) => {
       const loggedInUser = userDetails.find(user => user.userId === data.userId);
       if (loggedInUser !== undefined && loggedInUser.password === data.password) {
         // setUserDetails(loggedInUser);
-        loggedInUser.role === "CHECKER" ? navigate("/checker") : navigate("/maker")
+        loggedInUser.role === "CHECKER" ? navigate(NAVIGATE_PATH.CHECKER) : navigate(NAVIGATE_PATH.MAKER)
         loggedInUser.password = "";
         sessionStorage.setItem("user", JSON.stringify(loggedInUser))
         console.log(loggedInUser)
@@ -44,7 +45,7 @@ const LoginPage = ({setUserDetails}) => {
     };
 
     useEffect(() => {
-      sessionStorage.getItem("user") === null && navigate("/login")
+      sessionStorage.getItem("user") === null && navigate(NAVIGATE_PATH.LOGIN)
     }, [])
 
     
