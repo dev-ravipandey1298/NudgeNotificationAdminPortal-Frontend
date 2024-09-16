@@ -183,7 +183,7 @@ const CheckerTempateForm = () => {
 
   return (
     <>
-      <PageHeader heading={"Nudge Template"} />
+      <PageHeader heading={"Nudge Template Review -Checker"} />
       <div className="flex justify-center items-center   p-4">
         <form
           onSubmit={handleSubmit}

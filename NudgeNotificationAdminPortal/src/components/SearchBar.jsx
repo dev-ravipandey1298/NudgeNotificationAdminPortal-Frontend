@@ -1,8 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 
-const SearchBar = () => {
-
-    const [searchValue, setSearchValue] = useState('');
+const SearchBar = ({setSearchValue, handleSearch}) => {
    
     return (
         <div className="mb-3 md:w-96 mx-auto">
@@ -18,7 +16,7 @@ const SearchBar = () => {
                 {/* <!--Search button--> */}
                 
                 <button
-                    onClick={() => console.log(searchValue)}
+                    onClick={() => handleSearch()}
                     className="relative z-[2] text-white border-blue-800 bg-blue-800 rounded-r border-2 px-6 py-2 font-medium uppercase text-sm transition duration-150 ease-in-out hover:bg-blue-600 focus:outline-none focus:ring-0"
                     type="button"
                     id="button-addon3">

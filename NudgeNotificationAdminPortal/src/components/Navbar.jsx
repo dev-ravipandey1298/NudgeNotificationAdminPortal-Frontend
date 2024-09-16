@@ -1,6 +1,7 @@
 import React from "react";
 import hdfc_logo from "/icons/hdfc_logo.png";
 import { useNavigate } from "react-router-dom";
+import Sidebar from "./Sidebar";
 
 const Navbar = () => {
 
@@ -12,6 +13,7 @@ const Navbar = () => {
     }
     
     return (
+        <>
         <div className="bg-blue-600 flex justify-between space-x-1">
             <div className="m-1 p-1 pb-1 mb-[0.4rem] flex items-center bg-blue-600 space-x-3">
                 <img
@@ -31,9 +33,9 @@ const Navbar = () => {
 
             <button onClick={handleLogout} className="hover:cursor-pointer  hover:underline text-red-100 hover:text-red-300 font-medium ">Logout</button>
             </div>}
-
-            
+          
         </div>
+        </>
     );
 };
 

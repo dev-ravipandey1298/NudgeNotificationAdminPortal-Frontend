@@ -99,7 +99,7 @@ const CreateTemplateForm = () => {
 
   return (
     <>
-    <PageHeader heading={"Nudge Template"}/>                        
+    <PageHeader heading={"Create Nudge Template"}/>                        
     <div className="flex justify-center items-center   p-4">
       <form
         onSubmit={handleSubmit}

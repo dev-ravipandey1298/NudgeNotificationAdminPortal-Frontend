@@ -32,6 +32,7 @@ const router = createBrowserRouter(
 			<Route path="login" element={<LoginPage />} />
 			<Route path="maker" element={<Maker />} />
 			<Route path="checker" element={<Checker />} />
+			<Route path="cug-user" element={<CUGManagementPage />} />
 			<Route path="checker/pending-requests" element={<PendingRequestTable />} />
 			<Route path="checker/show-all" element={<ShowAllCheckerTable />} />
 			<Route path="checker/show/nudge-template-form/templateId/:templateId/status/:status" element={<CheckerTempateForm />} />
