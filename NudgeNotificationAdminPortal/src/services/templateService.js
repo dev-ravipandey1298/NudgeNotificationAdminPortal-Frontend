@@ -70,12 +70,8 @@ export const submitForCUG_Approval_Template = (templateData) => {
   return apiClient.put(`/templates/cug-approval`, templateData ); 
 };
 
-export const getAllSearchTemplate = () => {
-  return apiClient.get(`/templates?status=APPROVAL_PENDING_CUG&status=APPROVAL_PENDING_PROD`); 
-};
-
-export const getAllSearchActionTemplate = () => {
-  return apiClient.get(`/templates?status=CUG_APPROVED&status=REJECTED&status=CUG_FAILED`); 
+export const getTemplatesBySearchCriteria = (data) => {
+  return apiClient.post(`/templates`, data); 
 };
 
 export const markCUGReject = (templateId, comment) => {

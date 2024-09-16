@@ -13,7 +13,6 @@ import PendingRequestTable from "./components/PendingRequestTable";
 import ShowAllCheckerTable from "./components/ShowAllCheckerTable";
 import DraftTable from "./components/DraftTable";
 import ShowAllMakerTable from "./components/ShowAllMakerTable";
-import CUGTable from "./components/CUGTable";
 import FormComponent from "./components/FormComponent";
 import FormComponent2 from "./components/FormComponent2";
 import FormComponent3 from "./components/FormComponent3";
@@ -22,6 +21,8 @@ import Popup from "./components/Popup";
 import CUGManagementPage from "./components/CUGManagementPage";
 import CreateTemplateForm from "./components/CreateTemplateForm";
 import DraftTemplateForm from "./components/DraftTemplateForm";
+import CheckerTempateForm from "./components/CheckerTempateForm";
+import ActionTemplatesTable from "./components/ActionTemplatesTable";
 
 
 const router = createBrowserRouter(
@@ -33,14 +34,13 @@ const router = createBrowserRouter(
 			<Route path="checker" element={<Checker />} />
 			<Route path="checker/pending-requests" element={<PendingRequestTable />} />
 			<Route path="checker/show-all" element={<ShowAllCheckerTable />} />
-			<Route path="checker/show/nudge-template-form/templateId/:templateId/status/:status" element={<TemplateForm />} />
+			<Route path="checker/show/nudge-template-form/templateId/:templateId/status/:status" element={<CheckerTempateForm />} />
 			<Route path="maker/create/nudge-template-form" element={<CreateTemplateForm />} />
 			<Route path="maker/drafts/nudge-template-form/templateId/:templateId" element={<DraftTemplateForm />} />
 			<Route path="maker/actions/nudge-template-form/templateId/:templateId/status/:status" element={<TemplateForm />} />
 			<Route path="maker/drafts" element={<DraftTable />} />
 			<Route path="maker/show-all" element={<ShowAllMakerTable />} />
-			{/* <Route path="maker/cug_approval_status" element={<CUGTable />} /> */}
-			<Route path="maker/cug_approval_status" element={<FormComponent3 />} />
+			<Route path="maker/action-templates" element={<ActionTemplatesTable />} />
 		</Route>
 	)
 )

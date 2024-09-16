@@ -1,23 +1,27 @@
 import React, { useEffect, useState } from 'react'
 import PageHeader from './PageHeader';
-import { getAllSearchActionTemplate } from '../services/templateService';
 import { useNavigate } from 'react-router-dom';
+import { getTemplatesBySearchCriteria } from '../services/templateService';
 
-const CUGTable = () => {
+const ActionTemplatesTable = () => {
 
     const [data, setData] = useState([]);
     const navigate = useNavigate();
 
     useEffect(() => {
-      getAllActionTemplate()
+      const searchCriteria = {
+        templateId : '',
+        templateName : '',
+        status : ["CUG_APPROVED", "REJECTED", "CUG_FAILED", ]
+      }
+      getActionTemplates(JSON.stringify(searchCriteria))
     }, [])
 
-    const getAllActionTemplate = async () => {
+    const getActionTemplates = async (searchCriteria) => {
       try {
-        const response = await getAllSearchActionTemplate();
-        if(response.status == 200){
-          setData(response.data.payload)
-        }
+        console.log(searchCriteria)
+        const response = await getTemplatesBySearchCriteria(searchCriteria);  
+        setData(response.data.payload)
       } catch (error) {
         
       }
@@ -56,4 +60,4 @@ const CUGTable = () => {
   )
 }
 
-export default CUGTable
+export default ActionTemplatesTable

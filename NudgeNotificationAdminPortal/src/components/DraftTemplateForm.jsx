@@ -17,14 +17,14 @@ const DraftTemplateForm = () => {
     body: '',
     startDate: '',
     endDate: '',
-    recFrequency: 1,
-    recType: 'Weekly',
-    recDays: [],
-    environment: 'CUG',
+    occurrenceFrequency: 1,
+    occurrenceUnit: '',
+    occurrenceDays: [],
+    environment: 'CUG'
   });
 
   const [showDays, setShowDays] = useState(false);
-  
+
   const [isCheckedFinalSubmit, setIsCheckedFinalSubmit] = useState(false);
   const [submitMessage, setSubmitMessage] = useState('');
   const [showAlert, setshowAlert] = useState(false);
@@ -55,19 +55,19 @@ const DraftTemplateForm = () => {
   // Handle multi-select for Recurrence Days
   const handleRecDayChange = (e) => {
     const { value, checked } = e.target;
-    let newRecDays = [...formData.recDays];
+    let newOccurrenceDays = [...formData.occurrenceDays];
 
     if (checked) {
-      if (newRecDays.length < formData.recFrequency) {
-        newRecDays.push(Number(value));
+      if (newOccurrenceDays.length < formData.occurrenceFrequency) {
+        newOccurrenceDays.push(Number(value));
       }
     } else {
-      newRecDays = newRecDays.filter((day) => day !== Number(value));
+      newOccurrenceDays = newOccurrenceDays.filter((day) => day !== Number(value));
     }
 
     setFormData((prevData) => ({
       ...prevData,
-      recDays: newRecDays,
+      occurrenceDays: newOccurrenceDays,
     }));
   };
 
@@ -77,16 +77,16 @@ const DraftTemplateForm = () => {
 
       if (response.status == 200) {
         const data = response.data.payload;
-        console.log(data)
         setFormData({
+          templateId : templateId,
           templateName: data.templateName,
           title: data.title,
           body: data.body,
           startDate: data.startDate,
           endDate: data.endDate,
-          recFrequency: data.occurrenceFrequency,
-          recType: data.occurrenceUnit,
-          recDays: data.occurrenceDays,
+          occurrenceFrequency: data.occurrenceFrequency,
+          occurrenceUnit: data.occurrenceUnit,
+          occurrenceDays: data.occurrenceDays,
           environment: 'CUG',
           imageFile: null,
           comment: '',
@@ -100,28 +100,26 @@ const DraftTemplateForm = () => {
 
   const updateTemplateBackend = async (templateId, data) => {
     try {
-      const response = await updateTemplate(templateId, setNudgeData(data));
-      console.log(response.data)
+      const response = await updateTemplate(templateId, data);
       setSubmitMessage("Template Updated successfully with ID: " + templateId)
       setshowAlert(true)
     } catch (error) {
-      
+
     }
   }
 
   const submitForCUGApprovalBackend = async (data) => {
     try {
       const response = await submitForCUG_Approval_Template(data);
-      if(response.status == 200){
-       console.log(response.data.message)
-       setSubmitMessage(response.data.message)
-       setshowAlert(true)
+      if (response.status == 200) {
+        setSubmitMessage(response.data.message)
+        setshowAlert(true)
       }
     } catch (error) {
-     
+
     }
- 
-   }
+
+  }
 
   // Submit function
   const handleSubmit = (e) => {
@@ -138,9 +136,9 @@ const DraftTemplateForm = () => {
       body: '',
       startDate: '',
       endDate: '',
-      recFrequency: 1,
-      recType: 'Weekly',
-      recDays: [],
+      occurrenceFrequency: 1,
+      occurrenceUnit: 'Weekly',
+      occurrenceDays: [],
       environment: 'CUG',
       imageFile: null,
       comment: '',
@@ -148,7 +146,7 @@ const DraftTemplateForm = () => {
   };
 
   // Generate days for recurrence checkboxes
-  const maxDays = formData.recType === 'Weekly' ? 7 : 31;
+  const maxDays = formData.occurrenceUnit === 'Weekly' ? 7 : 31;
 
   return (
     <>
@@ -235,8 +233,8 @@ const DraftTemplateForm = () => {
               <div>
                 <label className="block font-medium text-gray-700 mb-2">Frequency</label>
                 <select
-                  name="recFrequency"
-                  value={formData.recFrequency}
+                  name="occurrenceFrequency"
+                  value={formData.occurrenceFrequency}
                   onChange={handleChange}
                   className="w-full p-2 bg-gray-50 border border-gray-400 rounded"
                 >
@@ -251,8 +249,8 @@ const DraftTemplateForm = () => {
               <div>
                 <label className="block font-medium text-gray-700 mb-2">Type</label>
                 <select
-                  name="recType"
-                  value={formData.recType}
+                  name="occurrenceUnit"
+                  value={formData.occurrenceUnit}
                   onChange={handleChange}
                   className="w-full p-2 bg-gray-50 border border-gray-400 rounded"
                 >
@@ -276,11 +274,11 @@ const DraftTemplateForm = () => {
                         <input
                           type="checkbox"
                           value={val}
-                          checked={formData.recDays.includes(val)}
+                          checked={formData.occurrenceDays.includes(val)}
                           onChange={handleRecDayChange}
                           disabled={
-                            !formData.recDays.includes(val) &&
-                            formData.recDays.length >= formData.recFrequency
+                            !formData.occurrenceDays.includes(val) &&
+                            formData.occurrenceDays.length >= formData.occurrenceFrequency
                           }
                         />
                         <span>{val}</span>
@@ -314,31 +312,31 @@ const DraftTemplateForm = () => {
 
             {/* Buttons */}
             <div>
-            {!isCheckedFinalSubmit ? <div className="flex justify-end space-x-2 mt-4">
-              <button
-                type="submit"
-                className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
-              >
-                Draft
-              </button>
-              <button
-                type="button"
-                onClick={handleReset}
-                className="bg-gray-500 text-white p-2 rounded hover:bg-gray-600"
-              >
-                Reset
-              </button>
-            </div>
-            :
-            <div className="flex justify-end space-x-2 mt-4">
-              <button
-                type="submit"
-                className="bg-green-500 text-white p-2 rounded hover:bg-green-600"
-              >
-                Submit
-              </button>
-            </div>
-            }
+              {!isCheckedFinalSubmit ? <div className="flex justify-end space-x-2 mt-4">
+                <button
+                  type="submit"
+                  className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
+                >
+                  Draft
+                </button>
+                <button
+                  type="button"
+                  onClick={handleReset}
+                  className="bg-gray-500 text-white p-2 rounded hover:bg-gray-600"
+                >
+                  Reset
+                </button>
+              </div>
+                :
+                <div className="flex justify-end space-x-2 mt-4">
+                  <button
+                    type="submit"
+                    className="bg-green-500 text-white p-2 rounded hover:bg-green-600"
+                  >
+                    Submit
+                  </button>
+                </div>
+              }
             </div>
           </div>
         </form>

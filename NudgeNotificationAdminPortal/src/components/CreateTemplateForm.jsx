@@ -260,7 +260,7 @@ const CreateTemplateForm = () => {
               type="submit"
               className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
             >
-              Submit
+              Draft
             </button>
             <button
               type="button"

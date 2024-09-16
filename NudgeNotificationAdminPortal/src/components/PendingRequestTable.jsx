@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { getAllCugPendingNudgeTemplatesForApproval, getAllPendingNudgeTemplatesForApproval, getAllProdPendingNudgeTemplatesForApproval } from '../services/nudgeTemplateService';
 import filter from '/icons/filter.png'
 import PageHeader from './PageHeader';
-import { getAllSearchTemplate } from '../services/templateService';
+import {getTemplatesBySearchCriteria } from '../services/templateService';
 
 const PendingRequestTable = () => {
 
@@ -20,10 +20,12 @@ const PendingRequestTable = () => {
     checkbox3: false
   });
 
-  const getPendingRequest = async () => {
+  const getPendingRequest = async (searchCriteria) => {
     try {
-      const response = await getAllSearchTemplate();
+     
+      const response = await getTemplatesBySearchCriteria(searchCriteria);
       console.log(response.data.payload)
+
       setPendingRequestData(response.data.payload)
     } catch (error) {
       
@@ -40,13 +42,27 @@ const PendingRequestTable = () => {
 
   const handleFetchData = async () => {
     setShowFilter(false)
-    console.log(checkboxes)
     if((checkboxes.checkbox2 && checkboxes.checkbox3) || (!checkboxes.checkbox2 && !checkboxes.checkbox3)){
-      setPendingRequestData(getAllPendingNudgeTemplatesForApproval())
+      const searchCriteria = {
+        templateId : '',
+        templateName : '',
+        status : ["APPROVAL_PENDING_PROD", "APPROVAL_PENDING_CUG"]
+      }
+      getPendingRequest(JSON.stringify(searchCriteria))
     }else if(checkboxes.checkbox2){
-      setPendingRequestData(getAllProdPendingNudgeTemplatesForApproval());
+      const searchCriteria = {
+        templateId : '',
+        templateName : '',
+        status : ["APPROVAL_PENDING_PROD"]
+      }
+      getPendingRequest(JSON.stringify(searchCriteria));
     }else{
-      setPendingRequestData(getAllCugPendingNudgeTemplatesForApproval())
+      const searchCriteria = {
+        templateId : '',
+        templateName : '',
+        status : ["APPROVAL_PENDING_CUG"]
+      }
+      getPendingRequest(JSON.stringify(searchCriteria))
     }
   };
 
@@ -57,9 +73,13 @@ const PendingRequestTable = () => {
 
   useEffect(() => {
     sessionStorage.getItem("user") === null && navigate("/login")
-    getPendingRequest()
-    // setPendingRequestData(getAllPendingNudgeTemplatesForApproval())
-    // console.log(selectedValues)
+    const searchCriteria = {
+      templateId : '',
+      templateName : '',
+      status : ["APPROVAL_PENDING_CUG", "APPROVAL_PENDING_PROD"]
+    }
+    getPendingRequest(JSON.stringify(searchCriteria));
+    
   }, [])
 
   return (
@@ -101,10 +121,10 @@ const PendingRequestTable = () => {
         {pendingRequestData.map((val, key) => {
           return (
             <tbody className=''>
-              <tr key={val.templateId}>
+              <tr key={key}>
                 <td className="border px-3 py-2">{val.templateId}</td>
                 <td className="border px-3 py-2">{val.templateName}</td>
-                <td className="border px-3 py-2">{val.requestedOn}</td>
+                <td className="border px-3 py-2">{val.createdOn}</td>
                 <td className="border px-3 py-2">{val.createdBy}</td>
                 <td className="border px-3 py-2">{val.status}</td>
                 <td className="border px-3 py-2 space-x-1">
