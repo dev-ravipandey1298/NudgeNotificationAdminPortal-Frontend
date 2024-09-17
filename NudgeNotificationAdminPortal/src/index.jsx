@@ -24,6 +24,8 @@ import DraftTemplateForm from "./components/DraftTemplateForm";
 import CheckerTempateForm from "./components/CheckerTempateForm";
 import ActionTemplatesTable from "./components/ActionTemplatesTable";
 import {COMMON_ROUTE, CHILD_PATH } from "./constants/routeConstant";
+import ActionTemplateForm from "./components/ActionTemplateForm";
+import SearchScreenTemplateForm from "./components/SearchScreenTemplateForm";
 
 
 const router = createBrowserRouter(
@@ -39,10 +41,12 @@ const router = createBrowserRouter(
 			<Route path={CHILD_PATH.checkerReviewTemplate} element={<CheckerTempateForm />} />
 			<Route path={CHILD_PATH.makerCreateTemplate} element={<CreateTemplateForm />} />
 			<Route path={CHILD_PATH.makerDraftTemplate} element={<DraftTemplateForm />} />
-			<Route path={CHILD_PATH.makerActionTemplate} element={<TemplateForm />} />
+			<Route path={CHILD_PATH.makerActionTemplate} element={<ActionTemplateForm />} />
 			<Route path={CHILD_PATH.makerDrafts} element={<DraftTable />} />
 			<Route path={CHILD_PATH.makerShowAll} element={<ShowAllMakerTable />} />
 			<Route path={CHILD_PATH.makerActionTemplatesTable} element={<ActionTemplatesTable />} />
+			<Route path={CHILD_PATH.makerSearchScreenTemplateForm} element={<SearchScreenTemplateForm />} />
+			<Route path={CHILD_PATH.checkerSearchScreenTemplateForm} element={<SearchScreenTemplateForm />} />
 		</Route>
 	)
 )

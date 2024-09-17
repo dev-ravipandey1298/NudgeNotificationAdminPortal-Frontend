@@ -3,10 +3,13 @@ import { useNavigate } from "react-router-dom";
 import PageHeader from "./PageHeader";
 import SearchBar from "./SearchBar";
 import filter from "/icons/filter.png"
-import { getTemplatesBySearchCriteria } from "../services/templateService";
+import { deleteNonApprovedTemplate, getTemplatesBySearchCriteria } from "../services/templateService";
 import { status } from "../constants/statusConstant";
+import { NAVIGATE_PATH } from "../constants/routeConstant";
 
 const ShowAllMakerTable = ({ setShowAllRequest }) => {
+
+  const navigate = useNavigate();
 
   const [tableData, setTableData] = useState([]);
   const [showFilter, setShowFilter] = useState(false);
@@ -80,14 +83,14 @@ const ShowAllMakerTable = ({ setShowAllRequest }) => {
       const searchCriteria = {
         templateId: searchValue.trim(),
         templateName: '',
-        status: []
+        status: ['PROD_APPROVED', 'APPROVAL_PENDING_CUG', 'CUG_APPROVED', 'REJECTED', 'CUG_FAILED', 'APPROVAL_PENDING_PROD']
       }
       getTemplateDetailsBySearchCriteriaBackend(JSON.stringify(searchCriteria));
     } else if (isValue) {
       const searchCriteria = {
         templateId: '',
         templateName: searchValue.trim(),
-        status: []
+        status: ['PROD_APPROVED', 'APPROVAL_PENDING_CUG', 'CUG_APPROVED', 'REJECTED', 'CUG_FAILED', 'APPROVAL_PENDING_PROD']
       }
       getTemplateDetailsBySearchCriteriaBackend(JSON.stringify(searchCriteria));
     } else {
@@ -95,9 +98,29 @@ const ShowAllMakerTable = ({ setShowAllRequest }) => {
     }
   }
 
+  const deleteNonApprovedTemplateBackend = async (templateId) => {
+    try {
+      const response = await deleteNonApprovedTemplate(templateId);
+      if (response.status == 200) {
+        const searchCriteria = {
+          templateId: searchValue.trim(),
+          templateName: '',
+          status: ['PROD_APPROVED', 'APPROVAL_PENDING_CUG', 'CUG_APPROVED', 'REJECTED', 'CUG_FAILED', 'APPROVAL_PENDING_PROD']
+        }
+        getTemplateDetailsBySearchCriteriaBackend(JSON.stringify(searchCriteria));
+      }
+    } catch (error) {
+
+    }
+  }
+
+  const handleClickBack = () => {
+    navigate(NAVIGATE_PATH.MAKER)
+  }
+
   return (
     <div>
-      <PageHeader heading={"Search Nudge Template"} />
+      <PageHeader handleClickBack={handleClickBack} heading={"Search Nudge Template"} />
       <SearchBar setSearchValue={setSearchValue} handleSearch={handleSearch} />
       <table className="shadow-lg bg-white mx-auto mt-5 ">
         <tr>
@@ -107,36 +130,36 @@ const ShowAllMakerTable = ({ setShowAllRequest }) => {
           <th className="bg-blue-100 border text-left px-3 py-2">Updated on</th>
           <th className="bg-blue-100 border text-left px-3 py-2">Approved By</th>
           <th className="bg-blue-100 border text-left px-3 py-2">
-            <div className='flex justify-between items-center'>
+            <div className='flex justify-between items-center  relative'>
               <div>Status</div>
               <div className='h-5 w-5'>
                 <img onClick={() => showFilter ? setShowFilter(false) : setShowFilter(true)} src={filter} alt="" />
               </div>
               {showFilter &&
-                <div className='w-[11.5] p-2 border fixed   bg-white shadow-md rounded-sm'>
+                <div className='absolute top-full right-0 mt-2 w-60 p-2 border bg-white shadow-md rounded-sm'>
                   <div className="">
                     <input onChange={handleCheckboxChange} checked={checkboxes.checkbox2} type="checkbox" id="checkbox2" className="h-[0.60rem] w-[0.60rem]" name="prodApproved" value="PROD_APPROVED" />
-                    <label className="font-semibold text-red-700 text-sm font-mono" for="prodApproved"> {status.PROD_APPROVED}</label>
+                    <label className="font-semibold text-red-700 text-sm font-mono" for="checkbox2"> {status.PROD_APPROVED}</label>
                   </div>
                   <div className="">
                     <input onChange={handleCheckboxChange} checked={checkboxes.checkbox3} type="checkbox" id="checkbox3" className="h-[0.60rem] w-[0.60rem]" name="pendingApprovalCUG" value="APPROVAL_PENDING_CUG" />
-                    <label className="font-semibold text-red-700 text-sm font-mono" for="pendingApprovalCUG"> {status.APPROVAL_PENDING_CUG}</label>
+                    <label className="font-semibold text-red-700 text-sm font-mono" for="checkbox3"> {status.APPROVAL_PENDING_CUG}</label>
                   </div>
                   <div className="">
                     <input onChange={handleCheckboxChange} checked={checkboxes.checkbox4} type="checkbox" id="checkbox4" className="h-[0.60rem] w-[0.60rem]" name="cugApproved" value="CUG_APPROVED" />
-                    <label className="font-semibold text-red-700 text-sm font-mono" for="cugApproved"> {status.CUG_APPROVED}</label>
+                    <label className="font-semibold text-red-700 text-sm font-mono" for="checkbox4"> {status.CUG_APPROVED}</label>
                   </div>
                   <div className="">
                     <input onChange={handleCheckboxChange} checked={checkboxes.checkbox5} type="checkbox" id="checkbox5" className="h-[0.60rem] w-[0.60rem]" name="rejected" value="REJECTED" />
-                    <label className="font-semibold text-red-700 text-sm font-mono" for="rejected"> {status.REJECTED}</label>
+                    <label className="font-semibold text-red-700 text-sm font-mono" for="checkbox5"> {status.REJECTED}</label>
                   </div>
                   <div className="">
                     <input onChange={handleCheckboxChange} checked={checkboxes.checkbox6} type="checkbox" id="checkbox6" className="h-[0.60rem] w-[0.60rem]" name="cugFailed" value="CUG_FAILED" />
-                    <label className="font-semibold text-red-700 text-sm font-mono" for="cugFailed"> {status.CUG_FAILED}</label>
+                    <label className="font-semibold text-red-700 text-sm font-mono" for="checkbox6"> {status.CUG_FAILED}</label>
                   </div>
                   <div className="">
                     <input onChange={handleCheckboxChange} checked={checkboxes.checkbox7} type="checkbox" id="checkbox7" className="h-[0.60rem] w-[0.60rem]" name="pendingApprovalProd" value="APPROVAL_PENDING_PROD" />
-                    <label className="font-semibold text-red-700 text-sm font-mono" for="pendingApprovalProd"> {status.APPROVAL_PENDING_PROD}</label>
+                    <label className="font-semibold text-red-700 text-sm font-mono" for="checkbox7"> {status.APPROVAL_PENDING_PROD}</label>
                   </div>
                   <div className='flex justify-end pt-2' >
                     <button onClick={handleFetchData} className='text-xs font-medium px-2 p-1 rounded-sm text-white bg-green-700 hover:bg-green-600'>Filter</button>
@@ -157,11 +180,15 @@ const ShowAllMakerTable = ({ setShowAllRequest }) => {
               <td className="border px-3 py-2">{val.createdOn}</td>
               <td className="border px-3 py-2">{val.updatedOn}</td>
               <td className="border px-3 py-2">{val.approvedBy}</td>
-              <td className="border px-3 py-2">{val.status}</td>
+              <td className="border px-3 py-2">{status[val.status]}</td>
               <td className="border px-3 py-2 space-x-1">
-                <button className="text-blue-500 hover:underline">View</button>
+                {val.status === "PROD_APPROVED" ? 
+                  <></>
+                : <>
+                <button onClick={() => navigate(`${NAVIGATE_PATH.MAKER_SEARCH_SCREEN_TEMPLATE_FORM + val.templateId + '/status/' +val.status}`)} className="text-blue-500 hover:underline">View</button>
                 <span>|</span>
-                <button className="text-blue-500 hover:underline">Delete</button>
+                <button onClick={() => deleteNonApprovedTemplateBackend(val.templateId)} className="text-blue-500 hover:underline">Delete</button>
+                </>}
               </td>
             </tr>
           );

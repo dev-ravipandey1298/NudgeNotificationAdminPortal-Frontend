@@ -38,11 +38,14 @@ const DraftTable = ({ setShowDraft }) => {
     }
   }
 
+  const handleClickBack = () => {
+    navigate(NAVIGATE_PATH.MAKER)
+  }
 
 
   return (
     <div>
-      <PageHeader heading={"Drafts"} />
+      <PageHeader handleClickBack={handleClickBack} heading={"Drafts"} />
       <table className="shadow-lg bg-white mx-auto mt-5">
         <tr>
           <th className="bg-blue-100 border text-left px-3 py-2">Template Id</th>

@@ -18,21 +18,22 @@ const LoginPage = ({setUserDetails}) => {
     ]
 
     const onSubmit = (data) => {
-      const loggedInUser = userDetails.find(user => user.userId === data.userId);
-      if (loggedInUser !== undefined && loggedInUser.password === data.password) {
-        // setUserDetails(loggedInUser);
-        loggedInUser.role === "CHECKER" ? navigate(NAVIGATE_PATH.CHECKER) : navigate(NAVIGATE_PATH.MAKER)
-        loggedInUser.password = "";
-        sessionStorage.setItem("user", JSON.stringify(loggedInUser))
-        console.log(loggedInUser)
-      } else {
-        alert('Invalid credentials');
-      }
+      // const loggedInUser = userDetails.find(user => user.userId === data.userId);
+      // if (loggedInUser !== undefined && loggedInUser.password === data.password) {
+      //   // setUserDetails(loggedInUser);
+      //   loggedInUser.role === "CHECKER" ? navigate(NAVIGATE_PATH.CHECKER) : navigate(NAVIGATE_PATH.MAKER)
+      //   loggedInUser.password = "";
+      //   sessionStorage.setItem("user", JSON.stringify(loggedInUser))
+      //   console.log(loggedInUser)
+      // } else {
+      //   alert('Invalid credentials');
+      // }
 
-    //   const loginDetails = {
-    //     "userId" : data.userId,
-    //     "password" : data.password 
-    //   }
+      const loginDetails = {
+        "userId" : data.userId,
+        "password" : data.password 
+      }
+      
 
     //   if(data.userId == "manish_checker"){
     //      sessionStorage.setItem("user", JSON.stringify({userId:"manish_checker", password:"", role:"CHECKER", name: "manish_checker"}))
@@ -40,7 +41,7 @@ const LoginPage = ({setUserDetails}) => {
     //   if(data.userId == "manish_maker"){
     //     sessionStorage.setItem("user", JSON.stringify({userId:"manish_maker", password:"", role:"MAKER", name: "manish_maker"}))
     //  }
-    //   login(loginDetails)
+      login(loginDetails)
 
     };
 
@@ -54,13 +55,18 @@ const LoginPage = ({setUserDetails}) => {
       try {
         const response = await userLogin(data);
         if(response.status == 200){
+          const roleValue = response.data.payload.role.split("_")[1];
           sessionStorage.setItem("authToken", response.data.payload.authToken)
-          if(data.userId == "manish_checker"){
-            navigate("/checker")
-         }
-         if(data.userId == "manish_maker"){
-           navigate("/maker")
-         }
+          sessionStorage.setItem("user", JSON.stringify({userId:data.userId, password:"", role: roleValue, name: data.userId}));
+          
+          if(roleValue === "CHECKER"){
+            navigate(NAVIGATE_PATH.CHECKER)
+          }
+          else if(roleValue === "MAKER"){
+           navigate(NAVIGATE_PATH.MAKER)
+          }else{
+            alert("Invalid Credentials")
+          }
         }
       } catch (error) {
         

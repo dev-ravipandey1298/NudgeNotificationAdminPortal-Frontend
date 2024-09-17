@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import PageHeader from './PageHeader';
 import { useNavigate } from 'react-router-dom';
-import { getTemplatesBySearchCriteria } from '../services/templateService';
+import { deleteNonApprovedTemplate, deleteTemplate, getTemplatesBySearchCriteria } from '../services/templateService';
 import { NAVIGATE_PATH } from '../constants/routeConstant';
+import { status } from '../constants/statusConstant';
 
 const ActionTemplatesTable = () => {
 
@@ -27,10 +28,30 @@ const ActionTemplatesTable = () => {
         
       }
     }
+
+    const deleteNonApprovedTemplateBackend = async (templateId) => {
+      try {
+        const response = await deleteNonApprovedTemplate(templateId);
+        if (response.status == 200) {
+          const searchCriteria = {
+            templateId : '',
+            templateName : '',
+            status : ["CUG_APPROVED", "REJECTED", "CUG_FAILED", ]
+          }
+          getActionTemplates(JSON.stringify(searchCriteria))
+        }
+      } catch (error) {
+  
+      }
+    }
     
+    const handleClickBack = () => {
+      navigate(NAVIGATE_PATH.MAKER)
+    }
+
   return (
     <div>
-      <PageHeader heading={"Action Templates"}/>
+      <PageHeader handleClickBack={handleClickBack} heading={"Action Templates"}/>
       <table className="shadow-lg bg-white mx-auto mt-5">
         <tr>
           <th className="bg-blue-100 border text-left px-3 py-2">Template Id</th>
@@ -45,11 +66,11 @@ const ActionTemplatesTable = () => {
               <td className="border px-3 py-2">{val.templateId}</td>
               <td className="border px-3 py-2">{val.templateName}</td>
               <td className="border px-3 py-2">{val.createdOn}</td>
-              <td className="border px-3 py-2">{val.status}</td>
+              <td className="border px-3 py-2">{status[val.status]}</td>
               <td className="border px-3 py-2 space-x-1">
-                <button onClick={() => navigate(`${NAVIGATE_PATH.MAKER_ACTION_TEMPLATE + val.templateId}/status/${val.status}`)} className="text-blue-500 hover:underline">Edit</button>
+                <button onClick={() => navigate(`${NAVIGATE_PATH.MAKER_ACTION_TEMPLATE_FORM + val.templateId}/status/${val.status}`)} className="text-blue-500 hover:underline">Edit</button>
                 <span>|</span>
-                <button className="text-blue-500 hover:underline">
+                <button  onClick={() => deleteNonApprovedTemplateBackend(val.templateId)}  className="text-blue-500 hover:underline">
                   Delete
                 </button>
               </td>

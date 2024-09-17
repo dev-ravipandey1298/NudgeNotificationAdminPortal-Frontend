@@ -1,8 +1,9 @@
 export const status = {
-    PROD_APPROVED : "Final Approved",
-    APPROVAL_PENDING_CUG : "Approval Pending From CUG",
-    CUG_APPROVED : "Approved for CUG Testing",
-    REJECTED : "Template Rejected",
-    CUG_FAILED : "CUG Failed",
-    APPROVAL_PENDING_PROD : "Approval Pending From PROD"
+    DRAFT: "Draft",
+    PROD_APPROVED : "Prod Approved",
+    APPROVAL_PENDING_CUG : "Submitted Cug Approval",
+    CUG_APPROVED : "Cug Approved",
+    REJECTED : "Rejected",
+    CUG_FAILED : "Cug failed",
+    APPROVAL_PENDING_PROD : "Submitted Prod Approval"
   }

@@ -1,29 +1,41 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PageHeader from './PageHeader';
 import downArrow from '/icons/down-arrow.png'
-import { createTemplate } from '../services/templateService';
-import Alert from './Alert';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import { getTemplateById, markCUGFailed, submitForPRODApproval } from '../services/templateService';
 import { NAVIGATE_PATH } from '../constants/routeConstant';
+import Alert from './Alert';
 
-const CreateTemplateForm = () => {
+const ActionTemplateForm = () => {
+  const { templateId, status } = useParams();
+  const navigate = useNavigate();
+  const formDataPROD = new FormData();
+
   const [formData, setFormData] = useState({
+    templateId: templateId,
     templateName: '',
     title: '',
     body: '',
     startDate: '',
     endDate: '',
     occurrenceFrequency: 1,
-    occurrenceUnit: 'Weekly',
+    occurrenceUnit: '',
     occurrenceDays: [],
-    environment: 'CUG'
+    environment: 'CUG',
+    file: null,
+    comment: ''
   });
 
   const [showDays, setShowDays] = useState(false);
+
+  const [isCheckedFinalSubmit, setIsCheckedFinalSubmit] = useState(false);
   const [submitMessage, setSubmitMessage] = useState('');
   const [showAlert, setshowAlert] = useState(false);
-  const [isCheckedFinalSubmit, setIsCheckedFinalSubmit] = useState(false);
-  const navigate = useNavigate();
+
+  useEffect(() => {
+    getTemplateByIdBackend(templateId);
+  }, [])
+
 
 
   // Handle form field changes
@@ -39,7 +51,7 @@ const CreateTemplateForm = () => {
   const handleFileChange = (e) => {
     setFormData((prevData) => ({
       ...prevData,
-      imageFile: e.target.files[0],
+      file: e.target.files[0],
     }));
   };
 
@@ -62,57 +74,77 @@ const CreateTemplateForm = () => {
     }));
   };
 
-  const createTemplateBackend = async (data) => {
+  const getTemplateByIdBackend = async (templateId) => {
     try {
-      const response = await createTemplate(data)
-      if (response.status == 201) {
-        setSubmitMessage("Template saved to Draft successfully with ID: " + response.data.payload.templateId)
-        setshowAlert(true)
+      const response = await getTemplateById(templateId);
+
+      if (response.status == 200) {
+        const data = response.data.payload;
+        setFormData({
+          templateId: templateId,
+          templateName: data.templateName,
+          title: data.title,
+          body: data.body,
+          startDate: data.startDate,
+          endDate: data.endDate,
+          occurrenceFrequency: data.occurrenceFrequency,
+          occurrenceUnit: data.occurrenceUnit,
+          occurrenceDays: data.occurrenceDays,
+          environment: 'CUG',
+          file: null,
+          comment: '',
+        })
+
       }
     } catch (error) {
 
     }
   }
-
-  const submitForCUGApprovalBackend = async (data) => {
+  
+  const submitForProdApprovalBackend = async (templateId, formDataPROD) => {
     try {
-      const response = await submitForCUG_Approval_Template(data);
-      if (response.status == 200) {
+      const response = await submitForPRODApproval(templateId, formDataPROD);
+
+      if(response.status == 200){
         setSubmitMessage(response.data.message)
         setshowAlert(true)
       }
     } catch (error) {
-
+      
     }
-
   }
+
+  const markCUGFailedBackend = async (templateId, formDataPROD) => {
+    try {
+      const response = await markCUGFailed(templateId, formDataPROD);
+      if(response.status == 200){
+        setSubmitMessage("Template mark as failed successfully")
+        setshowAlert(true)
+      }
+    } catch (error) {
+      
+    }
+  }
+
 
   // Submit function
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log('Form submitted:', formData);
-    isCheckedFinalSubmit ? submitForCUGApprovalBackend(formData) : createTemplateBackend(JSON.stringify(formData))
+    formDataPROD.append('file', formData.file);
+    formDataPROD.append('comment', formData.comment);
+    submitForProdApprovalBackend(templateId, formDataPROD);
   };
 
   // Reset form
-  const handleReset = () => {
-    setFormData({
-      templateName: '',
-      title: '',
-      body: '',
-      startDate: '',
-      endDate: '',
-      occurrenceFrequency: 1,
-      occurrenceUnit: 'Weekly',
-      occurrenceDays: [],
-      environment: 'CUG',
-      imageFile: null,
-      comment: '',
-    });
+  const handleFailed = () => {
+    formDataPROD.append('file', formData.file);
+    formDataPROD.append('comment', formData.comment);
+    markCUGFailedBackend(templateId, formDataPROD)
   };
 
   const handleClickBack = () => {
-    navigate(NAVIGATE_PATH.MAKER)
+    navigate(NAVIGATE_PATH.MAKER_ACTION_TEMPLATE)
   }
 
   // Generate days for recurrence checkboxes
@@ -120,7 +152,7 @@ const CreateTemplateForm = () => {
 
   return (
     <>
-      <PageHeader handleClickBack={handleClickBack} heading={"Create Nudge Template"} />
+      <PageHeader handleClickBack={handleClickBack} heading={"Nudge Template"} />
       <div className="flex justify-center items-center   p-4">
         <form
           onSubmit={handleSubmit}
@@ -202,7 +234,7 @@ const CreateTemplateForm = () => {
             <label className="block font-medium text-gray-700 mb-2">Reoccurance: </label>
             {/* Recurrence */}
             <div className="grid grid-cols-3 gap-4">
-
+              
               <div>
                 <label className="block font-medium text-gray-700 mb-2">Duration</label>
                 <select
@@ -252,10 +284,7 @@ const CreateTemplateForm = () => {
                           value={val}
                           checked={formData.occurrenceDays.includes(val)}
                           onChange={handleRecDayChange}
-                          disabled={true
-                            // !formData.occurrenceDays.includes(val) &&
-                            // formData.occurrenceDays.length >= formData.occurrenceFrequency
-                          }
+                          disabled={true}
                         />
                         <span>{val}</span>
                       </label>
@@ -280,38 +309,56 @@ const CreateTemplateForm = () => {
               </select>
             </div>
 
-            <div className="flex items-center space-x-2">
-              <input onClick={() => isCheckedFinalSubmit ? setIsCheckedFinalSubmit(false) : setIsCheckedFinalSubmit(true)} type="checkbox" id="finalSubmit" className="h-[0.60rem] w-[0.60rem]" name="finalSubmit" value="submitted" />
-              <label className="font-medium text-red-700 text-sm font-mono" for="finalSubmit"> Submit for CUG approval</label>
+            {/* CUG Evidence Upload */}
+            <div>
+              <label className="block font-medium text-gray-700 mb-2">Upload CUG Evidence</label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                className="w-full p-2 bg-gray-50 border border-gray-400 rounded"
+              />
             </div>
+
+                  {/* Checker Comment */}
+            <div className="space-y-1 space-x-2 flex items-center">
+            <label htmlFor="comment">
+              <p className="inline font-medium text-gray-700 mb-2">Checker's Comment :</p>
+            </label>
+            <div className="flex items-center justify-center pb-1">
+              <p></p>
+            </div>
+            </div>
+
+            {/* Comment */}
+            <div className="mb-4">
+              <label className="block font-medium text-gray-700 mb-2">Comment</label>
+              <textarea
+                name="comment"
+                value={formData.comment}
+                onChange={handleChange}
+                className="w-full p-2 bg-gray-50 border border-gray-400 rounded"
+              />
+            </div>
+
 
             {/* Buttons */}
             <div>
-              {!isCheckedFinalSubmit ? <div className="flex justify-end space-x-2 mt-4">
+              <div className="flex justify-end space-x-2 mt-4">
                 <button
                   type="submit"
                   className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
                 >
-                  Draft
+                  Submit
                 </button>
                 <button
                   type="button"
-                  onClick={handleReset}
-                  className="bg-gray-500 text-white p-2 rounded hover:bg-gray-600"
+                  onClick={handleFailed}
+                  className="bg-red-500 text-white p-2 rounded hover:bg-red-600"
                 >
-                  Reset
+                  Failed
                 </button>
               </div>
-                :
-                <div className="flex justify-end space-x-2 mt-4">
-                  <button
-                    type="submit"
-                    className="bg-green-500 text-white p-2 rounded hover:bg-green-600"
-                  >
-                    Submit
-                  </button>
-                </div>
-              }
             </div>
           </div>
         </form>
@@ -321,4 +368,4 @@ const CreateTemplateForm = () => {
   );
 };
 
-export default CreateTemplateForm;
+export default ActionTemplateForm;

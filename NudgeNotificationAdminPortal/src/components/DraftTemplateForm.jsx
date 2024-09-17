@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import PageHeader from './PageHeader';
 import downArrow from '/icons/down-arrow.png'
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { getTemplateById, submitForCUG_Approval_Template, updateTemplate } from '../services/templateService';
 import Alert from './Alert';
+import { NAVIGATE_PATH } from '../constants/routeConstant';
 
 
 const DraftTemplateForm = () => {
 
   const { templateId, status } = useParams();
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     templateId: templateId,
@@ -145,12 +147,16 @@ const DraftTemplateForm = () => {
     });
   };
 
+  const handleClickBack = () => {
+    navigate(NAVIGATE_PATH.MAKER_DRAFTS)
+  }
+
   // Generate days for recurrence checkboxes
   const maxDays = formData.occurrenceUnit === 'Weekly' ? 7 : 31;
 
   return (
     <>
-      <PageHeader heading={"Nudge Template"} />
+      <PageHeader handleClickBack={handleClickBack} heading={"Nudge Template"} />
       <div className="flex justify-center items-center   p-4">
         <form
           onSubmit={handleSubmit}
@@ -229,10 +235,28 @@ const DraftTemplateForm = () => {
           <div className="space-y-4">
 
             {/* Recurrence */}
+            <label className="block font-medium text-gray-700 mb-2">Reoccurance: </label>
+            {/* Recurrence */}
             <div className="grid grid-cols-3 gap-4">
+              
+              <div>
+                <label className="block font-medium text-gray-700 mb-2">Duration</label>
+                <select
+                  disabled
+                  name="occurrenceUnit"
+                  value={formData.occurrenceUnit}
+                  onChange={handleChange}
+                  className="w-full p-2 bg-gray-50 border border-gray-400 rounded"
+                >
+                  <option value="Weekly">Weekly</option>
+                  <option value="Monthly">Monthly</option>
+                </select>
+              </div>
+
               <div>
                 <label className="block font-medium text-gray-700 mb-2">Frequency</label>
                 <select
+                  disabled
                   name="occurrenceFrequency"
                   value={formData.occurrenceFrequency}
                   onChange={handleChange}
@@ -246,18 +270,6 @@ const DraftTemplateForm = () => {
                 </select>
               </div>
 
-              <div>
-                <label className="block font-medium text-gray-700 mb-2">Type</label>
-                <select
-                  name="occurrenceUnit"
-                  value={formData.occurrenceUnit}
-                  onChange={handleChange}
-                  className="w-full p-2 bg-gray-50 border border-gray-400 rounded"
-                >
-                  <option value="Weekly">Weekly</option>
-                  <option value="Monthly">Monthly</option>
-                </select>
-              </div>
 
               {/* Recurrence Days (Multi-select with checkboxes) */}
               <div>
@@ -265,20 +277,20 @@ const DraftTemplateForm = () => {
                 <div
                   onClick={() => showDays ? setShowDays(false) : setShowDays(true)}
                   className='text-nowrap p-2 bg-gray-50 border border-gray-400 flex justify-between' >
-                  <p>Select Days</p> <span><img src={downArrow} alt="" /></span>
+                  <p>Show Days</p> <span><img src={downArrow} alt="" /></span>
                 </div>
                 {showDays && <div className="grid grid-cols-3 gap-2 border p-4 rounded absolute bg-white shadow-xl">
                   {Array.from({ length: maxDays }, (_, i) => i + 1).map((val) => (
-                    <div key={val}>
+                    <div key={val} >
                       <label className="flex items-center space-x-2">
                         <input
                           type="checkbox"
                           value={val}
                           checked={formData.occurrenceDays.includes(val)}
                           onChange={handleRecDayChange}
-                          disabled={
-                            !formData.occurrenceDays.includes(val) &&
-                            formData.occurrenceDays.length >= formData.occurrenceFrequency
+                          disabled={true
+                            // !formData.occurrenceDays.includes(val) &&
+                            // formData.occurrenceDays.length >= formData.occurrenceFrequency
                           }
                         />
                         <span>{val}</span>

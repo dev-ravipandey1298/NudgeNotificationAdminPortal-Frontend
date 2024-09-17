@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import PageHeader from './PageHeader';
-import { deleteSelectedCUGUsers, getAllCUGUsers } from '../services/templateService';
+import { createNewCugUser, deleteSelectedCUGUsers, getAllCUGUsers } from '../services/templateService';
+import Alert from './Alert';
+import { COMMON_ROUTE, NAVIGATE_PATH } from '../constants/routeConstant';
+import { useNavigate } from 'react-router-dom';
 
 const CUGManagementPage = () => {
   const [activeTab, setActiveTab] = useState(0);
@@ -9,9 +12,12 @@ const CUGManagementPage = () => {
   const [selectedUsers, setSelectedUsers] = useState([]); 
   const [newUsers, setNewUsers] = useState([]); 
   const [userData, setUserData] = useState({ name: '', mobileNumber: '' });
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [deleteMode, setDeleteMode] = useState(false); 
+  const [submitMessage, setSubmitMessage] = useState('');
+  const [showAlert, setshowAlert] = useState(false);
+
+  const navigate = useNavigate();
   
   
   useEffect(() => {
@@ -51,20 +57,29 @@ const CUGManagementPage = () => {
     }
   }
 
+  const createNewUsersBackend = async (userDetails) => {
+    try {
+      const response = await createNewCugUser(userDetails);
+      if(response.status == 200){
+        alert("Created")
+      }
+    } catch (error) {
+      
+    }
+  }
+
   // Handle deletion of selected users
   const handleDeleteSelectedUsers = () => {
     if (selectedUsers.length === 0) return;
 
-    setLoading(true);
     try {
       setUsers(users.filter((user) => !selectedUsers.includes(user.mobileNumber))); 
-      deleteSelectedUserBackend(JSON.stringify(selectedUsers));
-      // setSelectedUsers([]); // Reset selected users
+      const userMobileNumber = users.map((user) => user.mobileNumber);
+      deleteSelectedUserBackend(JSON.stringify(userMobileNumber));
+      setSelectedUsers([]); 
     } catch (err) {
       setError('Failed to delete users');
-    } finally {
-      setLoading(false);
-    }
+    } 
   };
 
   // Handle adding new users to the list
@@ -77,23 +92,30 @@ const CUGManagementPage = () => {
 
   // Handle submitting new users to backend
   const handleSubmitNewUsers = () => {
-    setLoading(true);
-    try {
-      // await axios.post('/api/add-users', { users: newUsers }); 
-      
+    try {      
       setUsers([...users, ...newUsers]); 
-      console.log(newUsers)
+      createNewCugUser(JSON.stringify(newUsers));
       setNewUsers([]); 
+      setSubmitMessage("New CUG User added successfully.")
+      setshowAlert(true)
     } catch (err) {
       setError('Failed to add users');
-    } finally {
-      setLoading(false);
-    }
+    } 
   };
+
+  const handleClickBack = () => {
+    const role = JSON.parse(sessionStorage.getItem("user")).role
+    if(role === "CHECKER"){
+      navigate(NAVIGATE_PATH.CHECKER)
+    }else if(role === "MAKER"){
+      navigate(NAVIGATE_PATH.MAKER)
+    }
+    
+  }
 
   return (
     <>
-    <PageHeader heading={"CUG Management Screen"}/>
+    <PageHeader handleClickBack={handleClickBack} heading={"CUG Management Screen"}/>
     <div className="w-full max-w-6xl p-6 mx-auto bg-white">
       {/* Tabs */}
       <div className="mb-4 border-b border-gray-200">
@@ -125,11 +147,7 @@ const CUGManagementPage = () => {
             </label>
           </div>
 
-          {loading ? (
-            <p>Loading...</p>
-          ) : error ? (
-            <p className="text-red-500">{error}</p>
-          ) : (
+
             <>
               <table className="w-full mt-4 table-auto">
                 <thead>
@@ -169,7 +187,7 @@ const CUGManagementPage = () => {
                 </button>
               )}
             </>
-          )}
+          
         </div>
       )}
 
@@ -228,6 +246,7 @@ const CUGManagementPage = () => {
         </div>
       )}
     </div>
+    {showAlert && <Alert alertDetail={{ success: true, message: submitMessage }} handleCloseAlert={() => setshowAlert(false)} />}
     </>
   );
 };

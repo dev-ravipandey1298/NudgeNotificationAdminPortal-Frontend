@@ -7,6 +7,7 @@ import filter from '/icons/filter.png'
 import PageHeader from './PageHeader';
 import {getTemplatesBySearchCriteria } from '../services/templateService';
 import { NAVIGATE_PATH } from '../constants/routeConstant';
+import { status } from '../constants/statusConstant';
 
 const PendingRequestTable = () => {
 
@@ -83,9 +84,13 @@ const PendingRequestTable = () => {
     
   }, [])
 
+  const handleClickBack = () => {
+    navigate(NAVIGATE_PATH.CHECKER)
+  }
+
   return (
     <>
-      <PageHeader heading={"Pending Requests"} />
+      <PageHeader handleClickBack={handleClickBack} heading={"Pending Requests"} />
       <table className="shadow-lg bg-white  mx-auto mt-5 ">
         <thead>
           <tr>
@@ -94,20 +99,20 @@ const PendingRequestTable = () => {
             <th className="bg-blue-100 border text-left px-3 py-2">Requested On</th>
             <th className="bg-blue-100 border text-left px-3 py-2">Requested By</th>
             <th className="bg-blue-100 border text-left px-3 py-2">
-              <div className='flex justify-between items-center'>
+              <div className='flex justify-between items-center relative'>
                 <div>Status</div>
                 <div className='h-5 w-5'>
                   <img onClick={() => showFilter ? setShowFilter(false) : setShowFilter(true)} src={filter} alt="" />
                 </div>
                 {showFilter &&
-                  <div className='w-[11.5] p-2 border absolute bottom-[23.2rem]  bg-white'>
+                  <div className='absolute top-full right-0 mt-2 w-60 p-2 border bg-white shadow-md rounded-sm'>
                     <div className="">
-                      <input onChange={handleCheckboxChange} checked={checkboxes.checkbox2} type="checkbox" id="checkbox2" className="h-[0.60rem] w-[0.60rem]" name="pendingPROD" value="pending_approval_prod" />
-                      <label className="font-semibold text-red-700 text-sm font-mono" for="pendingPROD"> pending_approval_prod</label>
+                      <input onChange={handleCheckboxChange} checked={checkboxes.checkbox2} type="checkbox" id="checkbox2" className="h-[0.60rem] w-[0.60rem]" name="pendingPROD" value={status.APPROVAL_PENDING_PROD} />
+                      <label className="font-semibold text-red-700 text-sm font-mono" for="checkbox2"> {status.APPROVAL_PENDING_PROD}</label>
                     </div>
                     <div className="">
-                      <input onChange={handleCheckboxChange} checked={checkboxes.checkbox3} type="checkbox" id="checkbox3" className="h-[0.60rem] w-[0.60rem]" name="pendingCUG" value="pending_approval_cug" />
-                      <label className="font-semibold text-red-700 text-sm font-mono" for="pendingCUG"> pending_approval_cug</label>
+                      <input onChange={handleCheckboxChange} checked={checkboxes.checkbox3} type="checkbox" id="checkbox3" className="h-[0.60rem] w-[0.60rem]" name="pendingCUG" value={status.APPROVAL_PENDING_CUG} />
+                      <label className="font-semibold text-red-700 text-sm font-mono" for="checkbox3"> {status.APPROVAL_PENDING_CUG}</label>
                     </div>
                     <div className='flex justify-end pt-2' >
                     <button disabled={(!checkboxes.checkbox2 && !checkboxes.checkbox3)} onClick={handleFetchData} className='text-sm font-mono hover:text-green-600 text-green-700 '>Filter</button>
@@ -127,7 +132,7 @@ const PendingRequestTable = () => {
                 <td className="border px-3 py-2">{val.templateName}</td>
                 <td className="border px-3 py-2">{val.createdOn}</td>
                 <td className="border px-3 py-2">{val.createdBy}</td>
-                <td className="border px-3 py-2">{val.status}</td>
+                <td className="border px-3 py-2">{status[val.status]}</td>
                 <td className="border px-3 py-2 space-x-1">
                   <button onClick={() => navigate(`${NAVIGATE_PATH.CHECKER_REVIEW_TEMPLATE + val.templateId}/status/${val.status}`)} className="text-blue-500 hover:underline">Approve/Reject</button>
                 </td>
