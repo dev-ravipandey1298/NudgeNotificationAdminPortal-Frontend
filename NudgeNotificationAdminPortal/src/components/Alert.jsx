@@ -10,7 +10,7 @@ const Alert = ({alertDetail, handleCloseAlert}) => {
                 <div className='my-auto h-[75%] flex flex-col justify-center items-center' >
                     {alertDetail.success ? <img className="w-20 h-20"  src={success} alt="" />
                     : <img className="w-20 h-20"  src={fail} alt="" />}
-                    <p className={`font-semibold ${true ? 'text-green-600' : 'text-red-600'} font-mono text-center px-3`}>{alertDetail.message}</p>
+                    <p className={`font-semibold ${alertDetail.success ? 'text-green-600' : 'text-red-600'} font-mono text-center px-3`}>{alertDetail.message}</p>
                 </div>
                 <div className='flex space-x-3 justify-end px-5 font-bold text-sm font-mono'>
                     <button onClick={() => handleCloseAlert()} className='text-red-700 hover:text-red-600'>Close</button>

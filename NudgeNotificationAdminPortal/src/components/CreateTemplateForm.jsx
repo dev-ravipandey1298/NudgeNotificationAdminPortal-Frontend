@@ -5,6 +5,7 @@ import { createTemplate } from '../services/templateService';
 import Alert from './Alert';
 import { useNavigate } from 'react-router-dom';
 import { NAVIGATE_PATH } from '../constants/routeConstant';
+import { ERROR_MESSAGE } from '../constants/ErrorMessageConstant';
 
 const CreateTemplateForm = () => {
   const [formData, setFormData] = useState({
@@ -22,7 +23,9 @@ const CreateTemplateForm = () => {
   const [showDays, setShowDays] = useState(false);
   const [submitMessage, setSubmitMessage] = useState('');
   const [showAlert, setshowAlert] = useState(false);
+  const [alertTrue, setAlertTrue] = useState(true);
   const [isCheckedFinalSubmit, setIsCheckedFinalSubmit] = useState(false);
+  const [error, setError] = useState(false);
   const navigate = useNavigate();
 
 
@@ -91,7 +94,31 @@ const CreateTemplateForm = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log('Form submitted:', formData);
+    const start = new Date(formData.startDate);
+    const end = new Date(formData.endDate);
+
+    const errorArray = [];
+
+    if(start > end){
+      setError(true);
+      errorArray.push(ERROR_MESSAGE.DATE_RANGE)
+    }
+
+    if(formData.occurrenceFrequency != formData.occurrenceDays.length){
+      setError(true);
+      errorArray.push(ERROR_MESSAGE.SELECTED_DAYS_NOT_EQUAL_TO_FREQUENCY)
+    }
+
+    
+    if (error){
+      console.log("Here")
+      console.log(errorArray)
+      setSubmitMessage(errorArray.join(", "));
+      setAlertTrue(false)
+      setshowAlert(true);
+    }else{
     isCheckedFinalSubmit ? submitForCUGApprovalBackend(formData) : createTemplateBackend(JSON.stringify(formData))
+    }
   };
 
   // Reset form
@@ -206,7 +233,6 @@ const CreateTemplateForm = () => {
               <div>
                 <label className="block font-medium text-gray-700 mb-2">Duration</label>
                 <select
-                  disabled
                   name="occurrenceUnit"
                   value={formData.occurrenceUnit}
                   onChange={handleChange}
@@ -220,7 +246,6 @@ const CreateTemplateForm = () => {
               <div>
                 <label className="block font-medium text-gray-700 mb-2">Frequency</label>
                 <select
-                  disabled
                   name="occurrenceFrequency"
                   value={formData.occurrenceFrequency}
                   onChange={handleChange}
@@ -252,9 +277,9 @@ const CreateTemplateForm = () => {
                           value={val}
                           checked={formData.occurrenceDays.includes(val)}
                           onChange={handleRecDayChange}
-                          disabled={true
-                            // !formData.occurrenceDays.includes(val) &&
-                            // formData.occurrenceDays.length >= formData.occurrenceFrequency
+                          disabled={
+                            !formData.occurrenceDays.includes(val) &&
+                            formData.occurrenceDays.length >= formData.occurrenceFrequency
                           }
                         />
                         <span>{val}</span>
@@ -315,7 +340,7 @@ const CreateTemplateForm = () => {
             </div>
           </div>
         </form>
-        {showAlert && <Alert alertDetail={{ success: true, message: submitMessage }} handleCloseAlert={() => setshowAlert(false)} />}
+        {showAlert && <Alert alertDetail={{ success: alertTrue, message: submitMessage }} handleCloseAlert={() => {setshowAlert(false); setAlertTrue(true)}} />}
       </div>
     </>
   );
