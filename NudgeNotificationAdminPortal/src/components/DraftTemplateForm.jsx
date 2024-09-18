@@ -24,7 +24,8 @@ const DraftTemplateForm = () => {
     occurrenceFrequency: 1,
     occurrenceUnit: '',
     occurrenceDays: [],
-    environment: 'CUG'
+    environment: 'CUG',
+    imageFile : null
   });
 
   const [showDays, setShowDays] = useState(false);
@@ -94,7 +95,7 @@ const DraftTemplateForm = () => {
           occurrenceUnit: data.occurrenceUnit,
           occurrenceDays: data.occurrenceDays,
           environment: 'CUG',
-          imageFile: null,
+          imageFile: data.imageFile,
           comment: '',
         })
 
@@ -331,6 +332,17 @@ const DraftTemplateForm = () => {
                   ))}
                 </div>}
               </div>
+            </div>
+
+            {/* Notification Image */}
+            <div>
+              <label className="block font-medium text-gray-700 mb-2">Notification Image</label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                className="w-full p-2 bg-gray-50 border border-gray-400 rounded"
+              />
             </div>
 
             {/* Environment */}

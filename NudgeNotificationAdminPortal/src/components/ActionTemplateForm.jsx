@@ -34,6 +34,7 @@ const ActionTemplateForm = () => {
   const [showAlert, setshowAlert] = useState(false);
   const [alertTrue, setAlertTrue] = useState(true);
   const [error, setError] = useState(false);
+  const [showNotificationImage, setShowNotificationImage] = useState(false);
 
   useEffect(() => {
     getTemplateByIdBackend(templateId);
@@ -322,6 +323,16 @@ const ActionTemplateForm = () => {
               </div>
             </div>
 
+            {/* Images */}
+            <div className="space-y-1 space-x-2 flex items-center">
+              <label htmlFor="showEvidence">
+                <p className="inline font-medium text-gray-700 mb-2">Show Notification Image :</p>
+              </label>
+              <div className="flex items-center justify-center pb-1 h-8 w-8">
+                <img onClick={() => setShowNotificationImage(true)} src={preview} alt="" />
+              </div>
+            </div>
+
             {/* Environment */}
             <div className="mb-4 w-[50%]">
               <label className="block font-medium text-gray-700 mb-2">Environment</label>
@@ -391,6 +402,7 @@ const ActionTemplateForm = () => {
           </div>
         </form>
         {showAlert && <Alert alertDetail={{ success: alertTrue, message: submitMessage }} handleCloseAlert={() => {setshowAlert(false); setAlertTrue(true)}} />}
+        {showNotificationImage && <ShowImage file={formData.imageUrl} handleCloseAlert={() => setShowNotificationImage(false)}/>}
       </div>
     </>
   );

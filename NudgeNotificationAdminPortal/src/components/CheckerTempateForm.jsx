@@ -22,6 +22,7 @@ const CheckerTempateForm = () => {
     environment: 'CUG',
     file: null,
     comment: '',
+    imageUrl: '',
   });
 
   const [showDays, setShowDays] = useState(false);
@@ -30,6 +31,7 @@ const CheckerTempateForm = () => {
   const [showAlert, setshowAlert] = useState(false);
   const navigate = useNavigate();
   const [showEvidence, setShowEvidence] = useState(false);
+  const [showNotificationImage, setShowNotificationImage] = useState(false);
   const [alertTrue, setAlertTrue] = useState(true);
   const [error, setError] = useState(false);
 
@@ -93,6 +95,7 @@ const CheckerTempateForm = () => {
           environment: `${status == "APPROVAL_PENDING_CUG" ? 'CUG' : 'PROD'}`,
           file: data.file,
           comment: '',
+          imageUrl : data.imageUrl,
           makerComment: data.makerComment,
         })
 
@@ -359,6 +362,16 @@ const CheckerTempateForm = () => {
               </div>
             </div>
 
+            {/* Images */}
+            <div className="space-y-1 space-x-2 flex items-center">
+              <label htmlFor="showEvidence">
+                <p className="inline font-medium text-gray-700 mb-2">Show Notification Image :</p>
+              </label>
+              <div className="flex items-center justify-center pb-1 h-8 w-8">
+                <img onClick={() => setShowNotificationImage(true)} src={preview} alt="" />
+              </div>
+            </div>
+
             {/* Environment */}
             <div className="mb-4 w-[50%]">
               <label className="block font-medium text-gray-700 mb-2">Environment</label>
@@ -384,6 +397,7 @@ const CheckerTempateForm = () => {
               </div>
             </div>}
 
+              {/* Show Evidence */}
             {formData.environment === "PROD" && <div className="space-y-1 space-x-2 flex items-center">
               <label htmlFor="showEvidence">
                 <p className="inline font-medium text-gray-700 mb-2">Show Evidence :</p>
@@ -425,6 +439,7 @@ const CheckerTempateForm = () => {
         {showAlert && <Alert alertDetail={{ success: alertTrue, message: submitMessage }} handleCloseAlert={() => {setshowAlert(false); setAlertTrue(true)}} />}
       </div>
       {showEvidence && <ShowImage file={formData.file} handleCloseAlert={() => setShowEvidence(false)}/>}
+      {showNotificationImage && <ShowImage file={formData.imageUrl} handleCloseAlert={() => setShowNotificationImage(false)}/>}
     </>
   );
 };

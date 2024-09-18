@@ -46,16 +46,16 @@ export const getAllTemplates = () => {
     },
   }); 
 };
-export const createTemplate = (templateData) => {
-  return apiClient.post(`/v1/templates/draft?image=${emptyFile}`, templateData, {
+export const createTemplate = (templateData, imageFile) => {
+  return apiClient.post(`/v1/templates/draft?image=${imageFile}`, templateData, {
     headers: {
       TOKEN_NAME : `Bearer ${sessionStorage.getItem('authToken')}`,
     },
   }); 
 };
 
-export const updateTemplate = (templateId, templateData) => {
-  return apiClient.put(`/v1/templates/draft/${templateId}?image=${emptyFile}`, templateData, {
+export const updateTemplate = (templateId, templateData, imageFile) => {
+  return apiClient.put(`/v1/templates/draft/${templateId}?image=${imageFile}`, templateData, {
     headers: {
       TOKEN_NAME : `Bearer ${sessionStorage.getItem('authToken')}`,
     },
@@ -77,8 +77,8 @@ export const deleteNonApprovedTemplate = (templateId) => {
   }); 
 };
 
-export const submitForCUG_Approval_Template = (templateData) => {
-  return apiClient.put(`/v1/templates/template/cug-approval?image=${emptyFile}`, templateData , {
+export const submitForCUG_Approval_Template = (templateData, imageFile) => {
+  return apiClient.put(`/v1/templates/template/cug-approval?image=${imageFile}`, templateData , {
     headers: {
       TOKEN_NAME : `Bearer ${sessionStorage.getItem('authToken')}`,
     },

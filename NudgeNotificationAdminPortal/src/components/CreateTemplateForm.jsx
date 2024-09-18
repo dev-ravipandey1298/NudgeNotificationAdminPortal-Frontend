@@ -17,7 +17,8 @@ const CreateTemplateForm = () => {
     occurrenceFrequency: 1,
     occurrenceUnit: 'Weekly',
     occurrenceDays: [],
-    environment: 'CUG'
+    environment: 'CUG',
+    imageFile: null
   });
 
   const [showDays, setShowDays] = useState(false);
@@ -114,14 +115,13 @@ const CreateTemplateForm = () => {
       setError(true);
       errorArray.push(ERROR_MESSAGE.SELECTED_DAYS_NOT_EQUAL_TO_FREQUENCY)
     }
-
     
     if (error){
       setSubmitMessage(errorArray.join(", "));
       setAlertTrue(false)
       setshowAlert(true);
     }else{
-    isCheckedFinalSubmit ? submitForCUGApprovalBackend(formData) : createTemplateBackend(JSON.stringify(formData))
+    isCheckedFinalSubmit ? submitForCUGApprovalBackend(JSON.stringify(formData), formData.imageFile) : createTemplateBackend(JSON.stringify(formData), formData.imageFile)
     }
   };
 
@@ -292,6 +292,17 @@ const CreateTemplateForm = () => {
                   ))}
                 </div>}
               </div>
+            </div>
+
+            {/* Notification Image */}
+            <div>
+              <label className="block font-medium text-gray-700 mb-2">Notification Image</label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                className="w-full p-2 bg-gray-50 border border-gray-400 rounded"
+              />
             </div>
 
             {/* Environment */}
