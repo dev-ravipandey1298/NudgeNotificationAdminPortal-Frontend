@@ -5,6 +5,7 @@ import { createNewCugUser, deleteSelectedCUGUsers, getAllCUGUsers } from '../ser
 import Alert from './Alert';
 import { COMMON_ROUTE, NAVIGATE_PATH } from '../constants/routeConstant';
 import { useNavigate } from 'react-router-dom';
+import { ERROR_MESSAGE } from '../constants/ErrorMessageConstant';
 
 const CUGManagementPage = () => {
   const [activeTab, setActiveTab] = useState(0);
@@ -12,10 +13,11 @@ const CUGManagementPage = () => {
   const [selectedUsers, setSelectedUsers] = useState([]); 
   const [newUsers, setNewUsers] = useState([]); 
   const [userData, setUserData] = useState({ name: '', mobileNumber: '' });
-  const [error, setError] = useState('');
   const [deleteMode, setDeleteMode] = useState(false); 
   const [submitMessage, setSubmitMessage] = useState('');
   const [showAlert, setshowAlert] = useState(false);
+  const [alertTrue, setAlertTrue] = useState(true);
+  const [error, setError] = useState(false);
 
   const navigate = useNavigate();
   
@@ -33,7 +35,10 @@ const CUGManagementPage = () => {
         setUsers(response.data.payload)
       }
     } catch (error) {
-      
+      setSubmitMessage(ERROR_MESSAGE.SOME_EXCEPTION_OCCURRED)
+      setAlertTrue(false)
+      setshowAlert(true);
+      console.log(error)
     }
   }
 
@@ -53,7 +58,10 @@ const CUGManagementPage = () => {
         alert("Deleted")
       }
     } catch (error) {
-      
+      setSubmitMessage(ERROR_MESSAGE.SOME_EXCEPTION_OCCURRED)
+      setAlertTrue(false)
+      setshowAlert(true);
+      console.log(error)
     }
   }
 
@@ -64,7 +72,10 @@ const CUGManagementPage = () => {
         alert("Created")
       }
     } catch (error) {
-      
+      setSubmitMessage(ERROR_MESSAGE.SOME_EXCEPTION_OCCURRED)
+      setAlertTrue(false)
+      setshowAlert(true);
+      console.log(error)
     }
   }
 
@@ -85,8 +96,15 @@ const CUGManagementPage = () => {
   // Handle adding new users to the list
   const handleAddUser = () => {
     if (userData.name && userData.mobileNumber) {
-      setNewUsers([...newUsers, { name: Date.now(), ...userData }]);
-      setUserData({ name: '', mobileNumber: '' });
+      if(!userData.name.match(/^[A-Za-z ]+$/) || !userData.mobileNumber.match(/^[1-9][0-9]{9}$/)){
+        setError(true)
+        setSubmitMessage(ERROR_MESSAGE.NEW_CUG_USER_VALIDATION)
+        setAlertTrue(false)
+        setshowAlert(true);
+      }else{
+        setNewUsers([...newUsers, { name: Date.now(), ...userData }]);
+        setUserData({ name: '', mobileNumber: '' });
+      }  
     }
   };
 
@@ -94,7 +112,7 @@ const CUGManagementPage = () => {
   const handleSubmitNewUsers = () => {
     try {      
       setUsers([...users, ...newUsers]); 
-      createNewCugUser(JSON.stringify(newUsers));
+      createNewUsersBackend(JSON.stringify(newUsers));
       setNewUsers([]); 
       setSubmitMessage("New CUG User added successfully.")
       setshowAlert(true)
@@ -246,7 +264,7 @@ const CUGManagementPage = () => {
         </div>
       )}
     </div>
-    {showAlert && <Alert alertDetail={{ success: true, message: submitMessage }} handleCloseAlert={() => setshowAlert(false)} />}
+    {showAlert && <Alert alertDetail={{ success: alertTrue, message: submitMessage }} handleCloseAlert={() => {setshowAlert(false); setAlertTrue(true)}} />}
     </>
   );
 };

@@ -7,6 +7,7 @@ import Alert from './Alert';
 import { NAVIGATE_PATH } from '../constants/routeConstant';
 import preview from '/icons/preview.png'
 import { ShowImage } from './ShowImage';
+import { ERROR_MESSAGE } from '../constants/ErrorMessageConstant';
 
 const CheckerTempateForm = () => {
   const [formData, setFormData] = useState({
@@ -29,6 +30,8 @@ const CheckerTempateForm = () => {
   const [showAlert, setshowAlert] = useState(false);
   const navigate = useNavigate();
   const [showEvidence, setShowEvidence] = useState(false);
+  const [alertTrue, setAlertTrue] = useState(true);
+  const [error, setError] = useState(false);
 
 
   // Handle form field changes
@@ -95,6 +98,9 @@ const CheckerTempateForm = () => {
 
       }
     } catch (error) {
+      setSubmitMessage(ERROR_MESSAGE.SOME_EXCEPTION_OCCURRED)
+      setAlertTrue(false)
+      setshowAlert(true);
       console.log(error)
     }
   }
@@ -116,7 +122,10 @@ const CheckerTempateForm = () => {
         setshowAlert(true)
       }
     } catch (error) {
-
+      setSubmitMessage(ERROR_MESSAGE.SOME_EXCEPTION_OCCURRED)
+      setAlertTrue(false)
+      setshowAlert(true);
+      console.log(error)
     }
   }
 
@@ -129,7 +138,10 @@ const CheckerTempateForm = () => {
         setshowAlert(true)
       }
     } catch (error) {
-
+      setSubmitMessage(ERROR_MESSAGE.SOME_EXCEPTION_OCCURRED)
+      setAlertTrue(false)
+      setshowAlert(true);
+      console.log(error)
     }
   }
 
@@ -143,7 +155,10 @@ const CheckerTempateForm = () => {
         setshowAlert(true)
       }
     } catch (error) {
-
+      setSubmitMessage(ERROR_MESSAGE.SOME_EXCEPTION_OCCURRED)
+      setAlertTrue(false)
+      setshowAlert(true);
+      console.log(error)
     }
   }
 
@@ -156,7 +171,10 @@ const CheckerTempateForm = () => {
         setshowAlert(true)
       }
     } catch (error) {
-
+      setSubmitMessage(ERROR_MESSAGE.SOME_EXCEPTION_OCCURRED)
+      setAlertTrue(false)
+      setshowAlert(true);
+      console.log(error)
     }
   }
 
@@ -404,7 +422,7 @@ const CheckerTempateForm = () => {
             </div>
           </div>
         </form>
-        {showAlert && <Alert alertDetail={{ success: true, message: submitMessage }} handleCloseAlert={() => setshowAlert(false)} />}
+        {showAlert && <Alert alertDetail={{ success: alertTrue, message: submitMessage }} handleCloseAlert={() => {setshowAlert(false); setAlertTrue(true)}} />}
       </div>
       {showEvidence && <ShowImage file={formData.file} handleCloseAlert={() => setShowEvidence(false)}/>}
     </>

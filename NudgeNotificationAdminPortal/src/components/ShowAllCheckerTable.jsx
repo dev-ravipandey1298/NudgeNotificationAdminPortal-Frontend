@@ -9,8 +9,8 @@ import { NAVIGATE_PATH } from "../constants/routeConstant";
 
 const ShowAllMakerTable = () => {
   const navigate = useNavigate();
-  cosnt [isEnable, setIsEnable] = useState(true);
-  cosnt [isDisable, setIsDisable] = useState(false);
+  const [isEnable, setIsEnable] = useState(true);
+  const [isDisable, setIsDisable] = useState(false);
   
   const [tableData, setTableData] = useState([]);
   const [showFilter, setShowFilter] = useState(false);

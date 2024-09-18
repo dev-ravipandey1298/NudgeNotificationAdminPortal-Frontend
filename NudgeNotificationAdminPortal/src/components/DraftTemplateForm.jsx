@@ -5,12 +5,14 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { getTemplateById, submitForCUG_Approval_Template, updateTemplate } from '../services/templateService';
 import Alert from './Alert';
 import { NAVIGATE_PATH } from '../constants/routeConstant';
+import { ERROR_MESSAGE } from '../constants/ErrorMessageConstant';
 
 
 const DraftTemplateForm = () => {
 
   const { templateId, status } = useParams();
   const navigate = useNavigate();
+  
 
   const [formData, setFormData] = useState({
     templateId: templateId,
@@ -30,6 +32,8 @@ const DraftTemplateForm = () => {
   const [isCheckedFinalSubmit, setIsCheckedFinalSubmit] = useState(false);
   const [submitMessage, setSubmitMessage] = useState('');
   const [showAlert, setshowAlert] = useState(false);
+  const [alertTrue, setAlertTrue] = useState(true);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     getTemplateByIdBackend(templateId);
@@ -96,7 +100,10 @@ const DraftTemplateForm = () => {
 
       }
     } catch (error) {
-
+      setSubmitMessage(ERROR_MESSAGE.SOME_EXCEPTION_OCCURRED)
+      setAlertTrue(false)
+      setshowAlert(true);
+      console.log(error)
     }
   }
 
@@ -106,7 +113,10 @@ const DraftTemplateForm = () => {
       setSubmitMessage("Template Updated successfully with ID: " + templateId)
       setshowAlert(true)
     } catch (error) {
-
+      setSubmitMessage(ERROR_MESSAGE.SOME_EXCEPTION_OCCURRED)
+      setAlertTrue(false)
+      setshowAlert(true);
+      console.log(error)
     }
   }
 
@@ -118,7 +128,10 @@ const DraftTemplateForm = () => {
         setshowAlert(true)
       }
     } catch (error) {
-
+      setSubmitMessage(ERROR_MESSAGE.SOME_EXCEPTION_OCCURRED)
+      setAlertTrue(false)
+      setshowAlert(true);
+      console.log(error)
     }
 
   }
@@ -127,7 +140,28 @@ const DraftTemplateForm = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log('Form submitted:', formData);
+    const start = new Date(formData.startDate);
+    const end = new Date(formData.endDate);
+    const errorArray = [];
+
+    if(start > end){
+      setError(true);
+      errorArray.push(ERROR_MESSAGE.DATE_RANGE)
+    }
+
+    if(formData.occurrenceFrequency != formData.occurrenceDays.length){
+      setError(true);
+      errorArray.push(ERROR_MESSAGE.SELECTED_DAYS_NOT_EQUAL_TO_FREQUENCY)
+    }
+
+    
+    if (error){
+      setSubmitMessage(errorArray.join(", "));
+      setAlertTrue(false)
+      setshowAlert(true);
+    }else{
     isCheckedFinalSubmit ? submitForCUGApprovalBackend(JSON.stringify(formData)) : updateTemplateBackend(templateId, JSON.stringify(formData));
+    }
   };
 
   // Reset form
@@ -242,7 +276,6 @@ const DraftTemplateForm = () => {
               <div>
                 <label className="block font-medium text-gray-700 mb-2">Duration</label>
                 <select
-                  disabled
                   name="occurrenceUnit"
                   value={formData.occurrenceUnit}
                   onChange={handleChange}
@@ -256,7 +289,6 @@ const DraftTemplateForm = () => {
               <div>
                 <label className="block font-medium text-gray-700 mb-2">Frequency</label>
                 <select
-                  disabled
                   name="occurrenceFrequency"
                   value={formData.occurrenceFrequency}
                   onChange={handleChange}
@@ -288,9 +320,9 @@ const DraftTemplateForm = () => {
                           value={val}
                           checked={formData.occurrenceDays.includes(val)}
                           onChange={handleRecDayChange}
-                          disabled={true
-                            // !formData.occurrenceDays.includes(val) &&
-                            // formData.occurrenceDays.length >= formData.occurrenceFrequency
+                          disabled={
+                            !formData.occurrenceDays.includes(val) &&
+                            formData.occurrenceDays.length >= formData.occurrenceFrequency
                           }
                         />
                         <span>{val}</span>
@@ -352,7 +384,7 @@ const DraftTemplateForm = () => {
             </div>
           </div>
         </form>
-        {showAlert && <Alert alertDetail={{ success: true, message: submitMessage }} handleCloseAlert={() => setshowAlert(false)} />}
+        {showAlert && <Alert alertDetail={{ success: alertTrue, message: submitMessage }} handleCloseAlert={() => {setshowAlert(false); setAlertTrue(true)}} />}
       </div>
     </>
   );

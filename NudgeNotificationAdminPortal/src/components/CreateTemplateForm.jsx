@@ -24,8 +24,8 @@ const CreateTemplateForm = () => {
   const [submitMessage, setSubmitMessage] = useState('');
   const [showAlert, setshowAlert] = useState(false);
   const [alertTrue, setAlertTrue] = useState(true);
-  const [isCheckedFinalSubmit, setIsCheckedFinalSubmit] = useState(false);
   const [error, setError] = useState(false);
+  const [isCheckedFinalSubmit, setIsCheckedFinalSubmit] = useState(false);
   const navigate = useNavigate();
 
 
@@ -73,7 +73,10 @@ const CreateTemplateForm = () => {
         setshowAlert(true)
       }
     } catch (error) {
-
+      setSubmitMessage(ERROR_MESSAGE.SOME_EXCEPTION_OCCURRED)
+      setAlertTrue(false)
+      setshowAlert(true);
+      console.log(error)
     }
   }
 
@@ -85,7 +88,10 @@ const CreateTemplateForm = () => {
         setshowAlert(true)
       }
     } catch (error) {
-
+      setSubmitMessage(ERROR_MESSAGE.SOME_EXCEPTION_OCCURRED)
+      setAlertTrue(false)
+      setshowAlert(true);
+      console.log(error)
     }
 
   }
@@ -111,8 +117,6 @@ const CreateTemplateForm = () => {
 
     
     if (error){
-      console.log("Here")
-      console.log(errorArray)
       setSubmitMessage(errorArray.join(", "));
       setAlertTrue(false)
       setshowAlert(true);

@@ -5,6 +5,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { getTemplateById, markCUGFailed, submitForPRODApproval } from '../services/templateService';
 import { NAVIGATE_PATH } from '../constants/routeConstant';
 import Alert from './Alert';
+import { ERROR_MESSAGE } from '../constants/ErrorMessageConstant';
 
 const ActionTemplateForm = () => {
   const { templateId, status } = useParams();
@@ -31,6 +32,8 @@ const ActionTemplateForm = () => {
   const [isCheckedFinalSubmit, setIsCheckedFinalSubmit] = useState(false);
   const [submitMessage, setSubmitMessage] = useState('');
   const [showAlert, setshowAlert] = useState(false);
+  const [alertTrue, setAlertTrue] = useState(true);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     getTemplateByIdBackend(templateId);
@@ -110,7 +113,10 @@ const ActionTemplateForm = () => {
         setshowAlert(true)
       }
     } catch (error) {
-      
+      setSubmitMessage(ERROR_MESSAGE.SOME_EXCEPTION_OCCURRED)
+      setAlertTrue(false)
+      setshowAlert(true);
+      console.log(error)
     }
   }
 
@@ -122,7 +128,10 @@ const ActionTemplateForm = () => {
         setshowAlert(true)
       }
     } catch (error) {
-      
+      setSubmitMessage(ERROR_MESSAGE.EVIDENCE_REQUIRED)
+      setAlertTrue(false)
+      setshowAlert(true);
+      console.log(error)
     }
   }
 
@@ -133,6 +142,13 @@ const ActionTemplateForm = () => {
     console.log('Form submitted:', formData);
     formDataPROD.append('file', formData.file);
     formDataPROD.append('comment', formData.comment);
+
+    if(formData.file == null){
+      setSubmitMessage(ERROR_MESSAGE.SOME_EXCEPTION_OCCURRED)
+      setAlertTrue(false)
+      setshowAlert(true);
+    }
+
     submitForProdApprovalBackend(templateId, formDataPROD);
   };
 
@@ -140,6 +156,13 @@ const ActionTemplateForm = () => {
   const handleFailed = () => {
     formDataPROD.append('file', formData.file);
     formDataPROD.append('comment', formData.comment);
+
+    if(formData.file == null){
+      setSubmitMessage(ERROR_MESSAGE.SOME_EXCEPTION_OCCURRED)
+      setAlertTrue(false)
+      setshowAlert(true);
+    }
+
     markCUGFailedBackend(templateId, formDataPROD)
   };
 
@@ -165,6 +188,7 @@ const ActionTemplateForm = () => {
             <div>
               <label className="block font-medium text-gray-700 mb-2">Template Name</label>
               <input
+                disabled
                 type="text"
                 name="templateName"
                 value={formData.templateName}
@@ -178,6 +202,7 @@ const ActionTemplateForm = () => {
             <div>
               <label className="block font-medium text-gray-700 mb-2">Title</label>
               <input
+                disabled
                 type="text"
                 name="title"
                 value={formData.title}
@@ -191,6 +216,7 @@ const ActionTemplateForm = () => {
             <div>
               <label className="block font-medium text-gray-700 mb-2">Body</label>
               <textarea
+                disabled
                 name="body"
                 value={formData.body}
                 onChange={handleChange}
@@ -204,6 +230,7 @@ const ActionTemplateForm = () => {
             <div>
               <label className="block font-medium text-gray-700 mb-2">Start Date</label>
               <input
+                disabled
                 type="date"
                 name="startDate"
                 value={formData.startDate}
@@ -217,6 +244,7 @@ const ActionTemplateForm = () => {
             <div>
               <label className="block font-medium text-gray-700 mb-2">End Date</label>
               <input
+                disabled
                 type="date"
                 name="endDate"
                 value={formData.endDate}
@@ -362,7 +390,7 @@ const ActionTemplateForm = () => {
             </div>
           </div>
         </form>
-        {showAlert && <Alert alertDetail={{ success: true, message: submitMessage }} handleCloseAlert={() => setshowAlert(false)} />}
+        {showAlert && <Alert alertDetail={{ success: alertTrue, message: submitMessage }} handleCloseAlert={() => {setshowAlert(false); setAlertTrue(true)}} />}
       </div>
     </>
   );
