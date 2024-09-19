@@ -86,17 +86,18 @@ const CUGManagementPage = () => {
     try {
       setUsers(users.filter((user) => !selectedUsers.includes(user.mobileNumber))); 
       const userMobileNumber = users.map((user) => user.mobileNumber);
-      deleteSelectedUserBackend(userMobileNumber);
+      deleteSelectedUserBackend(JSON.stringify(userMobileNumber));
       setSelectedUsers([]); 
     } catch (err) {
-      setError('Failed to delete users');
+      setError(true);
+      console.log(err)
     } 
   };
 
   // Handle adding new users to the list
   const handleAddUser = () => {
-    if (userData.name && userData.mobileNumber) {
-      if(!userData.name.match(/^[A-Za-z ]+$/) || !userData.mobileNumber.match(/^[1-9][0-9]{9}$/)){
+    if (userData.mobileNumber) {
+      if(!userData.mobileNumber.match(/^[1-9][0-9]{9}$/)){
         setError(true)
         setSubmitMessage(ERROR_MESSAGE.NEW_CUG_USER_VALIDATION)
         setAlertTrue(false)

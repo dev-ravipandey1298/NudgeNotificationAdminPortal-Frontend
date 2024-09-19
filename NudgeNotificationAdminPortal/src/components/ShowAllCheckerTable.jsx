@@ -194,9 +194,9 @@ const ShowAllMakerTable = () => {
               <td className="border px-3 py-2 space-x-1">
               {val.status === "PROD_APPROVED" ? 
                   <>
-                  <button onClick={() => templatePRODEnable(val.templateId)} className="text-blue-500 hover:underline">Enable</button>
-                  <span>|</span>
-                  <button onClick={() => templatePRODDisable(val.templateId)} className="text-blue-500 hover:underline">Disable</button>
+                  {val.active ? <button onClick={() => templatePRODEnable(val.templateId)} className="text-blue-500 hover:underline">Enable</button>
+                  :
+                  <button onClick={() => templatePRODDisable(val.templateId)} className="text-blue-500 hover:underline">Disable</button>}
                   </>
                 : <>
                 <button onClick={() => navigate(`${NAVIGATE_PATH.CHECKER_SEARCH_SCREEN_TEMPLATE_FORM + val.templateId + '/status/' +val.status}`)} className="text-blue-500 hover:underline">View</button>

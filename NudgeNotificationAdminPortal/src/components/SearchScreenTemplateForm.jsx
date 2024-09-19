@@ -279,7 +279,7 @@ const SearchScreenTemplateForm = () => {
 
           {/* Right Section */}
           <div className="space-y-4">
-          <label className="block font-medium text-gray-700 mb-2">Reoccurance: </label>
+          <label className="block font-medium text-gray-700 mb-2">Reoccurrence: </label>
             {/* Recurrence */}
             <div className="grid grid-cols-3 gap-4">
               

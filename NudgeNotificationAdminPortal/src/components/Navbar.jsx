@@ -3,14 +3,28 @@ import hdfc_logo from "/icons/hdfc_logo.png";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import { NAVIGATE_PATH } from "../constants/routeConstant";
+import { userLogout } from "../services/templateService";
 
 const Navbar = () => {
 
     const navigate = useNavigate();
 
     const handleLogout = () => {
-        sessionStorage.clear();
-        navigate(NAVIGATE_PATH.LOGIN)
+        logoutBackend();
+    }
+
+    const logoutBackend = async () => {
+        try {
+            const response = await userLogout();
+            if(response.status == 200){
+                sessionStorage.clear();
+                navigate(NAVIGATE_PATH.LOGIN)
+            }else{
+                alert("Some exception occured")
+            }
+        } catch (error) {
+            console.log(error)
+        }
     }
     
     return (

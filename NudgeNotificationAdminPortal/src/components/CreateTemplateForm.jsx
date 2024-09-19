@@ -25,7 +25,6 @@ const CreateTemplateForm = () => {
   const [submitMessage, setSubmitMessage] = useState('');
   const [showAlert, setshowAlert] = useState(false);
   const [alertTrue, setAlertTrue] = useState(true);
-  const [error, setError] = useState(false);
   const [isCheckedFinalSubmit, setIsCheckedFinalSubmit] = useState(false);
   const navigate = useNavigate();
   const formDataCreate = new FormData();
@@ -99,40 +98,41 @@ const CreateTemplateForm = () => {
   }
 
   const submitForm = (data) => {
-     const payload = {
-        "templateName": data.templateName,
-        "title": data.title,
-        "body": data.body,
-        "startDate": data.startDate,
-        "endDate": data.endDate,
-        "occurrenceFrequency": data.occurrenceFrequency,
-        "occurrenceUnit": data.occurrenceUnit,
-        "occurrenceDays": data.occurrenceDays,
-        "hourOfDay": 12
-      }
-      return JSON.stringify(payload);
+    const payload = {
+      "templateName": data.templateName,
+      "title": data.title,
+      "body": data.body,
+      "startDate": data.startDate,
+      "endDate": data.endDate,
+      "occurrenceFrequency": data.occurrenceFrequency,
+      "occurrenceUnit": data.occurrenceUnit,
+      "occurrenceDays": data.occurrenceDays,
+      "hourOfDay": 12
+    }
+    return JSON.stringify(payload);
   }
 
   // Submit function
   const handleSubmit = (e) => {
     e.preventDefault();
+    let errorData = false;
     console.log('Form submitted:', formData);
     const start = new Date(formData.startDate);
     const end = new Date(formData.endDate);
 
     const errorArray = [];
 
-    if(start > end){
-      setError(true);
+    if (start > end) {
+      errorData = true;
       errorArray.push(ERROR_MESSAGE.DATE_RANGE)
     }
 
-    if(formData.occurrenceFrequency != formData.occurrenceDays.length){
-      setError(true);
+    if (formData.occurrenceFrequency != formData.occurrenceDays.length) {
+      errorData = true;
       errorArray.push(ERROR_MESSAGE.SELECTED_DAYS_NOT_EQUAL_TO_FREQUENCY)
     }
 
-    if(formData.imageFile === undefined || formData.imageFile === null){
+    if (formData.imageFile === undefined || formData.imageFile === null) {
       const emptyFile = new File([], 'empty.txt')
       setFormData((prevData) => ({
         ...prevData,
@@ -141,14 +141,14 @@ const CreateTemplateForm = () => {
     }
 
     formDataCreate.append('payload', new Blob([submitForm(formData)], { type: 'application/json' }));
-    formDataCreate.append('image', formData.imageFile); 
-    
-    if (error){
+    formDataCreate.append('image', formData.imageFile);
+
+    if (errorData) {
       setSubmitMessage(errorArray.join(", "));
       setAlertTrue(false)
       setshowAlert(true);
-    }else{
-    isCheckedFinalSubmit ? submitForCUGApprovalBackend(formDataCreate) : createTemplateBackend(formDataCreate)
+    } else {
+      isCheckedFinalSubmit ? submitForCUGApprovalBackend(formDataCreate) : createTemplateBackend(formDataCreate)
     }
   };
 
@@ -189,7 +189,7 @@ const CreateTemplateForm = () => {
 
             {/* Template Name */}
             <div>
-              <label className="block font-medium text-gray-700 mb-2">Template Name</label>
+              <label className="block font-medium text-gray-700 mb-2">Template Name*</label>
               <input
                 type="text"
                 name="templateName"
@@ -202,7 +202,7 @@ const CreateTemplateForm = () => {
 
             {/* Title */}
             <div>
-              <label className="block font-medium text-gray-700 mb-2">Title</label>
+              <label className="block font-medium text-gray-700 mb-2">Title*</label>
               <input
                 type="text"
                 name="title"
@@ -215,7 +215,7 @@ const CreateTemplateForm = () => {
 
             {/* Body */}
             <div>
-              <label className="block font-medium text-gray-700 mb-2">Body</label>
+              <label className="block font-medium text-gray-700 mb-2">Body*</label>
               <textarea
                 name="body"
                 value={formData.body}
@@ -228,7 +228,7 @@ const CreateTemplateForm = () => {
 
             {/* Start Date */}
             <div>
-              <label className="block font-medium text-gray-700 mb-2">Start Date</label>
+              <label className="block font-medium text-gray-700 mb-2">Start Date*</label>
               <input
                 type="date"
                 name="startDate"
@@ -241,7 +241,7 @@ const CreateTemplateForm = () => {
 
             {/* End Date */}
             <div>
-              <label className="block font-medium text-gray-700 mb-2">End Date</label>
+              <label className="block font-medium text-gray-700 mb-2">End Date*</label>
               <input
                 type="date"
                 name="endDate"
@@ -257,69 +257,71 @@ const CreateTemplateForm = () => {
           <div className="space-y-4">
 
             {/* Recurrence */}
-            <label className="block font-medium text-gray-700 mb-2">Reoccurance: </label>
-            {/* Recurrence */}
-            <div className="grid grid-cols-3 gap-4">
+            {(formData.startDate !== formData.endDate) && <div>
+              <label className="block font-medium text-gray-700 mb-2">Reoccurrence*: </label>
+              {/* Recurrence */}
+              <div className="grid grid-cols-3 gap-4">
 
-              <div>
-                <label className="block font-medium text-gray-700 mb-2">Duration</label>
-                <select
-                  name="occurrenceUnit"
-                  value={formData.occurrenceUnit}
-                  onChange={handleChange}
-                  className="w-full p-2 bg-gray-50 border border-gray-400 rounded"
-                >
-                  <option value="Week">Weekly</option>
-                  <option value="Month">Monthly</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block font-medium text-gray-700 mb-2">Frequency</label>
-                <select
-                  name="occurrenceFrequency"
-                  value={formData.occurrenceFrequency}
-                  onChange={handleChange}
-                  className="w-full p-2 bg-gray-50 border border-gray-400 rounded"
-                >
-                  {Array.from({ length: 10 }, (_, i) => i + 1).map((val) => (
-                    <option key={val} value={val}>
-                      {val}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-
-              {/* Recurrence Days (Multi-select with checkboxes) */}
-              <div>
-                <label className="block font-medium text-gray-700 mb-2">Days</label>
-                <div
-                  onClick={() => showDays ? setShowDays(false) : setShowDays(true)}
-                  className='text-nowrap p-2 bg-gray-50 border border-gray-400 flex justify-between' >
-                  <p>Show Days</p> <span><img src={downArrow} alt="" /></span>
+                <div>
+                  <label className="block font-medium text-gray-700 mb-2">Duration*</label>
+                  <select
+                    name="occurrenceUnit"
+                    value={formData.occurrenceUnit}
+                    onChange={handleChange}
+                    className="w-full p-2 bg-gray-50 border border-gray-400 rounded"
+                  >
+                    <option value="Week">Weekly</option>
+                    <option value="Month">Monthly</option>
+                  </select>
                 </div>
-                {showDays && <div className="grid grid-cols-3 gap-2 border p-4 rounded absolute bg-white shadow-xl">
-                  {Array.from({ length: maxDays }, (_, i) => i + 1).map((val) => (
-                    <div key={val} >
-                      <label className="flex items-center space-x-2">
-                        <input
-                          type="checkbox"
-                          value={val}
-                          checked={formData.occurrenceDays.includes(val)}
-                          onChange={handleRecDayChange}
-                          disabled={
-                            !formData.occurrenceDays.includes(val) &&
-                            formData.occurrenceDays.length >= formData.occurrenceFrequency
-                          }
-                        />
-                        <span>{val}</span>
-                      </label>
-                    </div>
-                  ))}
-                </div>}
+
+                <div>
+                  <label className="block font-medium text-gray-700 mb-2">Frequency*</label>
+                  <select
+                    name="occurrenceFrequency"
+                    value={formData.occurrenceFrequency}
+                    onChange={handleChange}
+                    className="w-full p-2 bg-gray-50 border border-gray-400 rounded"
+                  >
+                    {Array.from({ length: 10 }, (_, i) => i + 1).map((val) => (
+                      <option key={val} value={val}>
+                        {val}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+
+                {/* Recurrence Days (Multi-select with checkboxes) */}
+                <div>
+                  <label className="block font-medium text-gray-700 mb-2">Days*</label>
+                  <div
+                    onClick={() => showDays ? setShowDays(false) : setShowDays(true)}
+                    className='text-nowrap p-2 bg-gray-50 border border-gray-400 flex justify-between' >
+                    <p>Show Days</p> <span><img src={downArrow} alt="" /></span>
+                  </div>
+                  {showDays && <div className="grid grid-cols-3 gap-2 border p-4 rounded absolute bg-white shadow-xl">
+                    {Array.from({ length: maxDays }, (_, i) => i + 1).map((val) => (
+                      <div key={val} >
+                        <label className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            value={val}
+                            checked={formData.occurrenceDays.includes(val)}
+                            onChange={handleRecDayChange}
+                            disabled={
+                              !formData.occurrenceDays.includes(val) &&
+                              formData.occurrenceDays.length >= formData.occurrenceFrequency
+                            }
+                          />
+                          <span>{val}</span>
+                        </label>
+                      </div>
+                    ))}
+                  </div>}
+                </div>
               </div>
-            </div>
+            </div>}
 
             {/* Notification Image */}
             <div>
@@ -382,7 +384,7 @@ const CreateTemplateForm = () => {
             </div>
           </div>
         </form>
-        {showAlert && <Alert alertDetail={{ success: alertTrue, message: submitMessage }} handleCloseAlert={() => {setshowAlert(false); setAlertTrue(true)}} />}
+        {showAlert && <Alert alertDetail={{ success: alertTrue, message: submitMessage }} handleCloseAlert={() => { setshowAlert(false); setAlertTrue(true); }} />}
       </div>
     </>
   );

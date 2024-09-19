@@ -192,3 +192,11 @@ export const createNewCugUser = (user) => {
 export const userLogin = (data) => {
   return apiClient.post(`/v1/user/login`, data);
 };
+
+export const userLogout = () => {
+  return apiClient.post(`/v1/user/logout`,{
+    headers: {
+      'X-Auth-Token' : `Bearer ${sessionStorage.getItem('authToken')}`,
+    },
+  });
+};

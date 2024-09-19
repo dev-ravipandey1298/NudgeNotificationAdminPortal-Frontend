@@ -95,7 +95,7 @@ const CheckerTempateForm = () => {
           environment: `${status == "APPROVAL_PENDING_CUG" ? 'CUG' : 'PROD'}`,
           file: data.cugEvidence,
           comment: '',
-          imageUrl : data.templateData.imageUrl,
+          imageUrl: data.templateData.imageUrl,
           makerComment: data.makerComment,
         })
 
@@ -186,18 +186,33 @@ const CheckerTempateForm = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log('Form submitted:', formData);
-    if(formData.environment === 'CUG'){
-      markCUGApprovedBackend()
-    }else if(formData.environment === 'PROD'){
-      markPRODApprovedBackend()
+
+    if (formData.comment === '') {
+      setSubmitMessage(ERROR_MESSAGE.COMMENT_IS_REQUIRED)
+      setAlertTrue(false)
+      setshowAlert(true);
+    } else {
+
+      if (formData.environment === 'CUG') {
+        markCUGApprovedBackend()
+      } else if (formData.environment === 'PROD') {
+        markPRODApprovedBackend()
+      }
     }
   };
 
   const handleReject = () => {
-    if(formData.environment === 'CUG'){
-      markCUGRejectBackend()
-    }else if(formData.environment === 'PROD'){
-      markPRODRejectBackend()
+
+    if (formData.comment === '') {
+      setSubmitMessage(ERROR_MESSAGE.COMMENT_IS_REQUIRED)
+      setAlertTrue(false)
+      setshowAlert(true);
+    } else {
+      if (formData.environment === 'CUG') {
+        markCUGRejectBackend()
+      } else if (formData.environment === 'PROD') {
+        markPRODRejectBackend()
+      }
     }
   }
 
@@ -296,10 +311,10 @@ const CheckerTempateForm = () => {
 
           {/* Right Section */}
           <div className="space-y-4">
-          <label className="block font-medium text-gray-700 mb-2">Reoccurance: </label>
+            <label className="block font-medium text-gray-700 mb-2">Reoccurance: </label>
             {/* Recurrence */}
             <div className="grid grid-cols-3 gap-4">
-              
+
               <div>
                 <label className="block font-medium text-gray-700 mb-2">Duration</label>
                 <select
@@ -397,7 +412,7 @@ const CheckerTempateForm = () => {
               </div>
             </div>}
 
-              {/* Show Evidence */}
+            {/* Show Evidence */}
             {formData.environment === "PROD" && <div className="space-y-1 space-x-2 flex items-center">
               <label htmlFor="showEvidence">
                 <p className="inline font-medium text-gray-700 mb-2">Show Evidence :</p>
@@ -409,9 +424,10 @@ const CheckerTempateForm = () => {
 
             {/* Comment */}
             <div className="mb-4">
-              <label className="block font-medium text-gray-700 mb-2">Comment</label>
+              <label className="block font-medium text-gray-700 mb-2">Comment*</label>
               <textarea
                 name="comment"
+                placeholder='Provide your comment here ...'
                 value={formData.comment}
                 onChange={handleChange}
                 className="w-full p-2 bg-gray-50 border border-gray-400 rounded"
@@ -436,10 +452,10 @@ const CheckerTempateForm = () => {
             </div>
           </div>
         </form>
-        {showAlert && <Alert alertDetail={{ success: alertTrue, message: submitMessage }} handleCloseAlert={() => {setshowAlert(false); setAlertTrue(true)}} />}
+        {showAlert && <Alert alertDetail={{ success: alertTrue, message: submitMessage }} handleCloseAlert={() => { setshowAlert(false); setAlertTrue(true) }} />}
       </div>
-      {showEvidence && <ShowImage file={formData.file} handleCloseAlert={() => setShowEvidence(false)}/>}
-      {showNotificationImage && <ShowImage file={formData.imageUrl} handleCloseAlert={() => setShowNotificationImage(false)}/>}
+      {showEvidence && <ShowImage file={formData.file} handleCloseAlert={() => setShowEvidence(false)} />}
+      {showNotificationImage && <ShowImage file={formData.imageUrl} handleCloseAlert={() => setShowNotificationImage(false)} />}
     </>
   );
 };
