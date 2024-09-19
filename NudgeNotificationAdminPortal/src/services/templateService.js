@@ -2,8 +2,8 @@ import axios from 'axios';
 
 const apiClient = axios.create({
   // baseURL: process.env.REACT_APP_API_BASE_URL, 
-  baseURL: "http://localhost:8080/dp-internal/notification-admin",
-  // baseURL: "https://dpuat.wealthapp.hdfcbankuat.com/dp-internal/notification-admin",
+  // baseURL: "http://localhost:8080/dp-internal/notification-admin",
+  baseURL: "https://dpuat.wealthapp.hdfcbankuat.com/dp-internal/notification-admin",
   timeout: 10000, // Request timeout in milliseconds
   headers: {
     'Content-Type': 'application/json',
