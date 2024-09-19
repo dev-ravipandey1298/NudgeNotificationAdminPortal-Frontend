@@ -1,4 +1,4 @@
-export const COMMON_ROUTE = `/dp/portal/notification/`;
+export const COMMON_ROUTE = `/`;
 
 export const CHILD_PATH = {
 	login : `login`,

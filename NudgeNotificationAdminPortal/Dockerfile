@@ -10,7 +10,7 @@ RUN npm run build
 FROM nginx:stable-alpine3.20
 WORKDIR /usr/share/nginx/html
 RUN rm -rf ./*
-COPY --from=buildstage /myapp/dist ./
+COPY --from=buildstage /myapp/dist ./dp/portal/notification/
 COPY --from=buildstage /myapp/public/health.html ./dp/portal/notification/health.html
 RUN rm /etc/nginx/conf.d/default.conf
 COPY nginx.conf /etc/nginx/conf.d/
