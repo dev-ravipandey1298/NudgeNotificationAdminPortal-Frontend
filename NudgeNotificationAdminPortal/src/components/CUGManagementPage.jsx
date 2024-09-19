@@ -86,7 +86,7 @@ const CUGManagementPage = () => {
     try {
       setUsers(users.filter((user) => !selectedUsers.includes(user.mobileNumber))); 
       const userMobileNumber = users.map((user) => user.mobileNumber);
-      deleteSelectedUserBackend(JSON.stringify(userMobileNumber));
+      deleteSelectedUserBackend(userMobileNumber);
       setSelectedUsers([]); 
     } catch (err) {
       setError('Failed to delete users');

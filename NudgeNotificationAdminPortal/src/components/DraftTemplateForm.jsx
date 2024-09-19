@@ -36,6 +36,8 @@ const DraftTemplateForm = () => {
   const [alertTrue, setAlertTrue] = useState(true);
   const [error, setError] = useState(false);
 
+  const formDataUpdate = new FormData();
+
   useEffect(() => {
     getTemplateByIdBackend(templateId);
   }, [])
@@ -94,6 +96,7 @@ const DraftTemplateForm = () => {
           occurrenceFrequency: data.occurrenceFrequency,
           occurrenceUnit: data.occurrenceUnit,
           occurrenceDays: data.occurrenceDays,
+          hourOfDay: data.hourOfDay,
           environment: 'CUG',
           imageFile: data.imageFile,
           comment: '',
@@ -108,10 +111,10 @@ const DraftTemplateForm = () => {
     }
   }
 
-  const updateTemplateBackend = async (templateId, data, imageFile) => {
+  const updateTemplateBackend = async (templateId, formData) => {
     try {
-      const response = await updateTemplate(templateId, data, imageFile);
-      setSubmitMessage("Template Updated successfully with ID: " + templateId)
+      const response = await updateTemplate(templateId, formData);
+      setSubmitMessage("Template Updated succetssfully with ID: " + templateId)
       setshowAlert(true)
     } catch (error) {
       setSubmitMessage(ERROR_MESSAGE.SOME_EXCEPTION_OCCURRED)
@@ -121,9 +124,9 @@ const DraftTemplateForm = () => {
     }
   }
 
-  const submitForCUGApprovalBackend = async (data, imageFile) => {
+  const submitForCUGApprovalBackend = async (formData) => {
     try {
-      const response = await submitForCUG_Approval_Template(data, imageFile);
+      const response = await submitForCUG_Approval_Template(formData);
       if (response.status == 200) {
         setSubmitMessage(response.data.message)
         setshowAlert(true)
@@ -136,6 +139,22 @@ const DraftTemplateForm = () => {
     }
 
   }
+
+  const submitForm = (data) => {
+    const payload = {
+      "templateId" : templateId,
+       "templateName": data.templateName,
+       "title": data.title,
+       "body": data.body,
+       "startDate": data.startDate,
+       "endDate": data.endDate,
+       "occurrenceFrequency": data.occurrenceFrequency,
+       "occurrenceUnit": data.occurrenceUnit,
+       "occurrenceDays": data.occurrenceDays,
+       "hourOfDay": 12
+     }
+     return JSON.stringify(payload);
+ }
 
   // Submit function
   const handleSubmit = (e) => {
@@ -162,13 +181,18 @@ const DraftTemplateForm = () => {
         imageFile: emptyFile,
       }));
     }
+
+    formDataUpdate.append('payload', new Blob([submitForm(formData)], { type: 'application/json' }));
+    formDataUpdate.append('image', formData.imageFile); 
     
     if (error){
-      setSubmitMessage(errorArray.join(", "));
+      const errorsString = errorArray.join(", ")
+      setSubmitMessage(errorsString);
       setAlertTrue(false)
       setshowAlert(true);
+      console.log(errorArray)
     }else{
-    isCheckedFinalSubmit ? submitForCUGApprovalBackend(JSON.stringify(formData), formData.imageFile) : updateTemplateBackend(templateId, JSON.stringify(formData), formData.imageFile);
+    isCheckedFinalSubmit ? submitForCUGApprovalBackend(formDataUpdate) : updateTemplateBackend(templateId, formDataUpdate);
     }
   };
 
@@ -198,7 +222,7 @@ const DraftTemplateForm = () => {
 
   return (
     <>
-      <PageHeader handleClickBack={handleClickBack} heading={"Nudge Template"} />
+      <PageHeader handleClickBack={handleClickBack} heading={"Draft's Template form"} />
       <div className="flex justify-center items-center   p-4">
         <form
           onSubmit={handleSubmit}
@@ -403,7 +427,7 @@ const DraftTemplateForm = () => {
             </div>
           </div>
         </form>
-        {showAlert && <Alert alertDetail={{ success: alertTrue, message: submitMessage }} handleCloseAlert={() => {setshowAlert(false); setAlertTrue(true)}} />}
+        {showAlert && <Alert alertDetail={{ success: alertTrue, message: submitMessage }} handleCloseAlert={() => {setshowAlert(false); setAlertTrue(true); setError(false);} } />}
       </div>
     </>
   );

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import PageHeader from './PageHeader';
 import downArrow from '/icons/down-arrow.png'
-import { getTemplateAllFieldsByTemplateId, getTemplateById, markCUGApproved, markCUGReject, markPRODApproved, markPRODReject } from '../services/templateService';
+import { getNotificationTemplateById, markCUGApproved, markCUGReject, markPRODApproved, markPRODReject } from '../services/templateService';
 import { useNavigate, useParams } from 'react-router-dom';
 import Alert from './Alert';
 import { NAVIGATE_PATH } from '../constants/routeConstant';
@@ -78,24 +78,24 @@ const CheckerTempateForm = () => {
 
   const getTemplateByIdBackend = async (templateId) => {
     try {
-      const response = await getTemplateAllFieldsByTemplateId(templateId);
+      const response = await getNotificationTemplateById(templateId);
 
       if (response.status == 200) {
         const data = response.data.payload;
         setFormData({
           templateId: templateId,
-          templateName: data.templateName,
-          title: data.title,
-          body: data.body,
-          startDate: data.startDate,
-          endDate: data.endDate,
-          occurrenceFrequency: data.occurrenceFrequency,
-          occurrenceUnit: data.occurrenceUnit,
-          occurrenceDays: data.onDaysValue,
+          templateName: data.templateData.templateName,
+          title: data.templateData.title,
+          body: data.templateData.body,
+          startDate: data.templateData.startDate,
+          endDate: data.templateData.endDate,
+          occurrenceFrequency: data.templateData.occurrenceFrequency,
+          occurrenceUnit: data.templateData.occurrenceUnit,
+          occurrenceDays: data.templateData.onDaysValue,
           environment: `${status == "APPROVAL_PENDING_CUG" ? 'CUG' : 'PROD'}`,
-          file: data.file,
+          file: data.cugEvidence,
           comment: '',
-          imageUrl : data.imageUrl,
+          imageUrl : data.templateData.imageUrl,
           makerComment: data.makerComment,
         })
 

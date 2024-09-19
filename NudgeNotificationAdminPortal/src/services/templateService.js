@@ -2,7 +2,8 @@ import axios from 'axios';
 
 const apiClient = axios.create({
   // baseURL: process.env.REACT_APP_API_BASE_URL, 
-  baseURL: "https://dpuat.wealthapp.hdfcbankuat.com/dp-internal/notification-admin",
+  baseURL: "http://localhost:8080/dp-internal/notification-admin",
+  // baseURL: "https://dpuat.wealthapp.hdfcbankuat.com/dp-internal/notification-admin",
   timeout: 10000, // Request timeout in milliseconds
   headers: {
     'Content-Type': 'application/json',
@@ -31,13 +32,13 @@ export const getTemplateById = (templateId) => {
   });
 };
 
-export const getTemplateAllFieldsByTemplateId = (templateId) => {
-  return apiClient.get(`/v1/templates/${templateId}`, {
+export const getNotificationTemplateById = (templateId) => {
+  return apiClient.get(`/v1/templates/${templateId}`,{
     headers: {
       'X-Auth-Token' : `Bearer ${sessionStorage.getItem('authToken')}`,
     },
   });
-};
+}
 
 export const getAllTemplates = () => {
   return apiClient.get(`/v1/templates/draft`, {
@@ -46,17 +47,19 @@ export const getAllTemplates = () => {
     },
   }); 
 };
-export const createTemplate = (templateData, imageFile) => {
-  return apiClient.post(`/v1/templates/draft?image=${imageFile}`, templateData, {
+export const createTemplate = (formData) => {
+  return apiClient.post(`/v1/templates/draft`, formData, {
     headers: {
+      'Content-Type': 'multipart/form-data',
       'X-Auth-Token' : `Bearer ${sessionStorage.getItem('authToken')}`,
     },
   }); 
 };
 
-export const updateTemplate = (templateId, templateData, imageFile) => {
-  return apiClient.put(`/v1/templates/draft/${templateId}?image=${imageFile}`, templateData, {
+export const updateTemplate = (templateId, formData) => {
+  return apiClient.put(`/v1/templates/draft/${templateId}`, formData, {
     headers: {
+      'Content-Type': 'multipart/form-data',
       'X-Auth-Token' : `Bearer ${sessionStorage.getItem('authToken')}`,
     },
   });
@@ -77,9 +80,10 @@ export const deleteNonApprovedTemplate = (templateId) => {
   }); 
 };
 
-export const submitForCUG_Approval_Template = (templateData, imageFile) => {
-  return apiClient.put(`/v1/templates/template/cug-approval?image=${imageFile}`, templateData , {
+export const submitForCUG_Approval_Template = (formData) => {
+  return apiClient.put(`/v1/templates/template/cug-approval`, formData , {
     headers: {
+      'Content-Type': 'multipart/form-data',
       'X-Auth-Token' : `Bearer ${sessionStorage.getItem('authToken')}`,
     },
   });
@@ -144,7 +148,7 @@ export const markPRODApproved = (templateId, comment) => {
 };
 
 export const markPRODEnable = (templateId) => {
-  return apiClient.patch(`templates/${templateId}/enable`, {
+  return apiClient.patch(`/v1/templates/${templateId}/enable`, {
     headers: {
       'X-Auth-Token' : `Bearer ${sessionStorage.getItem('authToken')}`,
     },
@@ -152,7 +156,7 @@ export const markPRODEnable = (templateId) => {
 };
 
 export const markPRODDisable = (templateId) => {
-  return apiClient.patch(`templates/${templateId}/disable`, {
+  return apiClient.patch(`/v1/templates/${templateId}/disable`, {
     headers: {
       'X-Auth-Token' : `Bearer ${sessionStorage.getItem('authToken')}`,
     },
@@ -160,7 +164,7 @@ export const markPRODDisable = (templateId) => {
 };
 
 export const getAllCUGUsers = () => {
-  return apiClient.get(`/cug/users`, {
+  return apiClient.get(`/v1/cug/users`, {
     headers: {
       'X-Auth-Token' : `Bearer ${sessionStorage.getItem('authToken')}`,
     },
@@ -168,7 +172,7 @@ export const getAllCUGUsers = () => {
 };
 
 export const deleteSelectedCUGUsers = (selectedUsers) => {
-  return apiClient.delete(`/cug/users`, selectedUsers, {
+  return apiClient.delete(`/v1/cug/users`, selectedUsers, {
     headers: {
       'X-Auth-Token' : `Bearer ${sessionStorage.getItem('authToken')}`,
     },
@@ -176,7 +180,7 @@ export const deleteSelectedCUGUsers = (selectedUsers) => {
 };
 
 export const createNewCugUser = (user) => {
-  return apiClient.post(`/cug/users`, user, {
+  return apiClient.post(`/v1/cug/users`, user, {
     headers: {
       'X-Auth-Token' : `Bearer ${sessionStorage.getItem('authToken')}`,
     },

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import PageHeader from './PageHeader';
 import downArrow from '/icons/down-arrow.png'
-import { createTemplate } from '../services/templateService';
+import { createTemplate, submitForCUG_Approval_Template } from '../services/templateService';
 import Alert from './Alert';
 import { useNavigate } from 'react-router-dom';
 import { NAVIGATE_PATH } from '../constants/routeConstant';
@@ -28,6 +28,7 @@ const CreateTemplateForm = () => {
   const [error, setError] = useState(false);
   const [isCheckedFinalSubmit, setIsCheckedFinalSubmit] = useState(false);
   const navigate = useNavigate();
+  const formDataCreate = new FormData();
 
 
   // Handle form field changes
@@ -97,6 +98,21 @@ const CreateTemplateForm = () => {
 
   }
 
+  const submitForm = (data) => {
+     const payload = {
+        "templateName": data.templateName,
+        "title": data.title,
+        "body": data.body,
+        "startDate": data.startDate,
+        "endDate": data.endDate,
+        "occurrenceFrequency": data.occurrenceFrequency,
+        "occurrenceUnit": data.occurrenceUnit,
+        "occurrenceDays": data.occurrenceDays,
+        "hourOfDay": 12
+      }
+      return JSON.stringify(payload);
+  }
+
   // Submit function
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -123,13 +139,16 @@ const CreateTemplateForm = () => {
         imageFile: emptyFile,
       }));
     }
+
+    formDataCreate.append('payload', new Blob([submitForm(formData)], { type: 'application/json' }));
+    formDataCreate.append('image', formData.imageFile); 
     
     if (error){
       setSubmitMessage(errorArray.join(", "));
       setAlertTrue(false)
       setshowAlert(true);
     }else{
-    isCheckedFinalSubmit ? submitForCUGApprovalBackend(JSON.stringify(formData), formData.imageFile) : createTemplateBackend(JSON.stringify(formData), formData.imageFile)
+    isCheckedFinalSubmit ? submitForCUGApprovalBackend(formDataCreate) : createTemplateBackend(formDataCreate)
     }
   };
 

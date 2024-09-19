@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import PageHeader from './PageHeader';
 import downArrow from '/icons/down-arrow.png'
-import { getTemplateAllFieldsByTemplateId, getTemplateById, markCUGApproved, markCUGReject, markPRODApproved, markPRODReject } from '../services/templateService';
+import {getNotificationTemplateById, markCUGApproved, markCUGReject, markPRODApproved, markPRODReject } from '../services/templateService';
 import { useNavigate, useParams } from 'react-router-dom';
 import Alert from './Alert';
 import { NAVIGATE_PATH } from '../constants/routeConstant';
@@ -29,6 +29,7 @@ const SearchScreenTemplateForm = () => {
   const [showAlert, setshowAlert] = useState(false);
   const navigate = useNavigate();
   const [showEvidence, setShowEvidence] = useState(false);
+  const [showNotificationImage, setShowNotificationImage] = useState(false);
 
 
   // Handle form field changes
@@ -73,24 +74,27 @@ const SearchScreenTemplateForm = () => {
 
   const getTemplateByIdBackend = async (templateId) => {
     try {
-      const response = await getTemplateAllFieldsByTemplateId(templateId);
+      const response = await getNotificationTemplateById(templateId);
 
       if (response.status == 200) {
         const data = response.data.payload;
         setFormData({
           templateId: templateId,
-          templateName: data.templateName,
-          title: data.title,
-          body: data.body,
-          startDate: data.startDate,
-          endDate: data.endDate,
-          occurrenceFrequency: data.occurrenceFrequency,
-          occurrenceUnit: data.occurrenceUnit,
-          occurrenceDays: data.occurrenceDays,
+          templateName: data.templateData.templateName,
+          title: data.templateData.title,
+          body: data.templateData.body,
+          startDate: data.templateData.startDate,
+          endDate: data.templateData.endDate,
+          occurrenceFrequency: data.templateData.occurrenceFrequency,
+          occurrenceUnit: data.templateData.occurrenceUnit,
+          occurrenceDays: data.templateData.occurrenceDays,
           environment: `${status == "APPROVAL_PENDING_CUG" ? 'CUG' : 'PROD'}`,
-          file: data.file,
+          imageUrl : data.templateData.imageUrl,
+          file: data.cugEvidence,
           comment: '',
           makerComment: data.makerComment,
+          checkerCUGComment : data.checkerCUGComment,
+          checkerFinalComment : data.checkerFinalComment
         })
 
       }
@@ -288,8 +292,8 @@ const SearchScreenTemplateForm = () => {
                   onChange={handleChange}
                   className="w-full p-2 bg-gray-50 border border-gray-400 rounded"
                 >
-                  <option value="Weekly">Weekly</option>
-                  <option value="Monthly">Monthly</option>
+                  <option value="Week">Weekly</option>
+                  <option value="Month">Monthly</option>
                 </select>
               </div>
 
@@ -356,23 +360,33 @@ const SearchScreenTemplateForm = () => {
               </select>
             </div>
 
+            {/* Images */}
+            <div className="space-y-1 space-x-2 flex items-center">
+              <label htmlFor="showEvidence">
+                <p className="inline font-medium text-gray-700 mb-2">Show Notification Image :</p>
+              </label>
+              <div className="flex items-center justify-center pb-1 h-8 w-8">
+                <img onClick={() => setShowNotificationImage(true)} src={preview} alt="" />
+              </div>
+            </div>
+
             {/* Checker CUG Comment */}
             <div className="space-y-1 space-x-2 flex items-center">
               <label htmlFor="checkerCUGComment">
                 <p className="inline font-medium text-gray-700 mb-2">Checker's CUG Comment :</p>
               </label>
               <div className="flex items-center justify-center pb-1">
-                <p>{formData.checkerComment}</p>
+                <p>"{formData.checkerCUGComment}"</p>
               </div>
             </div>
 
-            {/* Checker CUG Comment */}
+            {/* Checker PROD Comment */}
             <div className="space-y-1 space-x-2 flex items-center">
               <label htmlFor="checkerPRODComment">
                 <p className="inline font-medium text-gray-700 mb-2">Checker's PROD Comment :</p>
               </label>
               <div className="flex items-center justify-center pb-1">
-                <p>{formData.checkerComment}</p>
+                <p>"{formData.checkerFinalComment}"</p>
               </div>
             </div>
             
@@ -391,6 +405,7 @@ const SearchScreenTemplateForm = () => {
         {showAlert && <Alert alertDetail={{ success: true, message: submitMessage }} handleCloseAlert={() => setshowAlert(false)} />}
       </div>
       {showEvidence && <ShowImage file={formData.file} handleCloseAlert={() => setShowEvidence(false)}/>}
+      {showNotificationImage && <ShowImage file={formData.imageUrl} handleCloseAlert={() => setShowNotificationImage(false)}/>}
     </>
   );
 };

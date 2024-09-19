@@ -2,10 +2,12 @@ import React, { useEffect, useState } from 'react';
 import PageHeader from './PageHeader';
 import downArrow from '/icons/down-arrow.png'
 import { useNavigate, useParams } from 'react-router-dom';
-import { getTemplateById, markCUGFailed, submitForPRODApproval } from '../services/templateService';
+import { getNotificationTemplateById, getTemplateById, markCUGFailed, submitForPRODApproval } from '../services/templateService';
 import { NAVIGATE_PATH } from '../constants/routeConstant';
 import Alert from './Alert';
 import { ERROR_MESSAGE } from '../constants/ErrorMessageConstant';
+import preview from '/icons/preview.png'
+import { ShowImage } from './ShowImage';
 
 const ActionTemplateForm = () => {
   const { templateId, status } = useParams();
@@ -80,20 +82,23 @@ const ActionTemplateForm = () => {
 
   const getTemplateByIdBackend = async (templateId) => {
     try {
-      const response = await getTemplateById(templateId);
+      const response = await getNotificationTemplateById(templateId);
 
       if (response.status == 200) {
         const data = response.data.payload;
+        console.log(response)
         setFormData({
           templateId: templateId,
-          templateName: data.templateName,
-          title: data.title,
-          body: data.body,
-          startDate: data.startDate,
-          endDate: data.endDate,
-          occurrenceFrequency: data.occurrenceFrequency,
-          occurrenceUnit: data.occurrenceUnit,
-          occurrenceDays: data.occurrenceDays,
+          templateName: data.templateData.templateName,
+          title: data.templateData.title,
+          body: data.templateData.body,
+          startDate: data.templateData.startDate,
+          endDate: data.templateData.endDate,
+          occurrenceFrequency: data.templateData.occurrenceFrequency,
+          occurrenceUnit: data.templateData.occurrenceUnit,
+          occurrenceDays: data.templateData.occurrenceDays,
+          checkerCUGComment : data.checkerCUGComment,
+          imageUrl: data.templateData.imageUrl,
           environment: 'CUG',
           file: null,
           comment: '',
@@ -110,6 +115,9 @@ const ActionTemplateForm = () => {
       const response = await submitForPRODApproval(templateId, formDataPROD);
 
       if(response.status == 200){
+        setSubmitMessage(response.data.message)
+        setshowAlert(true)
+      }else{
         setSubmitMessage(response.data.message)
         setshowAlert(true)
       }
@@ -365,7 +373,7 @@ const ActionTemplateForm = () => {
               <p className="inline font-medium text-gray-700 mb-2">Checker's Comment :</p>
             </label>
             <div className="flex items-center justify-center pb-1">
-              <p></p>
+              <p>"{formData.checkerCUGComment}"</p>
             </div>
             </div>
 
