@@ -15,7 +15,7 @@ WORKDIR /usr/share/nginx/html
 RUN rm -rf ./*
 
 # Copy React build output
-COPY --from=buildstage /myapp/build /usr/share/nginx/html/
+COPY --from=buildstage /myapp/dist /usr/share/nginx/html/
 
 # Copy health check file (optional)
 COPY --from=buildstage /myapp/public/health.html /usr/share/nginx/html/health.html
