@@ -17,7 +17,7 @@ const CheckerTempateForm = () => {
     startDate: '',
     endDate: '',
     occurrenceFrequency: 1,
-    occurrenceUnit: 'Weekly',
+    occurrenceUnit: 'Week',
     occurrenceDays: [],
     environment: 'CUG',
     file: null,
@@ -210,7 +210,7 @@ const CheckerTempateForm = () => {
   }
 
   // Generate days for recurrence checkboxes
-  const maxDays = formData.occurrenceUnit === 'Weekly' ? 7 : 31;
+  const maxDays = formData.occurrenceUnit === 'Week' ? 7 : 31;
 
   return (
     <>
@@ -309,8 +309,8 @@ const CheckerTempateForm = () => {
                   onChange={handleChange}
                   className="w-full p-2 bg-gray-50 border border-gray-400 rounded"
                 >
-                  <option value="Weekly">Weekly</option>
-                  <option value="Monthly">Monthly</option>
+                  <option value="Week">Weekly</option>
+                  <option value="Month">Monthly</option>
                 </select>
               </div>
 

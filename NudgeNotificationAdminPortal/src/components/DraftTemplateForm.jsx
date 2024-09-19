@@ -108,9 +108,9 @@ const DraftTemplateForm = () => {
     }
   }
 
-  const updateTemplateBackend = async (templateId, data) => {
+  const updateTemplateBackend = async (templateId, data, imageFile) => {
     try {
-      const response = await updateTemplate(templateId, data);
+      const response = await updateTemplate(templateId, data, imageFile);
       setSubmitMessage("Template Updated successfully with ID: " + templateId)
       setshowAlert(true)
     } catch (error) {
@@ -121,9 +121,9 @@ const DraftTemplateForm = () => {
     }
   }
 
-  const submitForCUGApprovalBackend = async (data) => {
+  const submitForCUGApprovalBackend = async (data, imageFile) => {
     try {
-      const response = await submitForCUG_Approval_Template(data);
+      const response = await submitForCUG_Approval_Template(data, imageFile);
       if (response.status == 200) {
         setSubmitMessage(response.data.message)
         setshowAlert(true)
@@ -155,13 +155,20 @@ const DraftTemplateForm = () => {
       errorArray.push(ERROR_MESSAGE.SELECTED_DAYS_NOT_EQUAL_TO_FREQUENCY)
     }
 
+    if(formData.imageFile === undefined || formData.imageFile === null){
+      const emptyFile = new File([], 'empty.txt')
+      setFormData((prevData) => ({
+        ...prevData,
+        imageFile: emptyFile,
+      }));
+    }
     
     if (error){
       setSubmitMessage(errorArray.join(", "));
       setAlertTrue(false)
       setshowAlert(true);
     }else{
-    isCheckedFinalSubmit ? submitForCUGApprovalBackend(JSON.stringify(formData)) : updateTemplateBackend(templateId, JSON.stringify(formData));
+    isCheckedFinalSubmit ? submitForCUGApprovalBackend(JSON.stringify(formData), formData.imageFile) : updateTemplateBackend(templateId, JSON.stringify(formData), formData.imageFile);
     }
   };
 
@@ -174,7 +181,7 @@ const DraftTemplateForm = () => {
       startDate: '',
       endDate: '',
       occurrenceFrequency: 1,
-      occurrenceUnit: 'Weekly',
+      occurrenceUnit: 'Week',
       occurrenceDays: [],
       environment: 'CUG',
       imageFile: null,
@@ -187,7 +194,7 @@ const DraftTemplateForm = () => {
   }
 
   // Generate days for recurrence checkboxes
-  const maxDays = formData.occurrenceUnit === 'Weekly' ? 7 : 31;
+  const maxDays = formData.occurrenceUnit === 'Week' ? 7 : 31;
 
   return (
     <>
@@ -282,8 +289,8 @@ const DraftTemplateForm = () => {
                   onChange={handleChange}
                   className="w-full p-2 bg-gray-50 border border-gray-400 rounded"
                 >
-                  <option value="Weekly">Weekly</option>
-                  <option value="Monthly">Monthly</option>
+                  <option value="Week">Weekly</option>
+                  <option value="Month">Monthly</option>
                 </select>
               </div>
 

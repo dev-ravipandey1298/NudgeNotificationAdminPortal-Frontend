@@ -15,7 +15,7 @@ const CreateTemplateForm = () => {
     startDate: '',
     endDate: '',
     occurrenceFrequency: 1,
-    occurrenceUnit: 'Weekly',
+    occurrenceUnit: 'Week',
     occurrenceDays: [],
     environment: 'CUG',
     imageFile: null
@@ -115,6 +115,14 @@ const CreateTemplateForm = () => {
       setError(true);
       errorArray.push(ERROR_MESSAGE.SELECTED_DAYS_NOT_EQUAL_TO_FREQUENCY)
     }
+
+    if(formData.imageFile === undefined || formData.imageFile === null){
+      const emptyFile = new File([], 'empty.txt')
+      setFormData((prevData) => ({
+        ...prevData,
+        imageFile: emptyFile,
+      }));
+    }
     
     if (error){
       setSubmitMessage(errorArray.join(", "));
@@ -134,7 +142,7 @@ const CreateTemplateForm = () => {
       startDate: '',
       endDate: '',
       occurrenceFrequency: 1,
-      occurrenceUnit: 'Weekly',
+      occurrenceUnit: 'Week',
       occurrenceDays: [],
       environment: 'CUG',
       imageFile: null,
@@ -147,7 +155,7 @@ const CreateTemplateForm = () => {
   }
 
   // Generate days for recurrence checkboxes
-  const maxDays = formData.occurrenceUnit === 'Weekly' ? 7 : 31;
+  const maxDays = formData.occurrenceUnit === 'Week' ? 7 : 31;
 
   return (
     <>
@@ -242,8 +250,8 @@ const CreateTemplateForm = () => {
                   onChange={handleChange}
                   className="w-full p-2 bg-gray-50 border border-gray-400 rounded"
                 >
-                  <option value="Weekly">Weekly</option>
-                  <option value="Monthly">Monthly</option>
+                  <option value="Week">Weekly</option>
+                  <option value="Month">Monthly</option>
                 </select>
               </div>
 
