@@ -127,9 +127,16 @@ const CreateTemplateForm = () => {
       errorArray.push(ERROR_MESSAGE.DATE_RANGE)
     }
 
-    if (formData.occurrenceFrequency != formData.occurrenceDays.length) {
+    if ((formData.startDate !== formData.endDate) && (formData.occurrenceFrequency != formData.occurrenceDays.length)) {
       errorData = true;
       errorArray.push(ERROR_MESSAGE.SELECTED_DAYS_NOT_EQUAL_TO_FREQUENCY)
+    }
+
+    if((formData.startDate === formData.endDate)){
+      setFormData((prevData) => ({
+        ...prevData,
+        occurrenceDays: [7],
+      }));
     }
 
     if (formData.imageFile === undefined || formData.imageFile === null) {

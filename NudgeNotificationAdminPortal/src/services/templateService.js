@@ -194,7 +194,7 @@ export const userLogin = (data) => {
 };
 
 export const userLogout = () => {
-  return apiClient.post(`/v1/user/logout`,{
+  return apiClient.post(`/v1/user/logout`,null, {
     headers: {
       'X-Auth-Token' : `Bearer ${sessionStorage.getItem('authToken')}`,
     },

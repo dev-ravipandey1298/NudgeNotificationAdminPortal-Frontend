@@ -33,7 +33,7 @@ const LoginPage = ({setUserDetails}) => {
 
       const loginDetails = {
         "userId" : data.userId,
-        "password" : data.password 
+        "password" : btoa(data.password)
       }
       
       login(loginDetails)
