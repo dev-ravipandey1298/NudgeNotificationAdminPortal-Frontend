@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { setDataInLocalStorage } from "../services/nudgeTemplateService";
 import hdfcBankImageBG from "/icons/hdfcBankImageBG.jpg"
 import { userLogin } from "../services/templateService";
 import { NAVIGATE_PATH } from "../constants/routeConstant";

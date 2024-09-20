@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import pendingApproval from "/icons/pending_approval.png";
 import showAll from "/icons/showAll.png";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { NAVIGATE_PATH } from "../constants/routeConstant";
 
 const Checker = ({ userDetails }) => {

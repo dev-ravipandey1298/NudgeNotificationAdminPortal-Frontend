@@ -1,7 +1,6 @@
 import React from "react";
 import hdfc_logo from "/icons/hdfc_logo.png";
 import { useNavigate } from "react-router-dom";
-import Sidebar from "./Sidebar";
 import { NAVIGATE_PATH } from "../constants/routeConstant";
 import { userLogout } from "../services/templateService";
 

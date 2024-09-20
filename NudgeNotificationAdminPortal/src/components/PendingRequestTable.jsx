@@ -1,8 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import TemplateForm from './TemplateForm';
 import { useNavigate } from 'react-router-dom';
-
-import { getAllCugPendingNudgeTemplatesForApproval, getAllPendingNudgeTemplatesForApproval, getAllProdPendingNudgeTemplatesForApproval } from '../services/nudgeTemplateService';
 import filter from '/icons/filter.png'
 import PageHeader from './PageHeader';
 import {getTemplatesBySearchCriteria } from '../services/templateService';

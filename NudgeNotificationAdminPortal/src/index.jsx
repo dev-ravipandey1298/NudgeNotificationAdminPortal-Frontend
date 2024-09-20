@@ -1,11 +1,9 @@
-import React, { useState } from "react";
+import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
 import "./index.css";
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from "react-router-dom";
 import Layout from "./Layout";
-import TemplateForm from "./components/TemplateForm";
-import TemplateForm_v1 from "./components/TemplateForm";
 import LoginPage from "./components/LoginPage";
 import Maker from "./components/Maker";
 import Checker from "./components/Checker";
@@ -13,11 +11,6 @@ import PendingRequestTable from "./components/PendingRequestTable";
 import ShowAllCheckerTable from "./components/ShowAllCheckerTable";
 import DraftTable from "./components/DraftTable";
 import ShowAllMakerTable from "./components/ShowAllMakerTable";
-import FormComponent from "./components/FormComponent";
-import FormComponent2 from "./components/FormComponent2";
-import FormComponent3 from "./components/FormComponent3";
-import Sidebar from "./components/Sidebar";
-import Popup from "./components/Popup";
 import CUGManagementPage from "./components/CUGManagementPage";
 import CreateTemplateForm from "./components/CreateTemplateForm";
 import DraftTemplateForm from "./components/DraftTemplateForm";
@@ -52,11 +45,8 @@ const router = createBrowserRouter(
 )
 
 
-
-
 ReactDOM.createRoot(document.getElementById("root")).render(
 	<React.StrictMode>
-		{/* <App /> */}
 		<RouterProvider router={router} />
 	</React.StrictMode>,
 );

@@ -4,8 +4,6 @@ import draft from "/icons/draft.png";
 import approval_status from "/icons/approval_status.png";
 import template from "/icons/template.png";
 import { useNavigate } from "react-router-dom";
-import { getAllDraftNudgeTemplate, setDataInLocalStorage } from "../services/nudgeTemplateService";
-import Sidebar from "./Sidebar";
 import { NAVIGATE_PATH } from "../constants/routeConstant";
 
 const Maker = ({ userDetails }) => {

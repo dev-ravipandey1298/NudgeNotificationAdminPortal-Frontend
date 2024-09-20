@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
 import PageHeader from "./PageHeader";
-import { getAllDraftNudgeTemplate } from "../services/nudgeTemplateService";
 import { useNavigate } from "react-router-dom";
 import { deleteTemplate, getAllTemplates } from "../services/templateService";
-import Warning from "./Warning";
 import { NAVIGATE_PATH } from "../constants/routeConstant";
 
 const DraftTable = ({ setShowDraft }) => {
