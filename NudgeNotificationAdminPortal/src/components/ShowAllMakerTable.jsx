@@ -34,7 +34,6 @@ const ShowAllMakerTable = ({ setShowAllRequest }) => {
 
   const handleFetchData = async () => {
     setShowFilter(false)
-    console.log(checkboxes)
     const statusArray = [];
     for (let [key, value] of Object.entries(checkboxes)) {
 
@@ -43,7 +42,6 @@ const ShowAllMakerTable = ({ setShowAllRequest }) => {
         statusArray.push(statusValue);
       }
     }
-    console.log(statusArray)
     const searchCriteria = {
       templateId: '',
       templateName: '',
@@ -68,7 +66,6 @@ const ShowAllMakerTable = ({ setShowAllRequest }) => {
     try {
 
       const response = await getTemplatesBySearchCriteria(searchCriteria);
-      console.log(response.data.payload)
 
       setTableData(response.data.payload)
     } catch (error) {
@@ -131,27 +128,27 @@ const ShowAllMakerTable = ({ setShowAllRequest }) => {
                 <div className='absolute top-full right-0 mt-2 w-60 p-2 border bg-white shadow-md rounded-sm'>
                   <div className="">
                     <input onChange={handleCheckboxChange} checked={checkboxes.checkbox2} type="checkbox" id="checkbox2" className="h-[0.60rem] w-[0.60rem]" name="prodApproved" value="PROD_APPROVED" />
-                    <label className="font-semibold text-red-700 text-sm font-mono" for="checkbox2"> {status.PROD_APPROVED}</label>
+                    <label className="font-semibold text-red-700 text-sm font-mono" htmlFor="checkbox2"> {status.PROD_APPROVED}</label>
                   </div>
                   <div className="">
                     <input onChange={handleCheckboxChange} checked={checkboxes.checkbox3} type="checkbox" id="checkbox3" className="h-[0.60rem] w-[0.60rem]" name="pendingApprovalCUG" value="APPROVAL_PENDING_CUG" />
-                    <label className="font-semibold text-red-700 text-sm font-mono" for="checkbox3"> {status.APPROVAL_PENDING_CUG}</label>
+                    <label className="font-semibold text-red-700 text-sm font-mono" htmlFor="checkbox3"> {status.APPROVAL_PENDING_CUG}</label>
                   </div>
                   <div className="">
                     <input onChange={handleCheckboxChange} checked={checkboxes.checkbox4} type="checkbox" id="checkbox4" className="h-[0.60rem] w-[0.60rem]" name="cugApproved" value="CUG_APPROVED" />
-                    <label className="font-semibold text-red-700 text-sm font-mono" for="checkbox4"> {status.CUG_APPROVED}</label>
+                    <label className="font-semibold text-red-700 text-sm font-mono" htmlFor="checkbox4"> {status.CUG_APPROVED}</label>
                   </div>
                   <div className="">
                     <input onChange={handleCheckboxChange} checked={checkboxes.checkbox5} type="checkbox" id="checkbox5" className="h-[0.60rem] w-[0.60rem]" name="rejected" value="REJECTED" />
-                    <label className="font-semibold text-red-700 text-sm font-mono" for="checkbox5"> {status.REJECTED}</label>
+                    <label className="font-semibold text-red-700 text-sm font-mono" htmlFor="checkbox5"> {status.REJECTED}</label>
                   </div>
                   <div className="">
                     <input onChange={handleCheckboxChange} checked={checkboxes.checkbox6} type="checkbox" id="checkbox6" className="h-[0.60rem] w-[0.60rem]" name="cugFailed" value="CUG_FAILED" />
-                    <label className="font-semibold text-red-700 text-sm font-mono" for="checkbox6"> {status.CUG_FAILED}</label>
+                    <label className="font-semibold text-red-700 text-sm font-mono" htmlFor="checkbox6"> {status.CUG_FAILED}</label>
                   </div>
                   <div className="">
                     <input onChange={handleCheckboxChange} checked={checkboxes.checkbox7} type="checkbox" id="checkbox7" className="h-[0.60rem] w-[0.60rem]" name="pendingApprovalProd" value="APPROVAL_PENDING_PROD" />
-                    <label className="font-semibold text-red-700 text-sm font-mono" for="checkbox7"> {status.APPROVAL_PENDING_PROD}</label>
+                    <label className="font-semibold text-red-700 text-sm font-mono" htmlFor="checkbox7"> {status.APPROVAL_PENDING_PROD}</label>
                   </div>
                   <div className='flex justify-end pt-2' >
                     <button onClick={handleFetchData} className='text-xs font-medium px-2 p-1 rounded-sm text-white bg-green-700 hover:bg-green-600'>Filter</button>

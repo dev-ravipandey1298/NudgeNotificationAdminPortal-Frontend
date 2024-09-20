@@ -21,7 +21,6 @@ const ActionTemplatesTable = () => {
 
     const getActionTemplates = async (searchCriteria) => {
       try {
-        console.log(searchCriteria)
         const response = await getTemplatesBySearchCriteria(searchCriteria);  
         setData(response.data.payload)
       } catch (error) {

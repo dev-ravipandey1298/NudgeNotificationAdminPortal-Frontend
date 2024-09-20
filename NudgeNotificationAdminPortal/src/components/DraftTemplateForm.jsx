@@ -160,7 +160,6 @@ const DraftTemplateForm = () => {
   // Submit function
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
     const start = new Date(formData.startDate);
     const end = new Date(formData.endDate);
     const errorArray = [];
@@ -191,7 +190,6 @@ const DraftTemplateForm = () => {
       setSubmitMessage(errorsString);
       setAlertTrue(false)
       setshowAlert(true);
-      console.log(errorArray)
     } else {
       isCheckedFinalSubmit ? submitForCUGApprovalBackend(formDataUpdate) : updateTemplateBackend(templateId, formDataUpdate);
     }
@@ -414,7 +412,7 @@ const DraftTemplateForm = () => {
 
             <div className="flex items-center space-x-2">
               <input onClick={() => isCheckedFinalSubmit ? setIsCheckedFinalSubmit(false) : setIsCheckedFinalSubmit(true)} type="checkbox" id="finalSubmit" className="h-[0.60rem] w-[0.60rem]" name="finalSubmit" value="submitted" />
-              <label className="font-medium text-red-700 text-sm font-mono" for="finalSubmit"> Submit for CUG approval</label>
+              <label className="font-medium text-red-700 text-sm font-mono" htmlFor="finalSubmit"> Submit for CUG approval</label>
             </div>
 
 

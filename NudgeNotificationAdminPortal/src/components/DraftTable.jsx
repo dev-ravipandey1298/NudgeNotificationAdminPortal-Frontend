@@ -11,7 +11,6 @@ const DraftTable = ({ setShowDraft }) => {
 
   useEffect(() => {
     getAllDraftData()
-    console.log(draftData)
   }, [])
 
   const getAllDraftData = async () => {

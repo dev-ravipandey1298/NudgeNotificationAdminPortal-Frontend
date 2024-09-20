@@ -118,7 +118,6 @@ const CreateTemplateForm = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     let errorData = false;
-    console.log('Form submitted:', formData);
     const start = new Date(formData.startDate);
     const end = new Date(formData.endDate);
 
@@ -307,7 +306,7 @@ const CreateTemplateForm = () => {
                   <label className="block font-medium text-gray-700 mb-2">Days*</label>
                   <div
                     onClick={() => showDays ? setShowDays(false) : setShowDays(true)}
-                    className='w-24 text-nowrap p-2 bg-gray-50 border border-gray-400 flex justify-between items-center' >
+                    className='w-24 h-[2.50rem] rounded-[0.290rem] text-nowrap p-2 bg-gray-50 border border-gray-400 flex justify-between items-center' >
                     <p>Select D.</p> <span><img className='h-4 w-4' src={downArrow} alt="" /></span>
                   </div>
                   {showDays && <div className="grid grid-cols-3 gap-2 border p-4 rounded absolute bg-white shadow-xl">
@@ -378,7 +377,7 @@ const CreateTemplateForm = () => {
 
             <div className="flex items-center space-x-2">
               <input onClick={() => isCheckedFinalSubmit ? setIsCheckedFinalSubmit(false) : setIsCheckedFinalSubmit(true)} type="checkbox" id="finalSubmit" className="h-[0.60rem] w-[0.60rem]" name="finalSubmit" value="submitted" />
-              <label className="font-medium text-red-700 text-sm font-mono" for="finalSubmit"> Submit for CUG approval</label>
+              <label className="font-medium text-red-700 text-sm font-mono" htmlFor="finalSubmit"> Submit for CUG approval</label>
             </div>
 
             {/* Buttons */}

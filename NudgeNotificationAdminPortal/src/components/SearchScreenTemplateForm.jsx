@@ -171,7 +171,6 @@ const SearchScreenTemplateForm = () => {
   // Submit function
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
     if (formData.environment === 'CUG') {
       markCUGApprovedBackend()
     } else if (formData.environment === 'PROD') {
@@ -192,7 +191,9 @@ const SearchScreenTemplateForm = () => {
   }
 
   const handleClickBack = () => {
-    navigate(NAVIGATE_PATH.MAKER_SHOW_ALL)
+    const userLoggedIn = JSON.parse(sessionStorage.getItem("user"))
+    userLoggedIn != null && userLoggedIn.role == "CHECKER" ? 
+    navigate(NAVIGATE_PATH.CHECKER_SHOW_ALL) : navigate(NAVIGATE_PATH.MAKER_SHOW_ALL)
   }
 
   // Generate days for recurrence checkboxes

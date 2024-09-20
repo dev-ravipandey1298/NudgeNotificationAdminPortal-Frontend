@@ -104,7 +104,6 @@ const ActionTemplateForm = () => {
 
       if (response.status == 200) {
         const data = response.data.payload;
-        console.log(response)
         setFormData({
           templateId: templateId,
           templateName: data.templateData.templateName,
@@ -184,7 +183,6 @@ const ActionTemplateForm = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!isResubmit) {
-      console.log('Form submitted:', formData);
       formDataPROD.append('file', formData.file);
       formDataPROD.append('comment', formData.comment);
 

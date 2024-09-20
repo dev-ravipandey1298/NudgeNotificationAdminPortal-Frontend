@@ -23,8 +23,6 @@ const PendingRequestTable = () => {
     try {
      
       const response = await getTemplatesBySearchCriteria(searchCriteria);
-      console.log(response.data.payload)
-
       setPendingRequestData(response.data.payload)
     } catch (error) {
       
@@ -105,11 +103,11 @@ const PendingRequestTable = () => {
                   <div className='absolute top-full right-0 mt-2 w-60 p-2 border bg-white shadow-md rounded-sm'>
                     <div className="">
                       <input onChange={handleCheckboxChange} checked={checkboxes.checkbox2} type="checkbox" id="checkbox2" className="h-[0.60rem] w-[0.60rem]" name="pendingPROD" value={status.APPROVAL_PENDING_PROD} />
-                      <label className="font-semibold text-red-700 text-sm font-mono" for="checkbox2"> {status.APPROVAL_PENDING_PROD}</label>
+                      <label className="font-semibold text-red-700 text-sm font-mono" htmlFor="checkbox2"> {status.APPROVAL_PENDING_PROD}</label>
                     </div>
                     <div className="">
                       <input onChange={handleCheckboxChange} checked={checkboxes.checkbox3} type="checkbox" id="checkbox3" className="h-[0.60rem] w-[0.60rem]" name="pendingCUG" value={status.APPROVAL_PENDING_CUG} />
-                      <label className="font-semibold text-red-700 text-sm font-mono" for="checkbox3"> {status.APPROVAL_PENDING_CUG}</label>
+                      <label className="font-semibold text-red-700 text-sm font-mono" htmlFor="checkbox3"> {status.APPROVAL_PENDING_CUG}</label>
                     </div>
                     <div className='flex justify-end pt-2' >
                     <button disabled={(!checkboxes.checkbox2 && !checkboxes.checkbox3)} onClick={handleFetchData} className='text-sm font-mono hover:text-green-600 text-green-700 '>Filter</button>
