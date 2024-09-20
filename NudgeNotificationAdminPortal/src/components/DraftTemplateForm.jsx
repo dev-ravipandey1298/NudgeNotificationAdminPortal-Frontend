@@ -115,7 +115,7 @@ const DraftTemplateForm = () => {
   const updateTemplateBackend = async (templateId, formData) => {
     try {
       const response = await updateTemplate(templateId, formData);
-      setSubmitMessage("Template Updated succetssfully with ID: " + templateId)
+      setSubmitMessage("Template Updated successfully with ID: " + templateId)
       setshowAlert(true)
     } catch (error) {
       setSubmitMessage(ERROR_MESSAGE.SOME_EXCEPTION_OCCURRED)

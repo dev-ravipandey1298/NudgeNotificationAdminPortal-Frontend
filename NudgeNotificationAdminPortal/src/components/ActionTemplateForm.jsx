@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import PageHeader from './PageHeader';
 import downArrow from '/icons/down-arrow.png'
 import { useNavigate, useParams } from 'react-router-dom';
-import { getNotificationTemplateById, getTemplateById, markCUGFailed, submitForPRODApproval } from '../services/templateService';
+import { getNotificationTemplateById, getTemplateById, markCUGFailed, submitForCUG_Approval_Template, submitForPRODApproval } from '../services/templateService';
 import { NAVIGATE_PATH } from '../constants/routeConstant';
 import Alert from './Alert';
 import { ERROR_MESSAGE } from '../constants/ErrorMessageConstant';
@@ -14,6 +14,7 @@ const ActionTemplateForm = () => {
   const { templateId, status } = useParams();
   const navigate = useNavigate();
   const formDataPROD = new FormData();
+  const formDataCreate = new FormData();
 
   const [formData, setFormData] = useState({
     templateId: templateId,
@@ -28,12 +29,14 @@ const ActionTemplateForm = () => {
     hourOfDay: 9,
     environment: 'CUG',
     file: null,
+    imageFile : null,
+    makerComment: '',
     comment: ''
   });
 
   const [showDays, setShowDays] = useState(false);
 
-  const [isCheckedFinalSubmit, setIsCheckedFinalSubmit] = useState(false);
+  const [isResubmit, setIsResubmit] = useState(false);
   const [submitMessage, setSubmitMessage] = useState('');
   const [showAlert, setshowAlert] = useState(false);
   const [alertTrue, setAlertTrue] = useState(true);
@@ -42,6 +45,11 @@ const ActionTemplateForm = () => {
 
   useEffect(() => {
     getTemplateByIdBackend(templateId);
+
+    if (status === "CUG_FAILED" || status === "REJECTED") {
+      setIsResubmit(true);
+    }
+
   }, [])
 
 
@@ -60,6 +68,14 @@ const ActionTemplateForm = () => {
     setFormData((prevData) => ({
       ...prevData,
       file: e.target.files[0],
+    }));
+  };
+
+  // Handle file upload
+  const handleImageFileChange = (e) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      imageFile: e.target.files[0],
     }));
   };
 
@@ -101,6 +117,8 @@ const ActionTemplateForm = () => {
           occurrenceDays: data.templateData.occurrenceDays,
           hourOfDay: data.templateData.hourOfDay,
           checkerCUGComment: data.checkerCUGComment,
+          checkerFinalComment: data.checkerFinalComment,
+          makerComment: data.makerComment,
           imageUrl: data.templateData.imageUrl,
           environment: 'CUG',
           file: null,
@@ -147,22 +165,66 @@ const ActionTemplateForm = () => {
     }
   }
 
+  const submitForm = (data) => {
+    const payload = {
+      "templateName": data.templateName,
+      "title": data.title,
+      "body": data.body,
+      "startDate": data.startDate,
+      "endDate": data.endDate,
+      "occurrenceFrequency": data.occurrenceFrequency,
+      "occurrenceUnit": data.occurrenceUnit,
+      "occurrenceDays": data.occurrenceDays,
+      "hourOfDay": data.hourOfDay
+    }
+    return JSON.stringify(payload);
+  }
 
   // Submit function
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
-    formDataPROD.append('file', formData.file);
-    formDataPROD.append('comment', formData.comment);
+    if (!isResubmit) {
+      console.log('Form submitted:', formData);
+      formDataPROD.append('file', formData.file);
+      formDataPROD.append('comment', formData.comment);
 
-    if (formData.file == null) {
+      if (formData.file == null) {
+        setSubmitMessage(ERROR_MESSAGE.EVIDENCE_REQUIRED)
+        setAlertTrue(false)
+        setshowAlert(true);
+      }
+      submitForProdApprovalBackend(templateId, formDataPROD);
+    } else {
+      if (formData.imageFile === undefined || formData.imageFile === null) {
+        const emptyFile = new File([], 'empty.txt')
+        setFormData((prevData) => ({
+          ...prevData,
+          imageFile: emptyFile,
+        }));
+      }
+
+      formDataCreate.append('payload', new Blob([submitForm(formData)], { type: 'application/json' }));
+      formDataCreate.append('image', formData.imageFile);
+      submitForCUGApprovalBackend(formDataCreate);
+    }
+
+  };
+
+  const submitForCUGApprovalBackend = async (data) => {
+    try {
+      const response = await submitForCUG_Approval_Template(data);
+      if (response.status == 200) {
+        setSubmitMessage(response.data.message)
+        setshowAlert(true)
+      }
+    } catch (error) {
       setSubmitMessage(ERROR_MESSAGE.SOME_EXCEPTION_OCCURRED)
       setAlertTrue(false)
       setshowAlert(true);
+      console.log(error)
     }
 
-    submitForProdApprovalBackend(templateId, formDataPROD);
-  };
+  }
 
   // Reset form
   const handleFailed = () => {
@@ -187,7 +249,7 @@ const ActionTemplateForm = () => {
   return (
     <>
       <PageHeader handleClickBack={handleClickBack} heading={"Action Nudge Template"} />
-      <div className="flex justify-center items-center   p-4">
+      <div className="flex justify-center items-center p-4">
         <form
           onSubmit={handleSubmit}
           className="bg-white p-8 shadow-lg rounded-lg w-full max-w-6xl  grid grid-cols-2 gap-8"
@@ -200,6 +262,7 @@ const ActionTemplateForm = () => {
               <label className="block font-medium text-gray-700 mb-2">Template Name*</label>
               <input
                 type="text"
+                disabled={!isResubmit}
                 name="templateName"
                 value={formData.templateName}
                 onChange={handleChange}
@@ -215,6 +278,7 @@ const ActionTemplateForm = () => {
                 type="text"
                 name="title"
                 value={formData.title}
+                disabled={!isResubmit}
                 onChange={handleChange}
                 className="w-full p-2 bg-gray-50 border border-gray-400 rounded"
                 required
@@ -227,6 +291,7 @@ const ActionTemplateForm = () => {
               <textarea
                 name="body"
                 value={formData.body}
+                disabled={!isResubmit}
                 onChange={handleChange}
                 className="w-full p-2 bg-gray-50 border border-gray-400 rounded"
                 rows={4}
@@ -240,6 +305,7 @@ const ActionTemplateForm = () => {
               <input
                 type="date"
                 name="startDate"
+                disabled={!isResubmit}
                 value={formData.startDate}
                 onChange={handleChange}
                 className="w-full p-2 bg-gray-50 border border-gray-400 rounded"
@@ -254,6 +320,7 @@ const ActionTemplateForm = () => {
                 type="date"
                 name="endDate"
                 value={formData.endDate}
+                disabled={!isResubmit}
                 onChange={handleChange}
                 className="w-full p-2 bg-gray-50 border border-gray-400 rounded"
                 required
@@ -273,6 +340,7 @@ const ActionTemplateForm = () => {
                 <div>
                   <label className="block font-medium text-gray-700 mb-2">Duration*</label>
                   <select
+                    disabled={!isResubmit}
                     name="occurrenceUnit"
                     value={formData.occurrenceUnit}
                     onChange={handleChange}
@@ -286,6 +354,7 @@ const ActionTemplateForm = () => {
                 <div>
                   <label className="block font-medium text-gray-700 mb-2">Frequency*</label>
                   <select
+                    disabled={!isResubmit}
                     name="occurrenceFrequency"
                     value={formData.occurrenceFrequency}
                     onChange={handleChange}
@@ -317,8 +386,8 @@ const ActionTemplateForm = () => {
                             value={val}
                             checked={formData.occurrenceDays.includes(val)}
                             onChange={handleRecDayChange}
-                            disabled={!formData.occurrenceDays.includes(val) &&
-                              formData.occurrenceDays.length >= formData.occurrenceFrequency}
+                            disabled={isResubmit ? !formData.occurrenceDays.includes(val) &&
+                              formData.occurrenceDays.length >= formData.occurrenceFrequency : !isResubmit}
                           />
                           <span>{maxDays == 7 ? occurrenceFrequencyOption[val - 1].label : val}</span>
                         </label>
@@ -332,6 +401,7 @@ const ActionTemplateForm = () => {
                   <label className="block font-medium text-gray-700 mb-2">Hours Of Day*</label>
                   <select
                     name="hourOfDay"
+                    disabled={!isResubmit}
                     value={formData.hourOfDay}
                     onChange={handleChange}
                     className="w-24 p-2 bg-gray-50 border border-gray-400 rounded"
@@ -348,14 +418,25 @@ const ActionTemplateForm = () => {
             </div>}
 
             {/* Images */}
-            <div className="space-y-1 space-x-2 flex items-center">
+            {!isResubmit && <div className="space-y-1 space-x-2 flex items-center">
               <label htmlFor="showEvidence">
                 <p className="inline font-medium text-gray-700 mb-2">Show Notification Image :</p>
               </label>
               <div className="flex items-center justify-center pb-1 h-8 w-8">
                 <img onClick={() => setShowNotificationImage(true)} src={preview} alt="" />
               </div>
-            </div>
+            </div>}
+
+            {/* Notification Image */}
+            {isResubmit && <div>
+              <label className="block font-medium text-gray-700 mb-2">Notification Image</label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageFileChange}
+                className="w-full p-2 bg-gray-50 border border-gray-400 rounded"
+              />
+            </div>}
 
             {/* Environment */}
             <div className="mb-4 w-[50%]">
@@ -373,7 +454,7 @@ const ActionTemplateForm = () => {
             </div>
 
             {/* CUG Evidence Upload */}
-            <div>
+            {!isResubmit && <div>
               <label className="block font-medium text-gray-700 mb-2">Upload CUG Evidence*</label>
               <input
                 type="file"
@@ -381,20 +462,40 @@ const ActionTemplateForm = () => {
                 onChange={handleFileChange}
                 className="w-full p-2 bg-gray-50 border border-gray-400 rounded"
               />
-            </div>
+            </div>}
 
-            {/* Checker Comment */}
-            <div className="space-y-1 space-x-2 flex items-center">
+            {/* Maker failed Comment */}
+            {(status === "CUG_FAILED" || status === "CUG_FAILED") && <div className="space-y-1 space-x-2 flex items-center">
               <label htmlFor="checkerComment">
-                <p className="inline font-medium text-gray-700 mb-2">Checker's Comment :</p>
+                <p className="inline font-medium text-gray-700 mb-2">Maker's Comment :</p>
               </label>
               <div className="flex items-center justify-center pb-1">
-                <p>"{formData.checkerCUGComment}"</p>
+                <p>{formData.makerComment != '' ? formData.makerComment : '**NO Comments**'}</p>
               </div>
-            </div>
+            </div>}
+
+            {/* Checker Comment */}
+            {(status === "REJECTED" || status === "CUG_APPROVED") && <div className="space-y-1 space-x-2 flex items-center">
+              <label htmlFor="checkerComment">
+                <p className="inline font-medium text-gray-700 mb-2">Checker's CUG Comment :</p>
+              </label>
+              <div className="flex items-center justify-center pb-1">
+                <p>{formData.checkerCUGComment != '' ? formData.checkerCUGComment : '**NO Comments**'}</p>
+              </div>
+            </div>}
+
+            {/* Checker Comment */}
+            {(status === "REJECTED" || status === "CUG_APPROVED") && formData.checkerFinalComment != '' && <div className="space-y-1 space-x-2 flex items-center">
+              <label htmlFor="checkerComment">
+                <p className="inline font-medium text-gray-700 mb-2">Checker's Final Comment :</p>
+              </label>
+              <div className="flex items-center justify-center pb-1">
+                <p>{formData.checkerFinalComment != '' ? formData.checkerFinalComment : '**NO Comments**'}</p>
+              </div>
+            </div>}
 
             {/* Comment */}
-            <div className="mb-4">
+            {!isResubmit && <div className="mb-4">
               <label className="block font-medium text-gray-700 mb-2">Comment</label>
               <textarea
                 name="comment"
@@ -403,12 +504,12 @@ const ActionTemplateForm = () => {
                 onChange={handleChange}
                 className="w-full p-2 bg-gray-50 border border-gray-400 rounded"
               />
-            </div>
+            </div>}
 
 
             {/* Buttons */}
             <div>
-              <div className="flex justify-end space-x-2 mt-4">
+              {!isResubmit ? <div className="flex justify-end space-x-2 mt-4">
                 <button
                   type="submit"
                   className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
@@ -422,7 +523,15 @@ const ActionTemplateForm = () => {
                 >
                   Failed
                 </button>
-              </div>
+              </div> :
+                <div className="flex justify-end space-x-2 mt-4">
+                  <button
+                    type="submit"
+                    className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
+                  >
+                    Re-Submit
+                  </button>
+                </div>}
             </div>
           </div>
         </form>

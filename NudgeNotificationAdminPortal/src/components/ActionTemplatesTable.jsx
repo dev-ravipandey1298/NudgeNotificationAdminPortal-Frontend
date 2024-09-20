@@ -68,7 +68,7 @@ const ActionTemplatesTable = () => {
               <td className="border px-3 py-2">{val.createdOn}</td>
               <td className="border px-3 py-2">{status[val.status]}</td>
               <td className="border px-3 py-2 space-x-1">
-                <button onClick={() => navigate(`${NAVIGATE_PATH.MAKER_ACTION_TEMPLATE_FORM + val.templateId}/status/${val.status}`)} className="text-blue-500 hover:underline">Edit</button>
+                <button onClick={() => navigate(`${NAVIGATE_PATH.MAKER_ACTION_TEMPLATE_FORM + val.templateId}/status/${val.status}`)} className="text-blue-500 hover:underline">{val.status !== "CUG_APPROVED" ? 'Edit' : 'Submit'}</button>
                 <span>|</span>
                 <button  onClick={() => deleteNonApprovedTemplateBackend(val.templateId)}  className="text-blue-500 hover:underline">
                   Delete
