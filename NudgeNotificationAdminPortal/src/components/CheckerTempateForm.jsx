@@ -8,6 +8,7 @@ import { NAVIGATE_PATH } from '../constants/routeConstant';
 import preview from '/icons/preview.png'
 import { ShowImage } from './ShowImage';
 import { ERROR_MESSAGE } from '../constants/ErrorMessageConstant';
+import { occurrenceFrequencyOption, occurrenceHoursOption } from '../constants/reoccuranceValue';
 
 const CheckerTempateForm = () => {
   const [formData, setFormData] = useState({
@@ -19,6 +20,7 @@ const CheckerTempateForm = () => {
     occurrenceFrequency: 1,
     occurrenceUnit: 'Week',
     occurrenceDays: [],
+    hourOfDay: 9,
     environment: 'CUG',
     file: null,
     comment: '',
@@ -91,7 +93,8 @@ const CheckerTempateForm = () => {
           endDate: data.templateData.endDate,
           occurrenceFrequency: data.templateData.occurrenceFrequency,
           occurrenceUnit: data.templateData.occurrenceUnit,
-          occurrenceDays: data.templateData.onDaysValue,
+          occurrenceDays: data.templateData.occurrenceDays,
+          hourOfDay: data.templateData.hourOfDay,
           environment: `${status == "APPROVAL_PENDING_CUG" ? 'CUG' : 'PROD'}`,
           file: data.cugEvidence,
           comment: '',
@@ -311,71 +314,92 @@ const CheckerTempateForm = () => {
 
           {/* Right Section */}
           <div className="space-y-4">
-            <label className="block font-medium text-gray-700 mb-2">Reoccurance: </label>
-            {/* Recurrence */}
-            <div className="grid grid-cols-3 gap-4">
+            {(formData.startDate !== formData.endDate) && <div>
+              <label className="block font-medium text-gray-700 mb-2">Reoccurance: </label>
+              {/* Recurrence */}
+              <div className="grid grid-cols-4 gap-0">
 
-              <div>
-                <label className="block font-medium text-gray-700 mb-2">Duration</label>
-                <select
-                  disabled
-                  name="occurrenceUnit"
-                  value={formData.occurrenceUnit}
-                  onChange={handleChange}
-                  className="w-full p-2 bg-gray-50 border border-gray-400 rounded"
-                >
-                  <option value="Week">Weekly</option>
-                  <option value="Month">Monthly</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block font-medium text-gray-700 mb-2">Frequency</label>
-                <select
-                  disabled
-                  name="occurrenceFrequency"
-                  value={formData.occurrenceFrequency}
-                  onChange={handleChange}
-                  className="w-full p-2 bg-gray-50 border border-gray-400 rounded"
-                >
-                  {Array.from({ length: 10 }, (_, i) => i + 1).map((val) => (
-                    <option key={val} value={val}>
-                      {val}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-
-              {/* Recurrence Days (Multi-select with checkboxes) */}
-              <div>
-                <label className="block font-medium text-gray-700 mb-2">Days</label>
-                <div
-                  onClick={() => showDays ? setShowDays(false) : setShowDays(true)}
-                  className='text-nowrap p-2 bg-gray-50 border border-gray-400 flex justify-between' >
-                  <p>Show Days</p> <span><img src={downArrow} alt="" /></span>
+                <div>
+                  <label className="block font-medium text-gray-700 mb-2">Duration</label>
+                  <select
+                    disabled
+                    name="occurrenceUnit"
+                    value={formData.occurrenceUnit}
+                    onChange={handleChange}
+                    className="w-24 p-2 bg-gray-50 border border-gray-400 rounded"
+                  >
+                    <option value="Week">Weekly</option>
+                    <option value="Month">Monthly</option>
+                  </select>
                 </div>
-                {showDays && <div className="grid grid-cols-3 gap-2 border p-4 rounded absolute bg-white shadow-xl">
-                  {Array.from({ length: maxDays }, (_, i) => i + 1).map((val) => (
-                    <div key={val} >
-                      <label className="flex items-center space-x-2">
-                        <input
-                          type="checkbox"
-                          value={val}
-                          checked={formData.occurrenceDays.includes(val)}
-                          onChange={handleRecDayChange}
-                          disabled={true
-                            // !formData.occurrenceDays.includes(val) &&
-                            // formData.occurrenceDays.length >= formData.occurrenceFrequency
-                          }
-                        />
-                        <span>{val}</span>
-                      </label>
-                    </div>
-                  ))}
-                </div>}
+
+                <div>
+                  <label className="block font-medium text-gray-700 mb-2">Frequency</label>
+                  <select
+                    disabled
+                    name="occurrenceFrequency"
+                    value={formData.occurrenceFrequency}
+                    onChange={handleChange}
+                    className="w-24 p-2 bg-gray-50 border border-gray-400 rounded"
+                  >
+                    {Array.from({ length: 10 }, (_, i) => i + 1).map((val) => (
+                      <option key={val} value={val}>
+                        {val}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+
+                {/* Recurrence Days (Multi-select with checkboxes) */}
+                <div>
+                  <label className="block font-medium text-gray-700 mb-2">Days</label>
+                  <div
+                    onClick={() => showDays ? setShowDays(false) : setShowDays(true)}
+                    className='w-24 h-[2.50rem] rounded-sm text-nowrap p-2 bg-gray-50 border border-gray-400 flex justify-between items-center' >
+                    <p>Show D.</p> <span><img className='h-4 w-4' src={downArrow} alt="" /></span>
+                  </div>
+                  {showDays && <div className="grid grid-cols-3 gap-2 border p-4 rounded absolute bg-white shadow-xl">
+                    {Array.from({ length: maxDays }, (_, i) => i + 1).map((val) => (
+                      <div key={val} >
+                        <label className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            value={val}
+                            checked={formData.occurrenceDays.includes(val)}
+                            onChange={handleRecDayChange}
+                            disabled={true
+                              // !formData.occurrenceDays.includes(val) &&
+                              // formData.occurrenceDays.length >= formData.occurrenceFrequency
+                            }
+                          />
+                          <span>{maxDays == 7 ? occurrenceFrequencyOption[val - 1].label : val}</span>
+                        </label>
+                      </div>
+                    ))}
+                  </div>}
+                </div>
+
+                {/* hour Of Day */}
+                <div>
+                  <label className="block font-medium text-gray-700 mb-2">Hours Of Day</label>
+                  <select
+                    disabled
+                    name="hourOfDay"
+                    value={formData.hourOfDay}
+                    onChange={handleChange}
+                    className="w-28 p-2 bg-gray-50 border border-gray-400 rounded"
+                  >
+                    {Array.from({ length: 24 }, (_, i) => i).map((val) => (
+                      <option key={val} value={val}>
+                        {occurrenceHoursOption[val].label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
               </div>
-            </div>
+            </div>}
 
             {/* Images */}
             <div className="space-y-1 space-x-2 flex items-center">

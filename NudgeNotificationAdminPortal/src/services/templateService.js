@@ -73,7 +73,7 @@ export const deleteTemplate = (templateId) => {
   });
 };
 export const deleteNonApprovedTemplate = (templateId) => {
-  return apiClient.delete(`templates/${templateId}`, {
+  return apiClient.delete(`/v1/templates/${templateId}`, {
     headers: {
       'X-Auth-Token' : `Bearer ${sessionStorage.getItem('authToken')}`,
     },
@@ -148,7 +148,7 @@ export const markPRODApproved = (templateId, comment) => {
 };
 
 export const markPRODEnable = (templateId) => {
-  return apiClient.patch(`/v1/templates/${templateId}/enable`, {
+  return apiClient.patch(`/v1/templates/${templateId}/enable`, null, {
     headers: {
       'X-Auth-Token' : `Bearer ${sessionStorage.getItem('authToken')}`,
     },
@@ -156,7 +156,7 @@ export const markPRODEnable = (templateId) => {
 };
 
 export const markPRODDisable = (templateId) => {
-  return apiClient.patch(`/v1/templates/${templateId}/disable`, {
+  return apiClient.patch(`/v1/templates/${templateId}/disable`, null, {
     headers: {
       'X-Auth-Token' : `Bearer ${sessionStorage.getItem('authToken')}`,
     },

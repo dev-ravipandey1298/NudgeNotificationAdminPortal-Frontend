@@ -9,7 +9,7 @@ const SearchBar = ({setSearchValue, handleSearch}) => {
                     type="search"
                     onChange={(e) => setSearchValue(e.target.value)}
                     className="relative m-0 -mr-0.5 block w-[1px] min-w-0 flex-auto rounded-l border-[1.8px] border-solid border-blue-600 bg-transparent bg-clip-padding px-3 py-[0.25rem] text-sm font-normal leading-[1.6] text-neutral-700 outline-none transition duration-200 ease-in-out focus:z-[3] focus:border-blue-800 focus:text-neutral-700 focus:shadow-[inset_0_0_0_1px_rgb(59,113,202)] focus:outline-none "
-                    placeholder="Search by Template ID or Template Name"
+                    placeholder="Search by Template Name"
                     aria-label="Search"
                     aria-describedby="button-addon3" />
 

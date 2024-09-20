@@ -6,6 +6,7 @@ import { getTemplateById, submitForCUG_Approval_Template, updateTemplate } from 
 import Alert from './Alert';
 import { NAVIGATE_PATH } from '../constants/routeConstant';
 import { ERROR_MESSAGE } from '../constants/ErrorMessageConstant';
+import { occurrenceFrequencyOption, occurrenceHoursOption } from '../constants/reoccuranceValue';
 
 
 const DraftTemplateForm = () => {
@@ -151,7 +152,7 @@ const DraftTemplateForm = () => {
       "occurrenceFrequency": data.occurrenceFrequency,
       "occurrenceUnit": data.occurrenceUnit,
       "occurrenceDays": data.occurrenceDays,
-      "hourOfDay": 12
+      "hourOfDay": data.hourOfDay,
     }
     return JSON.stringify(payload);
   }
@@ -207,6 +208,7 @@ const DraftTemplateForm = () => {
       occurrenceFrequency: 1,
       occurrenceUnit: 'Week',
       occurrenceDays: [],
+      hourOfDay : 9,
       environment: 'CUG',
       imageFile: null,
       comment: '',
@@ -304,7 +306,7 @@ const DraftTemplateForm = () => {
             {(formData.startDate !== formData.endDate) && <div>
               <label className="block font-medium text-gray-700 mb-2">Reoccurrence*: </label>
               {/* Recurrence */}
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-4 gap-4">
 
                 <div>
                   <label className="block font-medium text-gray-700 mb-2">Duration*</label>
@@ -312,7 +314,7 @@ const DraftTemplateForm = () => {
                     name="occurrenceUnit"
                     value={formData.occurrenceUnit}
                     onChange={handleChange}
-                    className="w-full p-2 bg-gray-50 border border-gray-400 rounded"
+                    className="w-24 p-2 bg-gray-50 border border-gray-400 rounded"
                   >
                     <option value="Week">Weekly</option>
                     <option value="Month">Monthly</option>
@@ -325,7 +327,7 @@ const DraftTemplateForm = () => {
                     name="occurrenceFrequency"
                     value={formData.occurrenceFrequency}
                     onChange={handleChange}
-                    className="w-full p-2 bg-gray-50 border border-gray-400 rounded"
+                    className="w-24 p-2 bg-gray-50 border border-gray-400 rounded"
                   >
                     {Array.from({ length: 10 }, (_, i) => i + 1).map((val) => (
                       <option key={val} value={val}>
@@ -341,8 +343,8 @@ const DraftTemplateForm = () => {
                   <label className="block font-medium text-gray-700 mb-2">Days*</label>
                   <div
                     onClick={() => showDays ? setShowDays(false) : setShowDays(true)}
-                    className='text-nowrap p-2 bg-gray-50 border border-gray-400 flex justify-between' >
-                    <p>Show Days</p> <span><img src={downArrow} alt="" /></span>
+                    className='w-24 h-[2.50rem] rounded-sm text-nowrap p-2 bg-gray-50 border border-gray-400 flex justify-between items-center' >
+                    <p>Select D.</p> <span><img className='h-4 w-4' src={downArrow} alt="" /></span>
                   </div>
                   {showDays && <div className="grid grid-cols-3 gap-2 border p-4 rounded absolute bg-white shadow-xl">
                     {Array.from({ length: maxDays }, (_, i) => i + 1).map((val) => (
@@ -358,11 +360,28 @@ const DraftTemplateForm = () => {
                               formData.occurrenceDays.length >= formData.occurrenceFrequency
                             }
                           />
-                          <span>{val}</span>
+                          <span>{maxDays == 7 ? occurrenceFrequencyOption[val-1].label : val}</span>
                         </label>
                       </div>
                     ))}
                   </div>}
+                </div>
+
+                 {/* hour Of Day */}
+                 <div>
+                  <label className="block font-medium text-gray-700 mb-2">Hours Of Day*</label>
+                  <select
+                    name="hourOfDay"
+                    value={formData.hourOfDay}
+                    onChange={handleChange}
+                    className="w-24 p-2 bg-gray-50 border border-gray-400 rounded"
+                  >
+                    {Array.from({ length: 24 }, (_, i) => i).map((val) => (
+                      <option key={val} value={val}>
+                        {occurrenceHoursOption[val].label}
+                      </option>
+                    ))}
+                  </select>
                 </div>
               </div>
             </div>}

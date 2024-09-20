@@ -51,6 +51,7 @@ const ShowAllMakerTable = ({ setShowAllRequest }) => {
     }
     getTemplateDetailsBySearchCriteriaBackend(JSON.stringify(searchCriteria));
   };
+  
 
 
   useEffect(() => {
@@ -76,17 +77,8 @@ const ShowAllMakerTable = ({ setShowAllRequest }) => {
   }
 
   const handleSearch = () => {
-    console.log(searchValue)
-    let isnum = searchValue.match(/^[0-9]+$/)
-    let isValue = searchValue.match(/^[A-Za-z ]+$/)
-    if (isnum) {
-      const searchCriteria = {
-        templateId: searchValue.trim(),
-        templateName: '',
-        status: ['PROD_APPROVED', 'APPROVAL_PENDING_CUG', 'CUG_APPROVED', 'REJECTED', 'CUG_FAILED', 'APPROVAL_PENDING_PROD']
-      }
-      getTemplateDetailsBySearchCriteriaBackend(JSON.stringify(searchCriteria));
-    } else if (isValue) {
+    let isValue = searchValue.match(/^[a-zA-Z0-9 _-]*$/)
+    if (isValue) {
       const searchCriteria = {
         templateId: '',
         templateName: searchValue.trim(),
@@ -94,7 +86,7 @@ const ShowAllMakerTable = ({ setShowAllRequest }) => {
       }
       getTemplateDetailsBySearchCriteriaBackend(JSON.stringify(searchCriteria));
     } else {
-      alert('Invalid input');
+      getTemplateDetailsBySearchCriteriaBackend(JSON.stringify(searchCriteria));
     }
   }
 

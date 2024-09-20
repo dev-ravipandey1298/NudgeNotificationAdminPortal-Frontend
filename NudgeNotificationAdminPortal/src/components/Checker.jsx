@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import pendingApproval from "/icons/pending_approval.png";
 import showAll from "/icons/showAll.png";
 import { Link, useNavigate } from "react-router-dom";
-import { getAllPendingNudgeTemplatesForApproval, setDataInLocalStorage } from "../services/nudgeTemplateService";
 import { NAVIGATE_PATH } from "../constants/routeConstant";
 
 const Checker = ({ userDetails }) => {
@@ -19,7 +18,12 @@ const Checker = ({ userDetails }) => {
   };
 
   useEffect(() => {
-    setDataInLocalStorage()
+    const userLoggedIn = JSON.parse(sessionStorage.getItem("user"))
+      if(userLoggedIn != null && userLoggedIn.role == "CHECKER"){
+        navigate(NAVIGATE_PATH.CHECKER)
+      }else if(userLoggedIn != null && userLoggedIn.role == "MAKER"){
+        navigate(NAVIGATE_PATH.MAKER)
+      }
   }, [])
   
 
@@ -34,11 +38,11 @@ const Checker = ({ userDetails }) => {
           className="relative h-60 w-72 rounded-lg p-4 flex flex-col items-center space-y-4 border shadow-lg transition ease-in-out delay-50 hover:-translate-y-1 hover:scale-110 hover:shadow-xl hover:cursor-pointer"
         >
 
-          {<span className="absolute -top-5 -right-5 h-12 w-12 rounded-full bg-red-400 flex justify-center items-center items">
+          {/* {<span className="absolute -top-5 -right-5 h-12 w-12 rounded-full bg-red-400 flex justify-center items-center items">
             <span className="text-white font-semibold text-lg">
               {}
             </span>
-          </span>}
+          </span>} */}
 
           <span className="text-xl font-bold text-cyan-700">
             Pending requests

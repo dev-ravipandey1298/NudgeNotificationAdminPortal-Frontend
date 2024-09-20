@@ -8,6 +8,7 @@ import Alert from './Alert';
 import { ERROR_MESSAGE } from '../constants/ErrorMessageConstant';
 import preview from '/icons/preview.png'
 import { ShowImage } from './ShowImage';
+import { occurrenceFrequencyOption, occurrenceHoursOption } from '../constants/reoccuranceValue';
 
 const ActionTemplateForm = () => {
   const { templateId, status } = useParams();
@@ -22,8 +23,9 @@ const ActionTemplateForm = () => {
     startDate: '',
     endDate: '',
     occurrenceFrequency: 1,
-    occurrenceUnit: '',
+    occurrenceUnit: 'Week',
     occurrenceDays: [],
+    hourOfDay: 9,
     environment: 'CUG',
     file: null,
     comment: ''
@@ -97,7 +99,8 @@ const ActionTemplateForm = () => {
           occurrenceFrequency: data.templateData.occurrenceFrequency,
           occurrenceUnit: data.templateData.occurrenceUnit,
           occurrenceDays: data.templateData.occurrenceDays,
-          checkerCUGComment : data.checkerCUGComment,
+          hourOfDay: data.templateData.hourOfDay,
+          checkerCUGComment: data.checkerCUGComment,
           imageUrl: data.templateData.imageUrl,
           environment: 'CUG',
           file: null,
@@ -109,15 +112,15 @@ const ActionTemplateForm = () => {
 
     }
   }
-  
+
   const submitForProdApprovalBackend = async (templateId, formDataPROD) => {
     try {
       const response = await submitForPRODApproval(templateId, formDataPROD);
 
-      if(response.status == 200){
+      if (response.status == 200) {
         setSubmitMessage(response.data.message)
         setshowAlert(true)
-      }else{
+      } else {
         setSubmitMessage(response.data.message)
         setshowAlert(true)
       }
@@ -132,7 +135,7 @@ const ActionTemplateForm = () => {
   const markCUGFailedBackend = async (templateId, formDataPROD) => {
     try {
       const response = await markCUGFailed(templateId, formDataPROD);
-      if(response.status == 200){
+      if (response.status == 200) {
         setSubmitMessage("Template mark as failed successfully")
         setshowAlert(true)
       }
@@ -152,7 +155,7 @@ const ActionTemplateForm = () => {
     formDataPROD.append('file', formData.file);
     formDataPROD.append('comment', formData.comment);
 
-    if(formData.file == null){
+    if (formData.file == null) {
       setSubmitMessage(ERROR_MESSAGE.SOME_EXCEPTION_OCCURRED)
       setAlertTrue(false)
       setshowAlert(true);
@@ -166,7 +169,7 @@ const ActionTemplateForm = () => {
     formDataPROD.append('file', formData.file);
     formDataPROD.append('comment', formData.comment);
 
-    if(formData.file == null){
+    if (formData.file == null) {
       setSubmitMessage(ERROR_MESSAGE.SOME_EXCEPTION_OCCURRED)
       setAlertTrue(false)
       setshowAlert(true);
@@ -179,7 +182,6 @@ const ActionTemplateForm = () => {
     navigate(NAVIGATE_PATH.MAKER_ACTION_TEMPLATE)
   }
 
-  // Generate days for recurrence checkboxes
   const maxDays = formData.occurrenceUnit === 'Week' ? 7 : 31;
 
   return (
@@ -263,67 +265,87 @@ const ActionTemplateForm = () => {
           <div className="space-y-4">
 
             {/* Recurrence */}
-            <label className="block font-medium text-gray-700 mb-2">Reoccurrence*: </label>
-            {/* Recurrence */}
-            <div className="grid grid-cols-3 gap-4">
-              
-              <div>
-                <label className="block font-medium text-gray-700 mb-2">Duration*</label>
-                <select
-                  name="occurrenceUnit"
-                  value={formData.occurrenceUnit}
-                  onChange={handleChange}
-                  className="w-full p-2 bg-gray-50 border border-gray-400 rounded"
-                >
-                  <option value="Week">Weekly</option>
-                  <option value="Month">Monthly</option>
-                </select>
-              </div>
+            {(formData.startDate !== formData.endDate) && <div>
+              <label className="block font-medium text-gray-700 mb-2">Reoccurrence*: </label>
+              {/* Recurrence */}
+              <div className="grid grid-cols-4 gap-4">
 
-              <div>
-                <label className="block font-medium text-gray-700 mb-2">Frequency*</label>
-                <select
-                  name="occurrenceFrequency"
-                  value={formData.occurrenceFrequency}
-                  onChange={handleChange}
-                  className="w-full p-2 bg-gray-50 border border-gray-400 rounded"
-                >
-                  {Array.from({ length: 10 }, (_, i) => i + 1).map((val) => (
-                    <option key={val} value={val}>
-                      {val}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-
-              {/* Recurrence Days (Multi-select with checkboxes) */}
-              <div>
-                <label className="block font-medium text-gray-700 mb-2">Days*</label>
-                <div
-                  onClick={() => showDays ? setShowDays(false) : setShowDays(true)}
-                  className='text-nowrap p-2 bg-gray-50 border border-gray-400 flex justify-between' >
-                  <p>Show Days</p> <span><img src={downArrow} alt="" /></span>
+                <div>
+                  <label className="block font-medium text-gray-700 mb-2">Duration*</label>
+                  <select
+                    name="occurrenceUnit"
+                    value={formData.occurrenceUnit}
+                    onChange={handleChange}
+                    className="w-24 p-2 bg-gray-50 border border-gray-400 rounded"
+                  >
+                    <option value="Week">Weekly</option>
+                    <option value="Month">Monthly</option>
+                  </select>
                 </div>
-                {showDays && <div className="grid grid-cols-3 gap-2 border p-4 rounded absolute bg-white shadow-xl">
-                  {Array.from({ length: maxDays }, (_, i) => i + 1).map((val) => (
-                    <div key={val} >
-                      <label className="flex items-center space-x-2">
-                        <input
-                          type="checkbox"
-                          value={val}
-                          checked={formData.occurrenceDays.includes(val)}
-                          onChange={handleRecDayChange}
-                          disabled={!formData.occurrenceDays.includes(val) &&
-                            formData.occurrenceDays.length >= formData.occurrenceFrequency}
-                        />
-                        <span>{val}</span>
-                      </label>
-                    </div>
-                  ))}
-                </div>}
+
+                <div>
+                  <label className="block font-medium text-gray-700 mb-2">Frequency*</label>
+                  <select
+                    name="occurrenceFrequency"
+                    value={formData.occurrenceFrequency}
+                    onChange={handleChange}
+                    className="w-24 p-2 bg-gray-50 border border-gray-400 rounded"
+                  >
+                    {Array.from({ length: 10 }, (_, i) => i + 1).map((val) => (
+                      <option key={val} value={val}>
+                        {val}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+
+                {/* Recurrence Days (Multi-select with checkboxes) */}
+                <div>
+                  <label className="block font-medium text-gray-700 mb-2">Days*</label>
+                  <div
+                    onClick={() => showDays ? setShowDays(false) : setShowDays(true)}
+                    className='w-24 h-[2.50rem] rounded-sm text-nowrap p-2 bg-gray-50 border border-gray-400 flex justify-between items-center' >
+                    <p>Show D.</p> <span><img className='h-4 w-4' src={downArrow} alt="" /></span>
+                  </div>
+                  {showDays && <div className="grid grid-cols-3 gap-2 border p-4 rounded absolute bg-white shadow-xl">
+                    {Array.from({ length: maxDays }, (_, i) => i + 1).map((val) => (
+                      <div key={val} >
+                        <label className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            value={val}
+                            checked={formData.occurrenceDays.includes(val)}
+                            onChange={handleRecDayChange}
+                            disabled={!formData.occurrenceDays.includes(val) &&
+                              formData.occurrenceDays.length >= formData.occurrenceFrequency}
+                          />
+                          <span>{maxDays == 7 ? occurrenceFrequencyOption[val - 1].label : val}</span>
+                        </label>
+                      </div>
+                    ))}
+                  </div>}
+                </div>
+
+                {/* hour Of Day */}
+                <div>
+                  <label className="block font-medium text-gray-700 mb-2">Hours Of Day*</label>
+                  <select
+                    name="hourOfDay"
+                    value={formData.hourOfDay}
+                    onChange={handleChange}
+                    className="w-24 p-2 bg-gray-50 border border-gray-400 rounded"
+                  >
+                    {Array.from({ length: 24 }, (_, i) => i).map((val) => (
+                      <option key={val} value={val}>
+                        {occurrenceHoursOption[val].label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
               </div>
-            </div>
+            </div>}
 
             {/* Images */}
             <div className="space-y-1 space-x-2 flex items-center">
@@ -361,14 +383,14 @@ const ActionTemplateForm = () => {
               />
             </div>
 
-                  {/* Checker Comment */}
+            {/* Checker Comment */}
             <div className="space-y-1 space-x-2 flex items-center">
-            <label htmlFor="checkerComment">
-              <p className="inline font-medium text-gray-700 mb-2">Checker's Comment :</p>
-            </label>
-            <div className="flex items-center justify-center pb-1">
-              <p>"{formData.checkerCUGComment}"</p>
-            </div>
+              <label htmlFor="checkerComment">
+                <p className="inline font-medium text-gray-700 mb-2">Checker's Comment :</p>
+              </label>
+              <div className="flex items-center justify-center pb-1">
+                <p>"{formData.checkerCUGComment}"</p>
+              </div>
             </div>
 
             {/* Comment */}
@@ -404,8 +426,8 @@ const ActionTemplateForm = () => {
             </div>
           </div>
         </form>
-        {showAlert && <Alert alertDetail={{ success: alertTrue, message: submitMessage }} handleCloseAlert={() => {setshowAlert(false); setAlertTrue(true)}} />}
-        {showNotificationImage && <ShowImage file={formData.imageUrl} handleCloseAlert={() => setShowNotificationImage(false)}/>}
+        {showAlert && <Alert alertDetail={{ success: alertTrue, message: submitMessage }} handleCloseAlert={() => { setshowAlert(false); setAlertTrue(true) }} />}
+        {showNotificationImage && <ShowImage file={formData.imageUrl} handleCloseAlert={() => setShowNotificationImage(false)} />}
       </div>
     </>
   );

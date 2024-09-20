@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import PageHeader from "./PageHeader";
 import SearchBar from "./SearchBar";
 import filter from "/icons/filter.png"
-import { getTemplatesBySearchCriteria, markPRODDisable, markPRODEnable } from "../services/templateService";
+import { deleteNonApprovedTemplate, getTemplatesBySearchCriteria, markPRODDisable, markPRODEnable } from "../services/templateService";
 import { status } from "../constants/statusConstant";
 import { NAVIGATE_PATH } from "../constants/routeConstant";
 
@@ -11,7 +11,7 @@ const ShowAllMakerTable = () => {
   const navigate = useNavigate();
   const [isEnable, setIsEnable] = useState(true);
   const [isDisable, setIsDisable] = useState(false);
-  
+
   const [tableData, setTableData] = useState([]);
   const [showFilter, setShowFilter] = useState(false);
   const [searchValue, setSearchValue] = useState('');
@@ -72,22 +72,13 @@ const ShowAllMakerTable = () => {
 
       setTableData(response.data.payload)
     } catch (error) {
-      
+
     }
   }
 
   const handleSearch = () => {
-    console.log(searchValue)
-    let isnum = searchValue.match(/^[0-9]+$/)
-    let isValue = searchValue.match(/^[A-Za-z ]+$/)
-    if (isnum) {
-      const searchCriteria = {
-        templateId: searchValue.trim(),
-        templateName: '',
-        status: ['PROD_APPROVED', 'APPROVAL_PENDING_CUG', 'CUG_APPROVED', 'REJECTED', 'CUG_FAILED', 'APPROVAL_PENDING_PROD']
-      }
-      getTemplateDetailsBySearchCriteriaBackend(JSON.stringify(searchCriteria));
-    } else if (isValue) {
+    let isValue = searchValue.match(/^[a-zA-Z0-9 _-]*$/)
+    if (isValue) {
       const searchCriteria = {
         templateId: '',
         templateName: searchValue.trim(),
@@ -95,32 +86,59 @@ const ShowAllMakerTable = () => {
       }
       getTemplateDetailsBySearchCriteriaBackend(JSON.stringify(searchCriteria));
     } else {
-      alert('Invalid input');
+      getTemplateDetailsBySearchCriteriaBackend(JSON.stringify(searchCriteria));
     }
   }
 
-  const templatePRODEnable = async (templateId) =>{
+  const templatePRODEnable = async (templateId) => {
     try {
       const response = await markPRODEnable(templateId);
       if (response.status == 200) {
         setIsEnable(false);
         setIsDisable(true);
+        const searchCriteria = {
+          templateId: '',
+          templateName: '',
+          status: ['PROD_APPROVED', 'APPROVAL_PENDING_CUG', 'CUG_APPROVED', 'REJECTED', 'CUG_FAILED', 'APPROVAL_PENDING_PROD']
+        }
+        getTemplateDetailsBySearchCriteriaBackend(JSON.stringify(searchCriteria));
       }
-
     } catch (error) {
       console.log(error)
     }
   }
 
-  const templatePRODDisable = async (templateId) =>{
+  const templatePRODDisable = async (templateId) => {
     try {
       const response = await markPRODDisable(templateId);
       if (response.status == 200) {
         setIsEnable(true);
         setIsDisable(false);
+        const searchCriteria = {
+          templateId: '',
+          templateName: '',
+          status: ['PROD_APPROVED', 'APPROVAL_PENDING_CUG', 'CUG_APPROVED', 'REJECTED', 'CUG_FAILED', 'APPROVAL_PENDING_PROD']
+        }
+        getTemplateDetailsBySearchCriteriaBackend(JSON.stringify(searchCriteria));
       }
     } catch (error) {
       console.log(error)
+    }
+  }
+
+  const deleteNonApprovedTemplateBackend = async (templateId) => {
+    try {
+      const response = await deleteNonApprovedTemplate(templateId);
+      if (response.status == 200) {
+        const searchCriteria = {
+          templateId: searchValue.trim(),
+          templateName: '',
+          status: ['PROD_APPROVED', 'APPROVAL_PENDING_CUG', 'CUG_APPROVED', 'REJECTED', 'CUG_FAILED', 'APPROVAL_PENDING_PROD']
+        }
+        getTemplateDetailsBySearchCriteriaBackend(JSON.stringify(searchCriteria));
+      }
+    } catch (error) {
+
     }
   }
 
@@ -192,17 +210,17 @@ const ShowAllMakerTable = () => {
               <td className="border px-3 py-2">{val.approvedBy}</td>
               <td className="border px-3 py-2">{status[val.status]}</td>
               <td className="border px-3 py-2 space-x-1">
-              {val.status === "PROD_APPROVED" ? 
+                {val.status === "PROD_APPROVED" ?
                   <>
-                  {val.active ? <button onClick={() => templatePRODEnable(val.templateId)} className="text-blue-500 hover:underline">Enable</button>
-                  :
-                  <button onClick={() => templatePRODDisable(val.templateId)} className="text-blue-500 hover:underline">Disable</button>}
+                    {!val.active ? <button onClick={() => templatePRODEnable(val.templateId)} className="text-blue-500 hover:underline">Enable</button>
+                      :
+                      <button onClick={() => templatePRODDisable(val.templateId)} className="text-blue-500 hover:underline">Disable</button>}
                   </>
-                : <>
-                <button onClick={() => navigate(`${NAVIGATE_PATH.CHECKER_SEARCH_SCREEN_TEMPLATE_FORM + val.templateId + '/status/' +val.status}`)} className="text-blue-500 hover:underline">View</button>
-                <span>|</span>
-                <button onClick={() => deleteNonApprovedTemplateBackend(val.templateId)} className="text-blue-500 hover:underline">Delete</button>
-                </>}
+                  : <>
+                    <button onClick={() => navigate(`${NAVIGATE_PATH.CHECKER_SEARCH_SCREEN_TEMPLATE_FORM + val.templateId + '/status/' + val.status}`)} className="text-blue-500 hover:underline">View</button>
+                    <span>|</span>
+                    <button onClick={() => deleteNonApprovedTemplateBackend(val.templateId)} className="text-blue-500 hover:underline">Delete</button>
+                  </>}
               </td>
             </tr>
           );
