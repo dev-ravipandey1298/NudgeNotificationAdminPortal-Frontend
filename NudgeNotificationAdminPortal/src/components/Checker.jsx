@@ -34,9 +34,9 @@ const Checker = ({ userDetails }) => {
           className="relative h-60 w-72 rounded-lg p-4 flex flex-col items-center space-y-4 border shadow-lg transition ease-in-out delay-50 hover:-translate-y-1 hover:scale-110 hover:shadow-xl hover:cursor-pointer"
         >
 
-          {getAllPendingNudgeTemplatesForApproval().length > 0 && <span className="absolute -top-5 -right-5 h-12 w-12 rounded-full bg-red-400 flex justify-center items-center items">
+          {<span className="absolute -top-5 -right-5 h-12 w-12 rounded-full bg-red-400 flex justify-center items-center items">
             <span className="text-white font-semibold text-lg">
-              {getAllPendingNudgeTemplatesForApproval().length}
+              {}
             </span>
           </span>}
 

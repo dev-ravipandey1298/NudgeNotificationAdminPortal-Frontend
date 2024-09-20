@@ -72,7 +72,7 @@ const ShowAllMakerTable = () => {
 
       setTableData(response.data.payload)
     } catch (error) {
-
+      
     }
   }
 
