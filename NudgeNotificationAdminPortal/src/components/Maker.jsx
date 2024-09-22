@@ -17,6 +17,8 @@ const Maker = ({ userDetails }) => {
     }else if(userLoggedIn != null && userLoggedIn.role == "MAKER"){
       navigate(NAVIGATE_PATH.MAKER)
     }
+
+    console.log(import.meta.env.VITE_ENVIRONMENT)
   }, [])
   
 

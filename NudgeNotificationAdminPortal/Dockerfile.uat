@@ -5,7 +5,7 @@ COPY package.json ./
 RUN npm install
 COPY . .
 ENV VITE_BASE_URL=/dp/portal/notification
-RUN npm run build --mode dev
+RUN npm run build --mode uat
 
 #  Nginx
 FROM nginx:stable-alpine3.20
