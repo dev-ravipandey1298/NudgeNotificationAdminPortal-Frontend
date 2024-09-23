@@ -89,7 +89,6 @@ const PendingRequestTable = () => {
       <table className="shadow-lg bg-white  mx-auto mt-5 ">
         <thead>
           <tr>
-            <th className="bg-blue-100 border text-left px-3 py-2">Template Id</th>
             <th className="bg-blue-100 border text-left px-3 py-2">Template Name</th>
             <th className="bg-blue-100 border text-left px-3 py-2">Requested On</th>
             <th className="bg-blue-100 border text-left px-3 py-2">Requested By</th>
@@ -123,7 +122,6 @@ const PendingRequestTable = () => {
           return (
             <tbody className=''>
               <tr key={key}>
-                <td className="border px-3 py-2">{val.templateId}</td>
                 <td className="border px-3 py-2">{val.templateName}</td>
                 <td className="border px-3 py-2">{val.createdOn}</td>
                 <td className="border px-3 py-2">{val.createdBy}</td>

@@ -17,7 +17,7 @@ const SearchScreenTemplateForm = () => {
     startDate: '',
     endDate: '',
     occurrenceFrequency: 1,
-    occurrenceUnit: 'Weekly',
+    occurrenceUnit: 'Week',
     occurrenceDays: [],
     hourOfDay: 9,
     environment: 'CUG',
@@ -210,7 +210,7 @@ const SearchScreenTemplateForm = () => {
   }, []);
 
   // Generate days for recurrence checkboxes
-  const maxDays = formData.occurrenceUnit === 'Weekly' ? 7 : 31;
+  const maxDays = formData.occurrenceUnit === 'Week' ? 7 : 31;
 
   return (
     <>
@@ -343,7 +343,7 @@ const SearchScreenTemplateForm = () => {
                     className='w-24 h-[2.50rem] rounded-sm text-nowrap p-2 bg-gray-50 border border-gray-400 flex justify-between items-center' >
                     <p>Show D.</p> <span><img className='h-4 w-4' src={downArrow} alt="" /></span>
                   </div>
-                  {showDays && <div className="grid grid-cols-3 gap-2 border p-4 absolute bg-white shadow-xl">
+                  {showDays && <div className={`grid ${maxDays === 7 ? 'grid-cols-1' : 'grid-cols-3'}  gap-2 border bg-gray-50 p-4 rounded absolute shadow-xl`}>
                     {Array.from({ length: maxDays }, (_, i) => i + 1).map((val) => (
                       <div key={val} >
                         <label className="flex items-center space-x-2">
@@ -407,25 +407,35 @@ const SearchScreenTemplateForm = () => {
               </div>
             </div>
 
-            {/* Checker CUG Comment */}
-            <div className="space-y-1 space-x-2 flex items-center">
-              <label htmlFor="checkerCUGComment">
+            {/* Maker failed Comment */}
+            {(status === "CUG_FAILED") && <div className="space-y-1 space-x-2 flex items-center">
+              <label htmlFor="checkerComment">
+                <p className="inline font-medium text-gray-700 mb-2">Maker's Comment :</p>
+              </label>
+              <div className="flex items-center justify-center pb-1">
+                <p>{formData.makerComment != '' ? formData.makerComment : '**NO Comments**'}</p>
+              </div>
+            </div>}
+
+            {/* Checker Comment */}
+            {(status === "REJECTED" || status === "CUG_APPROVED") && <div className="space-y-1 space-x-2 flex items-center">
+              <label htmlFor="checkerComment">
                 <p className="inline font-medium text-gray-700 mb-2">Checker's CUG Comment :</p>
               </label>
               <div className="flex items-center justify-center pb-1">
-                <p>"{formData.checkerCUGComment}"</p>
+                <p>{formData.checkerCUGComment != '' ? formData.checkerCUGComment : '**NO Comments**'}</p>
               </div>
-            </div>
+            </div>}
 
-            {/* Checker PROD Comment */}
-            <div className="space-y-1 space-x-2 flex items-center">
-              <label htmlFor="checkerPRODComment">
-                <p className="inline font-medium text-gray-700 mb-2">Checker's PROD Comment :</p>
+            {/* Checker Final Comment */}
+            {(status === "REJECTED") && formData.checkerFinalComment != '' && <div className="space-y-1 space-x-2 flex items-center">
+              <label htmlFor="checkerComment">
+                <p className="inline font-medium text-gray-700 mb-2">Checker's Final Comment :</p>
               </label>
               <div className="flex items-center justify-center pb-1">
-                <p>"{formData.checkerFinalComment}"</p>
+                <p>{formData.checkerFinalComment != '' ? formData.checkerFinalComment : '**NO Comments**'}</p>
               </div>
-            </div>
+            </div>}
 
             {/* CUG Evidence */}
             {formData.environment === "PROD" && <div className="space-y-1 space-x-2 flex items-center">

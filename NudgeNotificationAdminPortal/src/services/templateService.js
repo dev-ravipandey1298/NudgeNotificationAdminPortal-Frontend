@@ -110,7 +110,9 @@ export const getAllCUGUsers = () => {
 };
 
 export const deleteSelectedCUGUsers = (selectedUsers) => {
-  return apiClient.delete(`/v1/cug/users`, selectedUsers); 
+  return apiClient.delete(`/v1/cug/users`, {
+    data: selectedUsers, 
+  }); 
 };
 
 export const createNewCugUser = (user) => {

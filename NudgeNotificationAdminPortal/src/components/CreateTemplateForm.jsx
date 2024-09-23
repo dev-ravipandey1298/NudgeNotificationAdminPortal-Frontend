@@ -28,6 +28,7 @@ const CreateTemplateForm = () => {
   const [showAlert, setshowAlert] = useState(false);
   const [alertTrue, setAlertTrue] = useState(true);
   const [isCheckedFinalSubmit, setIsCheckedFinalSubmit] = useState(false);
+  const [isSuccessfullySubmit, setIsSuccessfullySubmit] = useState(false);
   const navigate = useNavigate();
   const formDataCreate = new FormData();
 
@@ -74,6 +75,7 @@ const CreateTemplateForm = () => {
       if (response.status == 201) {
         setSubmitMessage("Template saved to Draft successfully with ID: " + response.data.payload.templateId)
         setshowAlert(true)
+        setIsSuccessfullySubmit(true);
       }
     } catch (error) {
       setSubmitMessage(ERROR_MESSAGE.SOME_EXCEPTION_OCCURRED)
@@ -89,6 +91,7 @@ const CreateTemplateForm = () => {
       if (response.status == 200) {
         setSubmitMessage(response.data.message)
         setshowAlert(true)
+        setIsSuccessfullySubmit(true);
       }
     } catch (error) {
       setSubmitMessage(ERROR_MESSAGE.SOME_EXCEPTION_OCCURRED)
@@ -162,6 +165,7 @@ const CreateTemplateForm = () => {
 
   // Reset form
   const handleReset = () => {
+    document.getElementById("notificationImageFile").value = '';
     setFormData({
       templateName: '',
       title: '',
@@ -307,7 +311,7 @@ const CreateTemplateForm = () => {
                     onChange={handleChange}
                     className="w-24 p-2 bg-gray-50 border border-gray-400 rounded"
                   >
-                    {Array.from({ length: 10 }, (_, i) => i + 1).map((val) => (
+                    {Array.from({ length: maxDays }, (_, i) => i + 1).map((val) => (
                       <option key={val} value={val}>
                         {val}
                       </option>
@@ -324,7 +328,7 @@ const CreateTemplateForm = () => {
                     className='w-24 h-[2.50rem] rounded-[0.290rem] text-nowrap p-2 bg-gray-50 border border-gray-400 flex justify-between items-center' >
                     <p>Select D.</p> <span><img className='h-4 w-4' src={downArrow} alt="" /></span>
                   </div>
-                  {showDays && <div className="grid grid-cols-3 gap-2 border p-4 rounded absolute bg-white shadow-xl">
+                  {showDays && <div className={`grid ${maxDays === 7 ? 'grid-cols-1' : 'grid-cols-3'}  gap-2 border bg-gray-50 p-4 rounded absolute shadow-xl`}>
                     {Array.from({ length: maxDays }, (_, i) => i + 1).map((val) => (
                       <div key={val} >
                         <label className="flex items-center space-x-2">
@@ -425,10 +429,10 @@ const CreateTemplateForm = () => {
             </div>
           </div>
         </form>
-        {showAlert && <Alert alertDetail={{ success: alertTrue, message: submitMessage }} handleCloseAlert={() => { setshowAlert(false); setAlertTrue(true); }} />}
+        {showAlert && <Alert alertDetail={{ success: alertTrue, message: submitMessage }} handleCloseAlert={() => { setshowAlert(false); setAlertTrue(true); isSuccessfullySubmit && navigate(NAVIGATE_PATH.MAKER); setIsSuccessfullySubmit(false); }} />}
       </div>
     </>
   );
-};
+}; 
 
 export default CreateTemplateForm;

@@ -7,6 +7,8 @@ import Alert from './Alert';
 import { NAVIGATE_PATH } from '../constants/routeConstant';
 import { ERROR_MESSAGE } from '../constants/ErrorMessageConstant';
 import { occurrenceFrequencyOption, occurrenceHoursOption } from '../constants/reoccuranceValue';
+import preview from '/icons/preview.png'
+import { ShowImage } from './ShowImage';
 
 
 const DraftTemplateForm = () => {
@@ -36,6 +38,9 @@ const DraftTemplateForm = () => {
   const [showAlert, setshowAlert] = useState(false);
   const [alertTrue, setAlertTrue] = useState(true);
   const [error, setError] = useState(false);
+  const [showNotificationImage, setShowNotificationImage] = useState(false);
+  const [isEditImage, setIsEditImage] = useState(false);
+  const [isSuccessfullySubmit, setIsSuccessfullySubmit] = useState(false);
 
   const formDataUpdate = new FormData();
 
@@ -99,7 +104,7 @@ const DraftTemplateForm = () => {
           occurrenceDays: data.occurrenceDays,
           hourOfDay: data.hourOfDay,
           environment: 'CUG',
-          imageFile: data.imageFile,
+          imageFile: data.imageUrl,
           comment: '',
         })
 
@@ -117,6 +122,7 @@ const DraftTemplateForm = () => {
       const response = await updateTemplate(templateId, formData);
       setSubmitMessage("Template Updated successfully with ID: " + templateId)
       setshowAlert(true)
+      setIsSuccessfullySubmit(true)
     } catch (error) {
       setSubmitMessage(ERROR_MESSAGE.SOME_EXCEPTION_OCCURRED)
       setAlertTrue(false)
@@ -131,6 +137,7 @@ const DraftTemplateForm = () => {
       if (response.status == 200) {
         setSubmitMessage(response.data.message)
         setshowAlert(true)
+        setIsSuccessfullySubmit(true)
       }
     } catch (error) {
       setSubmitMessage(ERROR_MESSAGE.SOME_EXCEPTION_OCCURRED)
@@ -197,6 +204,7 @@ const DraftTemplateForm = () => {
 
   // Reset form
   const handleReset = () => {
+    document.getElementById("notificationImageFile").value = '';
     setFormData({
       templateName: '',
       title: '',
@@ -359,7 +367,7 @@ const DraftTemplateForm = () => {
                     className='w-24 h-[2.50rem] rounded-sm text-nowrap p-2 bg-gray-50 border border-gray-400 flex justify-between items-center' >
                     <p>Select D.</p> <span><img className='h-4 w-4' src={downArrow} alt="" /></span>
                   </div>
-                  {showDays && <div className="grid grid-cols-3 gap-2 border p-4 rounded absolute bg-white shadow-xl">
+                  {showDays && <div className={`grid ${maxDays === 7 ? 'grid-cols-1' : 'grid-cols-3'}  gap-2 border bg-gray-50 p-4 rounded absolute shadow-xl`}>
                     {Array.from({ length: maxDays }, (_, i) => i + 1).map((val) => (
                       <div key={val} >
                         <label className="flex items-center space-x-2">
@@ -400,15 +408,32 @@ const DraftTemplateForm = () => {
             </div>}
 
             {/* Notification Image */}
-            <div>
+
+            {(formData.imageFile !== null || formData.imageFile !== '') && !isEditImage && 
+            <div className='flex'>
+              <div className="space-y-1 space-x-2 flex items-center">
+                <label htmlFor="showEvidence">
+                  <p className="inline font-medium text-gray-700 mb-2">Show Notification Image :</p>
+                </label>
+                <div className="flex items-center justify-center pb-1 h-8 w-8">
+                  <img onClick={() => setShowNotificationImage(true)} src={preview} alt="" />
+                </div>
+              </div>
+              <button onClick={() => setIsEditImage((prev) => !prev)} className='text-blue-600 font-semibold ml-10 underline hover:text-blue-500'>Edit Image</button>
+            </div>
+            
+            }
+
+            {isEditImage && <div>
               <label className="block font-medium text-gray-700 mb-2">Notification Image</label>
               <input
+                id='notificationImageFile'
                 type="file"
                 accept="image/*"
                 onChange={handleFileChange}
                 className="w-full p-2 bg-gray-50 border border-gray-400 rounded"
               />
-            </div>
+            </div>}
 
             {/* Environment */}
             <div className="mb-4 w-[50%]">
@@ -461,7 +486,8 @@ const DraftTemplateForm = () => {
             </div>
           </div>
         </form>
-        {showAlert && <Alert alertDetail={{ success: alertTrue, message: submitMessage }} handleCloseAlert={() => { setshowAlert(false); setAlertTrue(true); setError(false); }} />}
+        {showAlert && <Alert alertDetail={{ success: alertTrue, message: submitMessage }} handleCloseAlert={() => { setshowAlert(false); setAlertTrue(true); setError(false); isSuccessfullySubmit && navigate(NAVIGATE_PATH.MAKER_DRAFTS); setIsSuccessfullySubmit(false); }} />}
+        {showNotificationImage && <ShowImage file={formData.imageFile} handleCloseAlert={() => setShowNotificationImage(false)} />}
       </div>
     </>
   );

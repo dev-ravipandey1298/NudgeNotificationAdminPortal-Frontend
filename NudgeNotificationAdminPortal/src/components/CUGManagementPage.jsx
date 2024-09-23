@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect} from 'react';
 import PageHeader from './PageHeader';
 import { createNewCugUser, deleteSelectedCUGUsers, getAllCUGUsers } from '../services/templateService';
 import Alert from './Alert';
@@ -85,8 +85,9 @@ const CUGManagementPage = () => {
     try {
       setUsers(users.filter((user) => !selectedUsers.includes(user.mobileNumber))); 
       const userMobileNumber = users.map((user) => user.mobileNumber);
-      deleteSelectedUserBackend(JSON.stringify(userMobileNumber));
-      setSelectedUsers([]); 
+
+      console.log(userMobileNumber)
+      deleteSelectedUserBackend(userMobileNumber);
     } catch (err) {
       setError(true);
       console.log(err)

@@ -113,7 +113,6 @@ const ShowAllMakerTable = ({ setShowAllRequest }) => {
       <SearchBar setSearchValue={setSearchValue} handleSearch={handleSearch} />
       <table className="shadow-lg bg-white mx-auto mt-5 ">
         <tr>
-          <th className="bg-blue-100 border text-left px-3 py-2">Template Id</th>
           <th className="bg-blue-100 border text-left px-3 py-2">Template Name</th>
           <th className="bg-blue-100 border text-left px-3 py-2">Created on</th>
           <th className="bg-blue-100 border text-left px-3 py-2">Updated on</th>
@@ -162,10 +161,7 @@ const ShowAllMakerTable = ({ setShowAllRequest }) => {
         {tableData.map((val, key) => {
           return (
             <tr key={key}>
-              <td className="border px-3 py-2">{val.templateId}</td>
-              {/* <td className="border px-8 py-4">{val.createdOn}</td> */}
               <td className="border px-3 py-2">{val.templateName}</td>
-              {/* <td className="border px-8 py-4">{val.requestSentOn}</td> */}
               <td className="border px-3 py-2">{val.createdOn}</td>
               <td className="border px-3 py-2">{val.updatedOn}</td>
               <td className="border px-3 py-2">{val.approvedBy}</td>

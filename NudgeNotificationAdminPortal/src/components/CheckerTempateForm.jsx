@@ -36,6 +36,7 @@ const CheckerTempateForm = () => {
   const [showNotificationImage, setShowNotificationImage] = useState(false);
   const [alertTrue, setAlertTrue] = useState(true);
   const [error, setError] = useState(false);
+  const [isSuccessfullySubmit, setIsSuccessfullySubmit] = useState(false);
 
 
   // Handle form field changes
@@ -126,6 +127,7 @@ const CheckerTempateForm = () => {
 
         setSubmitMessage("Template rejected successfully.")
         setshowAlert(true)
+        setIsSuccessfullySubmit(true)
       }
     } catch (error) {
       setSubmitMessage(ERROR_MESSAGE.SOME_EXCEPTION_OCCURRED)
@@ -142,6 +144,7 @@ const CheckerTempateForm = () => {
       if (response.status == 200) {
         setSubmitMessage("Template approved successfully.")
         setshowAlert(true)
+        setIsSuccessfullySubmit(true)
       }
     } catch (error) {
       setSubmitMessage(ERROR_MESSAGE.SOME_EXCEPTION_OCCURRED)
@@ -159,6 +162,7 @@ const CheckerTempateForm = () => {
 
         setSubmitMessage("Template rejected for PROD successfully.")
         setshowAlert(true)
+        setIsSuccessfullySubmit(true)
       }
     } catch (error) {
       setSubmitMessage(ERROR_MESSAGE.SOME_EXCEPTION_OCCURRED)
@@ -175,6 +179,7 @@ const CheckerTempateForm = () => {
       if (response.status == 200) {
         setSubmitMessage("Template approved for PROD successfully.")
         setshowAlert(true)
+        setIsSuccessfullySubmit(true)
       }
     } catch (error) {
       setSubmitMessage(ERROR_MESSAGE.SOME_EXCEPTION_OCCURRED)
@@ -476,7 +481,7 @@ const CheckerTempateForm = () => {
             </div>
           </div>
         </form>
-        {showAlert && <Alert alertDetail={{ success: alertTrue, message: submitMessage }} handleCloseAlert={() => { setshowAlert(false); setAlertTrue(true) }} />}
+        {showAlert && <Alert alertDetail={{ success: alertTrue, message: submitMessage }} handleCloseAlert={() => { setshowAlert(false); setAlertTrue(true);  isSuccessfullySubmit && navigate(NAVIGATE_PATH.CHECKER_PENDING_REQUEST); setIsSuccessfullySubmit(false);}} />}
       </div>
       {showEvidence && <ShowImage file={formData.file} handleCloseAlert={() => setShowEvidence(false)} />}
       {showNotificationImage && <ShowImage file={formData.imageUrl} handleCloseAlert={() => setShowNotificationImage(false)} />}

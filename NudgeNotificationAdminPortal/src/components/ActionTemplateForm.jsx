@@ -29,7 +29,7 @@ const ActionTemplateForm = () => {
     hourOfDay: 9,
     environment: 'CUG',
     file: null,
-    imageFile : null,
+    imageFile: null,
     makerComment: '',
     comment: ''
   });
@@ -42,6 +42,8 @@ const ActionTemplateForm = () => {
   const [alertTrue, setAlertTrue] = useState(true);
   const [error, setError] = useState(false);
   const [showNotificationImage, setShowNotificationImage] = useState(false);
+  const [isEditImage, setIsEditImage] = useState(false);
+  const [isSuccessfullySubmit, setIsSuccessfullySubmit] = useState(false);
 
   useEffect(() => {
     getTemplateByIdBackend(templateId);
@@ -118,7 +120,7 @@ const ActionTemplateForm = () => {
           checkerCUGComment: data.checkerCUGComment,
           checkerFinalComment: data.checkerFinalComment,
           makerComment: data.makerComment,
-          imageUrl: data.templateData.imageUrl,
+          imageFile: data.templateData.imageUrl,
           environment: 'CUG',
           file: null,
           comment: '',
@@ -137,6 +139,7 @@ const ActionTemplateForm = () => {
       if (response.status == 200) {
         setSubmitMessage(response.data.message)
         setshowAlert(true)
+        setIsSuccessfullySubmit(true);
       } else {
         setSubmitMessage(response.data.message)
         setshowAlert(true)
@@ -155,6 +158,7 @@ const ActionTemplateForm = () => {
       if (response.status == 200) {
         setSubmitMessage("Template mark as failed successfully")
         setshowAlert(true)
+        setIsSuccessfullySubmit(true);
       }
     } catch (error) {
       setSubmitMessage(ERROR_MESSAGE.EVIDENCE_REQUIRED)
@@ -190,9 +194,9 @@ const ActionTemplateForm = () => {
         setSubmitMessage(ERROR_MESSAGE.EVIDENCE_REQUIRED)
         setAlertTrue(false)
         setshowAlert(true);
-      }else {
+      } else {
         submitForProdApprovalBackend(templateId, formDataPROD);
-      }   
+      }
     } else {
       if (formData.imageFile === undefined || formData.imageFile === null) {
         const emptyFile = new File([], 'empty.txt')
@@ -215,6 +219,7 @@ const ActionTemplateForm = () => {
       if (response.status == 200) {
         setSubmitMessage(response.data.message)
         setshowAlert(true)
+        setIsSuccessfullySubmit(true);
       }
     } catch (error) {
       setSubmitMessage(ERROR_MESSAGE.SOME_EXCEPTION_OCCURRED)
@@ -390,7 +395,7 @@ const ActionTemplateForm = () => {
                     className='w-24 h-[2.50rem] rounded-sm text-nowrap p-2 bg-gray-50 border border-gray-400 flex justify-between items-center' >
                     <p>Show D.</p> <span><img className='h-4 w-4' src={downArrow} alt="" /></span>
                   </div>
-                  {showDays && <div className="grid grid-cols-3 gap-2 border p-4 rounded absolute bg-white shadow-xl">
+                  {showDays && <div className={`grid ${maxDays === 7 ? 'grid-cols-1' : 'grid-cols-3'}  gap-2 border bg-gray-50 p-4 rounded absolute shadow-xl`}>
                     {Array.from({ length: maxDays }, (_, i) => i + 1).map((val) => (
                       <div key={val} >
                         <label className="flex items-center space-x-2">
@@ -431,6 +436,35 @@ const ActionTemplateForm = () => {
             </div>}
 
             {/* Images */}
+            {isResubmit && <div>
+              {(formData.imageFile !== null || formData.imageFile !== '') && !isEditImage &&
+                <div className='flex'>
+                  <div className="space-y-1 space-x-2 flex items-center">
+                    <label htmlFor="showEvidence">
+                      <p className="inline font-medium text-gray-700 mb-2">Show Notification Image :</p>
+                    </label>
+                    <div className="flex items-center justify-center pb-1 h-8 w-8">
+                      <img onClick={() => setShowNotificationImage(true)} src={preview} alt="" />
+                    </div>
+                  </div>
+                  <button onClick={() => setIsEditImage((prev) => !prev)} className='text-blue-600 font-semibold ml-10 underline hover:text-blue-500'>Edit Image</button>
+                </div>
+
+              }
+
+              {isEditImage && <div>
+                <label className="block font-medium text-gray-700 mb-2">Notification Image</label>
+                <input
+                  id='notificationImageFile'
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  className="w-full p-2 bg-gray-50 border border-gray-400 rounded"
+                />
+              </div>}
+            </div>}
+
+            {/* Notification Image */}
             {!isResubmit && <div className="space-y-1 space-x-2 flex items-center">
               <label htmlFor="showEvidence">
                 <p className="inline font-medium text-gray-700 mb-2">Show Notification Image :</p>
@@ -438,17 +472,6 @@ const ActionTemplateForm = () => {
               <div className="flex items-center justify-center pb-1 h-8 w-8">
                 <img onClick={() => setShowNotificationImage(true)} src={preview} alt="" />
               </div>
-            </div>}
-
-            {/* Notification Image */}
-            {isResubmit && <div>
-              <label className="block font-medium text-gray-700 mb-2">Notification Image</label>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleImageFileChange}
-                className="w-full p-2 bg-gray-50 border border-gray-400 rounded"
-              />
             </div>}
 
             {/* Environment */}
@@ -548,8 +571,8 @@ const ActionTemplateForm = () => {
             </div>
           </div>
         </form>
-        {showAlert && <Alert alertDetail={{ success: alertTrue, message: submitMessage }} handleCloseAlert={() => { setshowAlert(false); setAlertTrue(true) }} />}
-        {showNotificationImage && <ShowImage file={formData.imageUrl} handleCloseAlert={() => setShowNotificationImage(false)} />}
+        {showAlert && <Alert alertDetail={{ success: alertTrue, message: submitMessage }} handleCloseAlert={() => { setshowAlert(false); setAlertTrue(true); isSuccessfullySubmit && navigate(NAVIGATE_PATH.MAKER_ACTION_TEMPLATE); setIsSuccessfullySubmit(false);}} />}
+        {showNotificationImage && <ShowImage file={formData.imageFile} handleCloseAlert={() => setShowNotificationImage(false)} />}
       </div>
     </>
   );
