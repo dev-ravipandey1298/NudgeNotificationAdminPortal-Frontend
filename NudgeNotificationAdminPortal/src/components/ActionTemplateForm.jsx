@@ -190,8 +190,9 @@ const ActionTemplateForm = () => {
         setSubmitMessage(ERROR_MESSAGE.EVIDENCE_REQUIRED)
         setAlertTrue(false)
         setshowAlert(true);
-      }
-      submitForProdApprovalBackend(templateId, formDataPROD);
+      }else {
+        submitForProdApprovalBackend(templateId, formDataPROD);
+      }   
     } else {
       if (formData.imageFile === undefined || formData.imageFile === null) {
         const emptyFile = new File([], 'empty.txt')
@@ -224,13 +225,12 @@ const ActionTemplateForm = () => {
 
   }
 
-  // Reset form
   const handleFailed = () => {
     formDataPROD.append('file', formData.file);
     formDataPROD.append('comment', formData.comment);
 
     if (formData.file == null) {
-      setSubmitMessage(ERROR_MESSAGE.SOME_EXCEPTION_OCCURRED)
+      setSubmitMessage(ERROR_MESSAGE.EVIDENCE_REQUIRED)
       setAlertTrue(false)
       setshowAlert(true);
     }
@@ -241,6 +241,19 @@ const ActionTemplateForm = () => {
   const handleClickBack = () => {
     navigate(NAVIGATE_PATH.MAKER_ACTION_TEMPLATE)
   }
+
+  const closeDropdown = (event) => {
+    if (!event.target.closest('.dropdown')) {
+      setShowDays(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('click', closeDropdown);
+    return () => {
+      document.removeEventListener('click', closeDropdown);
+    };
+  }, []);
 
   const maxDays = formData.occurrenceUnit === 'Week' ? 7 : 31;
 
@@ -308,6 +321,7 @@ const ActionTemplateForm = () => {
                 onChange={handleChange}
                 className="w-full p-2 bg-gray-50 border border-gray-400 rounded"
                 required
+                min={new Date().toISOString().split("T")[0]}
               />
             </div>
 
@@ -322,6 +336,7 @@ const ActionTemplateForm = () => {
                 onChange={handleChange}
                 className="w-full p-2 bg-gray-50 border border-gray-400 rounded"
                 required
+                min={new Date().toISOString().split("T")[0]}
               />
             </div>
           </div>
@@ -368,7 +383,7 @@ const ActionTemplateForm = () => {
 
 
                 {/* Recurrence Days (Multi-select with checkboxes) */}
-                <div>
+                <div className='dropdown'>
                   <label className="block font-medium text-gray-700 mb-2">Days*</label>
                   <div
                     onClick={() => showDays ? setShowDays(false) : setShowDays(true)}
@@ -482,8 +497,8 @@ const ActionTemplateForm = () => {
               </div>
             </div>}
 
-            {/* Checker Comment */}
-            {(status === "REJECTED" || status === "CUG_APPROVED") && formData.checkerFinalComment != '' && <div className="space-y-1 space-x-2 flex items-center">
+            {/* Checker Final Comment */}
+            {(status === "REJECTED") && formData.checkerFinalComment != '' && <div className="space-y-1 space-x-2 flex items-center">
               <label htmlFor="checkerComment">
                 <p className="inline font-medium text-gray-700 mb-2">Checker's Final Comment :</p>
               </label>

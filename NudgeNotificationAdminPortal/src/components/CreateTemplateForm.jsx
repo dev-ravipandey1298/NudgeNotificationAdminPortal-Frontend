@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PageHeader from './PageHeader';
 import downArrow from '/icons/down-arrow.png'
 import { createTemplate, submitForCUG_Approval_Template } from '../services/templateService';
@@ -182,6 +182,19 @@ const CreateTemplateForm = () => {
     navigate(NAVIGATE_PATH.MAKER)
   }
 
+  const closeDropdown = (event) => {
+    if (!event.target.closest('.dropdown')) {
+      setShowDays(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('click', closeDropdown);
+    return () => {
+      document.removeEventListener('click', closeDropdown);
+    };
+  }, []);
+
   // Generate days for recurrence checkboxes
   const maxDays = formData.occurrenceUnit === 'Week' ? 7 : 31;
 
@@ -240,11 +253,12 @@ const CreateTemplateForm = () => {
               <label className="block font-medium text-gray-700 mb-2">Start Date*</label>
               <input
                 type="date"
-                name="startDate"
+                name="startDate"          
                 value={formData.startDate}
                 onChange={handleChange}
                 className="w-full p-2 bg-gray-50 border border-gray-400 rounded"
                 required
+                min={new Date().toISOString().split("T")[0]}
               />
             </div>
 
@@ -258,6 +272,7 @@ const CreateTemplateForm = () => {
                 onChange={handleChange}
                 className="w-full p-2 bg-gray-50 border border-gray-400 rounded"
                 required
+                min={new Date().toISOString().split("T")[0]}
               />
             </div>
           </div>
@@ -302,7 +317,7 @@ const CreateTemplateForm = () => {
 
 
                 {/* Recurrence Days (Multi-select with checkboxes) */}
-                <div>
+                <div className='dropdown'>
                   <label className="block font-medium text-gray-700 mb-2">Days*</label>
                   <div
                     onClick={() => showDays ? setShowDays(false) : setShowDays(true)}

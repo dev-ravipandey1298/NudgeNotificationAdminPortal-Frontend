@@ -217,6 +217,19 @@ const DraftTemplateForm = () => {
     navigate(NAVIGATE_PATH.MAKER_DRAFTS)
   }
 
+  const closeDropdown = (event) => {
+    if (!event.target.closest('.dropdown')) {
+      setShowDays(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('click', closeDropdown);
+    return () => {
+      document.removeEventListener('click', closeDropdown);
+    };
+  }, []);
+
   // Generate days for recurrence checkboxes
   const maxDays = formData.occurrenceUnit === 'Week' ? 7 : 31;
 
@@ -280,6 +293,7 @@ const DraftTemplateForm = () => {
                 onChange={handleChange}
                 className="w-full p-2 bg-gray-50 border border-gray-400 rounded"
                 required
+                min={new Date().toISOString().split("T")[0]}
               />
             </div>
 
@@ -293,6 +307,7 @@ const DraftTemplateForm = () => {
                 onChange={handleChange}
                 className="w-full p-2 bg-gray-50 border border-gray-400 rounded"
                 required
+                min={new Date().toISOString().split("T")[0]}
               />
             </div>
           </div>
@@ -337,7 +352,7 @@ const DraftTemplateForm = () => {
 
 
                 {/* Recurrence Days (Multi-select with checkboxes) */}
-                <div>
+                <div className="dropdown">
                   <label className="block font-medium text-gray-700 mb-2">Days*</label>
                   <div
                     onClick={() => showDays ? setShowDays(false) : setShowDays(true)}

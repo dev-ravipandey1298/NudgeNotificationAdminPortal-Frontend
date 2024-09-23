@@ -18,24 +18,24 @@ const LoginPage = ({setUserDetails}) => {
     ]
 
     const onSubmit = (data) => {
-      const loggedInUser = userDetails.find(user => user.userId === data.userId);
-      sessionStorage.setItem('authToken', '423432523rfdsifn34or')
-      if (loggedInUser !== undefined && loggedInUser.password === data.password) {
-        // setUserDetails(loggedInUser);
-        loggedInUser.role === "CHECKER" ? navigate(NAVIGATE_PATH.CHECKER) : navigate(NAVIGATE_PATH.MAKER)
-        loggedInUser.password = "";
-        sessionStorage.setItem("user", JSON.stringify(loggedInUser))
-        console.log(loggedInUser)
-      } else {
-        alert('Invalid credentials');
-      }
-
-      // const loginDetails = {
-      //   "userId" : data.userId,
-      //   "password" : btoa(data.password)
+      // const loggedInUser = userDetails.find(user => user.userId === data.userId);
+      // sessionStorage.setItem('authToken', '423432523rfdsifn34or')
+      // if (loggedInUser !== undefined && loggedInUser.password === data.password) {
+      //   // setUserDetails(loggedInUser);
+      //   loggedInUser.role === "CHECKER" ? navigate(NAVIGATE_PATH.CHECKER) : navigate(NAVIGATE_PATH.MAKER)
+      //   loggedInUser.password = "";
+      //   sessionStorage.setItem("user", JSON.stringify(loggedInUser))
+      //   console.log(loggedInUser)
+      // } else {
+      //   alert('Invalid credentials');
       // }
+
+      const loginDetails = {
+        "userId" : data.userId,
+        "password" : btoa(data.password)
+      }
       
-      // login(loginDetails)
+      login(loginDetails)
 
     };
 
