@@ -17,6 +17,7 @@ const DraftTemplateForm = () => {
 
   const { templateId, status } = useParams();
   const navigate = useNavigate();
+  const [showTooltip, setShowTooltip] = useState(false);
 
 
   const [formData, setFormData] = useState({
@@ -249,6 +250,14 @@ const DraftTemplateForm = () => {
     }
   };
 
+  const handleMouseEnter = () => {
+    setShowTooltip(true);
+  };
+
+  const handleMouseLeave = () => {
+    setShowTooltip(false);
+  };
+
   useEffect(() => {
     document.addEventListener('click', closeDropdown);
     return () => {
@@ -458,7 +467,7 @@ const DraftTemplateForm = () => {
             </div>}
 
             {/* Environment */}
-            <div className="mb-4 w-[50%]">
+            <div onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} className="relative mb-4 w-[50%]">
               <label className="block font-medium text-gray-700 mb-2">Environment</label>
               <select
                 name="environment"
@@ -466,10 +475,16 @@ const DraftTemplateForm = () => {
                 disabled={true}
                 onChange={handleChange}
                 className="w-full p-2 bg-gray-50 border border-gray-400 rounded"
+
               >
                 <option value="CUG">CUG</option>
                 <option value="PROD">PROD</option>
               </select>
+              {showTooltip && (
+              <div className="absolute left-0 mt-2 w-[200px] p-2 bg-gray-800 text-white text-sm rounded shadow">
+                {VALIDATION_MESSAGES.ENVIRONMENT_DETAILS}
+              </div>
+              )}
             </div>
 
             <div className="flex items-center space-x-2">

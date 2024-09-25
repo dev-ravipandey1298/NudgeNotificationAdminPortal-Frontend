@@ -18,6 +18,7 @@ const ActionTemplateForm = () => {
   const formDataPROD = new FormData();
   const formDataCreate = new FormData();
   const [isCheckedForImage, setIsCheckedForImage] = useState(false);
+  const [showTooltip, setShowTooltip] = useState(false);
 
   const [formData, setFormData] = useState({
     templateId: templateId,
@@ -56,6 +57,14 @@ const ActionTemplateForm = () => {
     }
 
   }, [])
+
+  const handleMouseEnter = () => {
+    setShowTooltip(true);
+  };
+
+  const handleMouseLeave = () => {
+    setShowTooltip(false);
+  };
 
 
 
@@ -147,7 +156,7 @@ const ActionTemplateForm = () => {
           checkerFinalComment: data.checkerFinalComment,
           makerComment: data.makerComment,
           imageFile: data.templateData.imageUrl,
-          environment: 'CUG',
+          environment: `${(status == "REJECTED" || status == "CUG_FAILED" || status == "REJECTED") ? 'CUG' : 'PROD'}`,
           file: null,
           comment: '',
         })
@@ -513,7 +522,7 @@ const ActionTemplateForm = () => {
             </div>}
 
             {/* Environment */}
-            <div className="mb-4 w-[50%]">
+            <div onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} className="relative mb-4 w-[50%]">
               <label className="block font-medium text-gray-700 mb-2">Environment</label>
               <select
                 name="environment"
@@ -521,10 +530,16 @@ const ActionTemplateForm = () => {
                 disabled={true}
                 onChange={handleChange}
                 className="w-full p-2 bg-gray-50 border border-gray-400 rounded"
+
               >
                 <option value="CUG">CUG</option>
                 <option value="PROD">PROD</option>
               </select>
+              {showTooltip && (
+              <div className="absolute left-0 mt-2 w-[200px] p-2 bg-gray-800 text-white text-sm rounded shadow">
+                {VALIDATION_MESSAGES.ENVIRONMENT_DETAILS}
+              </div>
+              )}
             </div>
 
             {/* CUG Evidence Upload */}
@@ -560,7 +575,7 @@ const ActionTemplateForm = () => {
             </div>}
 
             {/* Checker Final Comment */}
-            {(status === "REJECTED") && formData.checkerFinalComment != '' && <div className="space-y-1 space-x-2 flex items-center">
+            {(status === "REJECTED" && (formData.checkerFinalComment !== '' || formData.checkerFinalComment !== null))  && <div className="space-y-1 space-x-2 flex items-center">
               <label htmlFor="checkerComment">
                 <p className="inline font-medium text-gray-700 mb-2">Checker's Final Comment :</p>
               </label>

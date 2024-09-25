@@ -8,6 +8,7 @@ import { NAVIGATE_PATH } from '../constants/routeConstant';
 import preview from '/icons/preview.png'
 import { ShowImage } from './ShowImage';
 import { occurrenceFrequencyOption, occurrenceHoursOption } from '../constants/reoccuranceValue';
+import { VALIDATION_MESSAGES } from '../constants/ValidationMessageConstant';
 
 const SearchScreenTemplateForm = () => {
   const [formData, setFormData] = useState({
@@ -32,6 +33,7 @@ const SearchScreenTemplateForm = () => {
   const navigate = useNavigate();
   const [showEvidence, setShowEvidence] = useState(false);
   const [showNotificationImage, setShowNotificationImage] = useState(false);
+  const [showTooltip, setShowTooltip] = useState(false);
 
 
   // Handle form field changes
@@ -91,7 +93,7 @@ const SearchScreenTemplateForm = () => {
           occurrenceUnit: data.templateData.occurrenceUnit,
           occurrenceDays: data.templateData.occurrenceDays,
           hourOfDay: data.templateData.hourOfDay,
-          environment: `${status == "APPROVAL_PENDING_CUG" ? 'CUG' : 'PROD'}`,
+          environment: `${(status == "APPROVAL_PENDING_PROD" || status == "PROD_APPROVED" || status == "CUG_APPROVED") ? 'PROD' : 'CUG'}`,
           imageUrl: data.templateData.imageUrl,
           file: data.cugEvidence,
           comment: '',
@@ -208,6 +210,14 @@ const SearchScreenTemplateForm = () => {
       document.removeEventListener('click', closeDropdown);
     };
   }, []);
+
+  const handleMouseEnter = () => {
+    setShowTooltip(true);
+  };
+
+  const handleMouseLeave = () => {
+    setShowTooltip(false);
+  };
 
   // Generate days for recurrence checkboxes
   const maxDays = formData.occurrenceUnit === 'Week' ? 7 : 31;
@@ -383,7 +393,7 @@ const SearchScreenTemplateForm = () => {
             </div>}
 
             {/* Environment */}
-            <div className="mb-4 w-[50%]">
+            <div onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} className="relative mb-4 w-[50%]">
               <label className="block font-medium text-gray-700 mb-2">Environment</label>
               <select
                 name="environment"
@@ -391,10 +401,16 @@ const SearchScreenTemplateForm = () => {
                 disabled={true}
                 onChange={handleChange}
                 className="w-full p-2 bg-gray-50 border border-gray-400 rounded"
+
               >
                 <option value="CUG">CUG</option>
                 <option value="PROD">PROD</option>
               </select>
+              {showTooltip && (
+              <div className="absolute left-0 mt-2 w-[200px] p-2 bg-gray-800 text-white text-sm rounded shadow">
+                {VALIDATION_MESSAGES.ENVIRONMENT_DETAILS}
+              </div>
+              )}
             </div>
 
             {/* Images */}

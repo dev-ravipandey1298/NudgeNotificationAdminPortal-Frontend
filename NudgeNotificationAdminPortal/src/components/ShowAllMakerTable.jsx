@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PageHeader from "./PageHeader";
 import SearchBar from "./SearchBar";
@@ -27,6 +27,7 @@ const ShowAllMakerTable = ({ setShowAllRequest }) => {
     checkbox6: false, // CUG_FAILED
     checkbox7: false // APPROVAL_PENDING_PROD
   });
+  const dropdownRef = useRef(null);
 
   const handleCheckboxChange = (event) => {
     const { id, checked, value } = event.target;
@@ -54,6 +55,11 @@ const ShowAllMakerTable = ({ setShowAllRequest }) => {
     getTemplateDetailsBySearchCriteriaBackend(JSON.stringify(searchCriteria));
   };
   
+  const handleClickOutside = (event) => {
+    if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      setShowFilter(false);
+    }
+  };
 
 
   useEffect(() => {
@@ -64,6 +70,12 @@ const ShowAllMakerTable = ({ setShowAllRequest }) => {
       status: ['PROD_APPROVED', 'APPROVAL_PENDING_CUG', 'CUG_APPROVED', 'REJECTED', 'CUG_FAILED', 'APPROVAL_PENDING_PROD']
     }
     getTemplateDetailsBySearchCriteriaBackend(JSON.stringify(searchCriteria));
+
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, [])
 
   const getTemplateDetailsBySearchCriteriaBackend = async (searchCriteria) => {
@@ -86,9 +98,9 @@ const ShowAllMakerTable = ({ setShowAllRequest }) => {
         status: ['PROD_APPROVED', 'APPROVAL_PENDING_CUG', 'CUG_APPROVED', 'REJECTED', 'CUG_FAILED', 'APPROVAL_PENDING_PROD']
       }
       getTemplateDetailsBySearchCriteriaBackend(JSON.stringify(searchCriteria));
-    } else {
-      getTemplateDetailsBySearchCriteriaBackend(JSON.stringify(searchCriteria));
-    }
+    }else{
+      alert('Invalid Input')
+    } 
   }
 
   const deleteNonApprovedTemplateBackend = async (templateId) => {
@@ -128,7 +140,7 @@ const ShowAllMakerTable = ({ setShowAllRequest }) => {
                 <img onClick={() => showFilter ? setShowFilter(false) : setShowFilter(true)} src={filter} alt="" />
               </div>
               {showFilter &&
-                <div className='absolute top-full right-0 mt-2 w-60 p-2 border bg-white shadow-md rounded-sm'>
+                <div ref={dropdownRef} className='absolute top-full right-0 mt-2 w-64 p-2 border bg-white shadow-md rounded-sm'>
                   <div className="">
                     <input onChange={handleCheckboxChange} checked={checkboxes.checkbox2} type="checkbox" id="checkbox2" className="h-[0.60rem] w-[0.60rem]" name="prodApproved" value="PROD_APPROVED" />
                     <label className="font-semibold text-red-700 text-sm font-mono" htmlFor="checkbox2"> {status.PROD_APPROVED}</label>

@@ -29,9 +29,6 @@ const Checker = ({ userDetails }) => {
 
   return (
     <>
-     <div className="flex justify-end p-2 pl-4">
-        <button onClick={() => navigate(NAVIGATE_PATH.CUG_USER)} className="hover:cursor-pointer underline-offset-2 underline text-blue-700 hover:text-blue-900 font-sm flex justify-end ">Go to CUG Screen </button>
-        </div>
       <div className="flex justify-center items-center h-[80vh] space-x-10">
         <div
           onClick={handlePendingRequests}
