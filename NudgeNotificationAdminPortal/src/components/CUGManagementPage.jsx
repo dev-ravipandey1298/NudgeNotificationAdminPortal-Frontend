@@ -34,7 +34,7 @@ const CUGManagementPage = () => {
         setUsers(response.data.payload)
       }
     } catch (error) {
-      setSubmitMessage(ERROR_MESSAGE.SOME_EXCEPTION_OCCURRED)
+      setSubmitMessage(error.response.data.message)
       setAlertTrue(false)
       setshowAlert(true);
       console.log(error)
@@ -57,7 +57,7 @@ const CUGManagementPage = () => {
         alert("Deleted")
       }
     } catch (error) {
-      setSubmitMessage(ERROR_MESSAGE.SOME_EXCEPTION_OCCURRED)
+      setSubmitMessage(error.response.data.message)
       setAlertTrue(false)
       setshowAlert(true);
       console.log(error)
@@ -71,7 +71,7 @@ const CUGManagementPage = () => {
         alert("Created")
       }
     } catch (error) {
-      setSubmitMessage(ERROR_MESSAGE.SOME_EXCEPTION_OCCURRED)
+      setSubmitMessage(error.response.data.message)
       setAlertTrue(false)
       setshowAlert(true);
       console.log(error)

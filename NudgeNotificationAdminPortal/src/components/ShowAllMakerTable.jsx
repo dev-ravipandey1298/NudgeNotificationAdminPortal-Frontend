@@ -6,6 +6,8 @@ import filter from "/icons/filter.png"
 import { deleteNonApprovedTemplate, getTemplatesBySearchCriteria } from "../services/templateService";
 import { status } from "../constants/statusConstant";
 import { NAVIGATE_PATH } from "../constants/routeConstant";
+import ConfirmationWarning from "./ConfirmationWarning";
+import { CONFIRMATION_MESSAGES } from "../constants/ValidationMessageConstant";
 
 const ShowAllMakerTable = ({ setShowAllRequest }) => {
 
@@ -14,6 +16,8 @@ const ShowAllMakerTable = ({ setShowAllRequest }) => {
   const [tableData, setTableData] = useState([]);
   const [showFilter, setShowFilter] = useState(false);
   const [searchValue, setSearchValue] = useState('');
+  const [confirmation, setConfirmation] = useState(false);
+  const [deletionDetails, setDeletionDetails] = useState({templateName : '', templateId : ''});
   const [checkboxes, setCheckboxes] = useState({
     checkbox1: false, // Select All
     checkbox2: false, // PROD_APPROVED
@@ -172,13 +176,14 @@ const ShowAllMakerTable = ({ setShowAllRequest }) => {
                 : <>
                 <button onClick={() => navigate(`${NAVIGATE_PATH.MAKER_SEARCH_SCREEN_TEMPLATE_FORM + val.templateId + '/status/' +val.status}`)} className="text-blue-500 hover:underline">View</button>
                 <span>|</span>
-                <button onClick={() => deleteNonApprovedTemplateBackend(val.templateId)} className="text-blue-500 hover:underline">Delete</button>
+                <button onClick={() => {setConfirmation(true); setDeletionDetails({templateName : val.templateName, templateId : val.templateId})}} className="text-blue-500 hover:underline">Delete</button> 
                 </>}
               </td>
             </tr>
           );
         })}
       </table>
+      {confirmation && <ConfirmationWarning message={CONFIRMATION_MESSAGES.CONFIRMATION_ON_DELETE + deletionDetails.templateName} handleConfirmWarning={() => {deleteNonApprovedTemplateBackend(deletionDetails.templateId); setConfirmation(false)} } handleCloseWarning={() => setConfirmation(false)}/>}
     </div>
   );
 };

@@ -9,12 +9,15 @@ import { ERROR_MESSAGE } from '../constants/ErrorMessageConstant';
 import preview from '/icons/preview.png'
 import { ShowImage } from './ShowImage';
 import { occurrenceFrequencyOption, occurrenceHoursOption } from '../constants/reoccuranceValue';
+import { EVIDENCE_IMAGE_MAX_SIZE, NOTIFICATION_IMAGE_MAX_SIZE } from '../configuration/fileSizeConfig';
+import { VALIDATION_MESSAGES } from '../constants/ValidationMessageConstant';
 
 const ActionTemplateForm = () => {
   const { templateId, status } = useParams();
   const navigate = useNavigate();
   const formDataPROD = new FormData();
   const formDataCreate = new FormData();
+  const [isCheckedForImage, setIsCheckedForImage] = useState(false);
 
   const [formData, setFormData] = useState({
     templateId: templateId,
@@ -65,20 +68,43 @@ const ActionTemplateForm = () => {
     }));
   };
 
-  // Handle file upload
   const handleFileChange = (e) => {
-    setFormData((prevData) => ({
-      ...prevData,
-      file: e.target.files[0],
-    }));
+    const file = e.target.files[0];
+    if (file) {
+      const maxSizeInBytes = NOTIFICATION_IMAGE_MAX_SIZE;
+      if (file.size > maxSizeInBytes) {
+        setSubmitMessage(VALIDATION_MESSAGES.NOTIFICATION_IMAGE_MAX_SIZE_VALIDATION)
+        document.getElementById("notificationImageFile").value = ''
+        setAlertTrue(false)
+        setshowAlert(true);
+      } else {
+        setshowAlert(false);
+        setFormData((prevData) => ({
+          ...prevData,
+          imageFile: e.target.files[0],
+        }));
+      }
+    }
   };
 
   // Handle file upload
-  const handleImageFileChange = (e) => {
-    setFormData((prevData) => ({
-      ...prevData,
-      imageFile: e.target.files[0],
-    }));
+  const handleEvidenceImageFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const maxSizeInBytes = EVIDENCE_IMAGE_MAX_SIZE;
+      if (file.size > maxSizeInBytes) {
+        setSubmitMessage(VALIDATION_MESSAGES.EVIDENCE_IMAGE_MAX_SIZE_VALIDATION)
+        document.getElementById("evidenceImageUpload").value = ''
+        setAlertTrue(false)
+        setshowAlert(true);
+      } else {
+        setshowAlert(false);
+        setFormData((prevData) => ({
+          ...prevData,
+          file: e.target.files[0],
+        }));
+      }
+    }
   };
 
   // Handle multi-select for Recurrence Days
@@ -125,10 +151,16 @@ const ActionTemplateForm = () => {
           file: null,
           comment: '',
         })
+        if(data.templateData.imageUrl !== null && data.templateData.imageUrl !== '') {
+          setIsCheckedForImage(true);
+          document.getElementById("notificationImage").checked = true
+        }
 
       }
     } catch (error) {
-
+      setSubmitMessage(error.response.data.message)
+      setAlertTrue(false)
+      setshowAlert(true);
     }
   }
 
@@ -145,7 +177,7 @@ const ActionTemplateForm = () => {
         setshowAlert(true)
       }
     } catch (error) {
-      setSubmitMessage(ERROR_MESSAGE.SOME_EXCEPTION_OCCURRED)
+      setSubmitMessage(error.response.data.message)
       setAlertTrue(false)
       setshowAlert(true);
       console.log(error)
@@ -156,12 +188,12 @@ const ActionTemplateForm = () => {
     try {
       const response = await markCUGFailed(templateId, formDataPROD);
       if (response.status == 200) {
-        setSubmitMessage("Template mark as failed successfully")
+        setSubmitMessage(response.data.message)
         setshowAlert(true)
         setIsSuccessfullySubmit(true);
       }
     } catch (error) {
-      setSubmitMessage(ERROR_MESSAGE.EVIDENCE_REQUIRED)
+      setSubmitMessage(error.response.data.message)
       setAlertTrue(false)
       setshowAlert(true);
       console.log(error)
@@ -222,7 +254,7 @@ const ActionTemplateForm = () => {
         setIsSuccessfullySubmit(true);
       }
     } catch (error) {
-      setSubmitMessage(ERROR_MESSAGE.SOME_EXCEPTION_OCCURRED)
+      setSubmitMessage(error.response.data.message)
       setAlertTrue(false)
       setshowAlert(true);
       console.log(error)
@@ -336,12 +368,12 @@ const ActionTemplateForm = () => {
               <input
                 type="date"
                 name="endDate"
-                value={formData.endDate}
+                value={formData.endDate !== '' ? formData.endDate < formData.startDate ? formData.startDate : formData.endDate : formData.endDate}
                 disabled={!isResubmit}
                 onChange={handleChange}
                 className="w-full p-2 bg-gray-50 border border-gray-400 rounded"
                 required
-                min={new Date().toISOString().split("T")[0]}
+                min={formData.startDate === '' ? new Date().toISOString().split("T")[0] : new Date(formData.startDate).toISOString().split("T")[0]}
               />
             </div>
           </div>
@@ -436,8 +468,14 @@ const ActionTemplateForm = () => {
             </div>}
 
             {/* Images */}
+
+            <div className="flex items-center space-x-2">
+              <input onClick={() => setIsCheckedForImage((prev) => !prev)} type="checkbox" id="notificationImage" className="h-[0.80rem] w-[0.80rem]" name="notificationImage" value="submitted" />
+              <label className="font-medium text-red-700 text-sm " htmlFor="notificationImage"> Add an image along with the notification</label>
+            </div>
+
             {isResubmit && <div>
-              {(formData.imageFile !== null || formData.imageFile !== '') && !isEditImage &&
+              {(formData.imageFile !== null || formData.imageFile !== '') && !isEditImage && isCheckedForImage &&
                 <div className='flex'>
                   <div className="space-y-1 space-x-2 flex items-center">
                     <label htmlFor="showEvidence">
@@ -452,10 +490,10 @@ const ActionTemplateForm = () => {
 
               }
 
-              {isEditImage && <div>
-                <label className="block font-medium text-gray-700 mb-2">Notification Image</label>
+              {isEditImage && isCheckedForImage && <div>
+                <label className="block "><p className='font-medium text-gray-700 mb-2'>Notification Image</p><p className='text-red-700 text-sm'>{`**Notification Image must be of 1 MB in size`}</p></label>
                 <input
-                  id='notificationImageFile'
+                  id="notificationImageFile"
                   type="file"
                   accept="image/*"
                   onChange={handleFileChange}
@@ -493,9 +531,10 @@ const ActionTemplateForm = () => {
             {!isResubmit && <div>
               <label className="block font-medium text-gray-700 mb-2">Upload CUG Evidence*</label>
               <input
+                id='evidenceImageUpload'
                 type="file"
                 accept="image/*"
-                onChange={handleFileChange}
+                onChange={handleEvidenceImageFileChange}
                 className="w-full p-2 bg-gray-50 border border-gray-400 rounded"
               />
             </div>}
@@ -571,7 +610,7 @@ const ActionTemplateForm = () => {
             </div>
           </div>
         </form>
-        {showAlert && <Alert alertDetail={{ success: alertTrue, message: submitMessage }} handleCloseAlert={() => { setshowAlert(false); setAlertTrue(true); isSuccessfullySubmit && navigate(NAVIGATE_PATH.MAKER_ACTION_TEMPLATE); setIsSuccessfullySubmit(false);}} />}
+        {showAlert && <Alert alertDetail={{ success: alertTrue, message: submitMessage }} handleCloseAlert={() => { setshowAlert(false); setAlertTrue(true); isSuccessfullySubmit && navigate(NAVIGATE_PATH.MAKER_ACTION_TEMPLATE); setIsSuccessfullySubmit(false); }} />}
         {showNotificationImage && <ShowImage file={formData.imageFile} handleCloseAlert={() => setShowNotificationImage(false)} />}
       </div>
     </>

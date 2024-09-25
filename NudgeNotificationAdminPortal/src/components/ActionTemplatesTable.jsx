@@ -4,11 +4,15 @@ import { useNavigate } from 'react-router-dom';
 import { deleteNonApprovedTemplate, deleteTemplate, getTemplatesBySearchCriteria } from '../services/templateService';
 import { NAVIGATE_PATH } from '../constants/routeConstant';
 import { status } from '../constants/statusConstant';
+import ConfirmationWarning from './ConfirmationWarning';
+import { CONFIRMATION_MESSAGES } from '../constants/ValidationMessageConstant';
 
 const ActionTemplatesTable = () => {
 
     const [data, setData] = useState([]);
     const navigate = useNavigate();
+    const [confirmation, setConfirmation] = useState(false);
+    const [deletionDetails, setDeletionDetails] = useState({templateName : '', templateId : ''});
 
     useEffect(() => {
       const searchCriteria = {
@@ -67,14 +71,13 @@ const ActionTemplatesTable = () => {
               <td className="border px-3 py-2 space-x-1">
                 <button onClick={() => navigate(`${NAVIGATE_PATH.MAKER_ACTION_TEMPLATE_FORM + val.templateId}/status/${val.status}`)} className="text-blue-500 hover:underline">{val.status !== "CUG_APPROVED" ? 'Edit' : 'Submit'}</button>
                 <span>|</span>
-                <button  onClick={() => deleteNonApprovedTemplateBackend(val.templateId)}  className="text-blue-500 hover:underline">
-                  Delete
-                </button>
+                <button  onClick={() => {setConfirmation(true); setDeletionDetails({templateName : val.templateName, templateId : val.templateId})}}  className="text-blue-500 hover:underline">Delete</button>
               </td>
             </tr>
           );
         })}
       </table>
+      {confirmation && <ConfirmationWarning message={CONFIRMATION_MESSAGES.CONFIRMATION_ON_DELETE + deletionDetails.templateName} handleConfirmWarning={() => {deleteNonApprovedTemplateBackend(deletionDetails.templateId); setConfirmation(false)} } handleCloseWarning={() => setConfirmation(false)}/>}
     </div>
   )
 }

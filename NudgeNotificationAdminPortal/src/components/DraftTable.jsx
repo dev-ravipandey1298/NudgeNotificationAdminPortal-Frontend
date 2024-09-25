@@ -3,11 +3,15 @@ import PageHeader from "./PageHeader";
 import { useNavigate } from "react-router-dom";
 import { deleteTemplate, getAllTemplates } from "../services/templateService";
 import { NAVIGATE_PATH } from "../constants/routeConstant";
+import ConfirmationWarning from "./ConfirmationWarning";
+import { CONFIRMATION_MESSAGES } from "../constants/ValidationMessageConstant";
 
 const DraftTable = ({ setShowDraft }) => {
 
   const [draftData, setDraftData] = useState([]);
   const navigate = useNavigate()
+  const [confirmation, setConfirmation] = useState(false);
+  const [deletionDetails, setDeletionDetails] = useState({templateName : '', templateId : ''});
 
   useEffect(() => {
     getAllDraftData()
@@ -59,12 +63,13 @@ const DraftTable = ({ setShowDraft }) => {
               <td className="border px-3 py-2 space-x-1">
                 <button onClick={() => navigate(`${NAVIGATE_PATH.MAKER_DRAFT_TEMPLATE +  val.templateId}`)} className="text-blue-500 hover:underline">Edit</button>
                 <span>|</span>
-                <button onClick={() => deleteDraftData(val.templateId)} className="text-blue-500 hover:underline">Delete</button>
+                <button onClick={() => {setConfirmation(true); setDeletionDetails({templateName : val.templateName, templateId : val.templateId})}} className="text-blue-500 hover:underline">Delete</button>
               </td>
             </tr>
           );
         })}
       </table>
+      {confirmation && <ConfirmationWarning message={CONFIRMATION_MESSAGES.CONFIRMATION_ON_DELETE + deletionDetails.templateName} handleConfirmWarning={() => {deleteDraftData(deletionDetails.templateId); setConfirmation(false)} } handleCloseWarning={() => setConfirmation(false)}/>}
     </div>
   );
 };

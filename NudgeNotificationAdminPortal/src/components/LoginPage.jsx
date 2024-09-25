@@ -8,6 +8,7 @@ import { NAVIGATE_PATH } from "../constants/routeConstant";
 const LoginPage = ({setUserDetails}) => {
     const { register, handleSubmit } = useForm();
     const [isError, setIsError] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
 
     const navigate = useNavigate();
 
@@ -64,13 +65,11 @@ const LoginPage = ({setUserDetails}) => {
           }
           else if(roleValue === "MAKER"){
            navigate(NAVIGATE_PATH.MAKER)
-          }else{
-            alert("Invalid Credentials")
           }
-        }else{
-          setIsError(true);
         }
       } catch (error) {
+        setIsError(true);
+        setErrorMessage(error.response.data.message);
         console.log(error)
       }
     }
@@ -92,7 +91,7 @@ const LoginPage = ({setUserDetails}) => {
                     {!isError ? <p className="text-xl text-gray-600 text-center">
                         Welcome back!
                     </p> :
-                    <p className="text-lg font-medium text-red-800 text-center">Invalid Credentials !</p>}
+                    <p className="text-lg font-medium text-red-800 text-center">{errorMessage} !</p>}
                     <div className="mt-4">
                         <label className="block text-gray-700 text-sm font-bold mb-2">
                             User ID
