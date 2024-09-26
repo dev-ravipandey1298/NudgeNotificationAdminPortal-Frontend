@@ -224,6 +224,20 @@ const CheckerTempateForm = () => {
     }
   }
 
+  const closeDropdown = (event) => {
+    if (!event.target.closest('.dropdown')) {
+      setShowDays(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('click', closeDropdown);
+    return () => {
+      document.removeEventListener('click', closeDropdown);
+    };
+  }, []);
+
+
   const handleShowEvidence = () => {
     setShowEvidence(true)
   }
@@ -357,14 +371,14 @@ const CheckerTempateForm = () => {
 
 
                 {/* Recurrence Days (Multi-select with checkboxes) */}
-                <div>
+                <div className='dropdown'>
                   <label className="block font-medium text-gray-700 mb-2">Days</label>
                   <div
                     onClick={() => showDays ? setShowDays(false) : setShowDays(true)}
                     className='w-24 h-[2.50rem] rounded-sm text-nowrap p-2 bg-gray-50 border border-gray-400 flex justify-between items-center' >
                     <p>Show D.</p> <span><img className='h-4 w-4' src={downArrow} alt="" /></span>
                   </div>
-                  {showDays && <div className="grid grid-cols-3 gap-2 border p-4 rounded absolute bg-white shadow-xl">
+                  {showDays && <div className={`grid ${maxDays === 7 ? 'grid-cols-1' : 'grid-cols-3'}  gap-2 border bg-gray-50 p-4 rounded absolute shadow-xl`}>
                     {Array.from({ length: maxDays }, (_, i) => i + 1).map((val) => (
                       <div key={val} >
                         <label className="flex items-center space-x-2">
@@ -378,7 +392,7 @@ const CheckerTempateForm = () => {
                               // formData.occurrenceDays.length >= formData.occurrenceFrequency
                             }
                           />
-                          <span>{maxDays == 7 ? occurrenceFrequencyOption[val - 1].label : val}</span>
+                          <span className={`ml-2 ${formData.occurrenceDays.includes(val) ? 'text-black font-semibold' : 'text-gray-500'}`}>{maxDays == 7 ? occurrenceFrequencyOption[val - 1].label : val}</span>
                         </label>
                       </div>
                     ))}
