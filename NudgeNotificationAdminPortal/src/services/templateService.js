@@ -34,89 +34,172 @@ const TOKEN_NAME = 'X-Auth-Token'
 
 
 export const fetchTemplates = () => {
-  return apiClient.get('/v1/templates');  
+  return apiClient.get('/v1/templates', {
+    headers: {
+      'X-Auth-Token' : `Bearer ${sessionStorage.getItem('authToken')}`,
+    },
+  });  
 };
 
 export const getTemplateById = (templateId) => {
-  return apiClient.get(`/v1/templates/draft/${templateId}`);
+  return apiClient.get(`/v1/templates/draft/${templateId}`, {
+    headers: {
+      'X-Auth-Token' : `Bearer ${sessionStorage.getItem('authToken')}`,
+    },
+  });
 };
 
 export const getNotificationTemplateById = (templateId) => {
-  return apiClient.get(`/v1/templates/${templateId}`);
+  return apiClient.get(`/v1/templates/${templateId}`, {
+    headers: {
+      'X-Auth-Token' : `Bearer ${sessionStorage.getItem('authToken')}`,
+    },
+  });
 }
 
 export const getAllTemplates = () => {
-  return apiClient.get(`/v1/templates/draft`); 
+  return apiClient.get(`/v1/templates/draft`, {
+    headers: {
+      'X-Auth-Token' : `Bearer ${sessionStorage.getItem('authToken')}`,
+    },
+  }); 
 };
 
 export const createTemplate = (formData) => {
-  return apiClientWithMultipartContent.post(`/v1/templates/draft`, formData); 
+  return apiClientWithMultipartContent.post(`/v1/templates/draft`, formData, {
+    headers: {
+      'X-Auth-Token' : `Bearer ${sessionStorage.getItem('authToken')}`,
+    },
+  }); 
 };
 
 export const updateTemplate = (templateId, formData) => {
-  return apiClientWithMultipartContent.put(`/v1/templates/draft/${templateId}`, formData);
+  return apiClientWithMultipartContent.put(`/v1/templates/draft/${templateId}`, formData, {
+    headers: {
+      'X-Auth-Token' : `Bearer ${sessionStorage.getItem('authToken')}`,
+    },
+  });
 };
 
 export const deleteTemplate = (templateId) => {
-  return apiClient.delete(`/v1/templates/draft/${templateId}`);
+  return apiClient.delete(`/v1/templates/draft/${templateId}`, {
+    headers: {
+      'X-Auth-Token' : `Bearer ${sessionStorage.getItem('authToken')}`,
+    },
+  });
 };
 
 export const deleteNonApprovedTemplate = (templateId) => {
-  return apiClient.delete(`/v1/templates/${templateId}`); 
+  return apiClient.delete(`/v1/templates/${templateId}`, {
+    headers: {
+      'X-Auth-Token' : `Bearer ${sessionStorage.getItem('authToken')}`,
+    },
+  }); 
 };
 
 export const submitForCUG_Approval_Template = (formData) => {
-  return apiClientWithMultipartContent.put(`/v1/templates/template/cug-approval`, formData);
+  return apiClientWithMultipartContent.put(`/v1/templates/template/cug-approval`, formData, {
+    headers: {
+      'X-Auth-Token' : `Bearer ${sessionStorage.getItem('authToken')}`,
+    },
+  });
 };
 
 export const getTemplatesBySearchCriteria = (data) => {
-  return apiClient.post(`/v1/templates`, data);
+  return apiClient.post(`/v1/templates`, data, {
+    headers: {
+      'X-Auth-Token' : `Bearer ${sessionStorage.getItem('authToken')}`,
+    },
+  });
 };
 
 export const markCUGReject = (templateId, comment) => {
-  return apiClient.patch(`/v1/templates/${templateId}/cug-reject`, comment);
+  return apiClient.patch(`/v1/templates/${templateId}/cug-reject`, comment, {
+    headers: {
+      'X-Auth-Token' : `Bearer ${sessionStorage.getItem('authToken')}`,
+    },
+  });
 };
 
 export const markCUGApproved = (templateId, comment) => {
-  return apiClient.patch(`/v1/templates/${templateId}/cug-approved`, comment);
+  return apiClient.patch(`/v1/templates/${templateId}/cug-approved`, comment, {
+    headers: {
+      'X-Auth-Token' : `Bearer ${sessionStorage.getItem('authToken')}`,
+    },
+  });
 };
 
 export const submitForPRODApproval = (templateId, formData) => {
-  return apiClientWithMultipartContent.patch(`/v1/templates/${templateId}/final-approval`, formData);
+  return apiClientWithMultipartContent.patch(`/v1/templates/${templateId}/final-approval`, formData, {
+    headers: {
+      'X-Auth-Token' : `Bearer ${sessionStorage.getItem('authToken')}`,
+    },
+  });
 };
 
 export const markCUGFailed = (templateId, formData) => {
-  return apiClientWithMultipartContent.patch(`/v1/templates/${templateId}/cug-failed`, formData);
+  return apiClientWithMultipartContent.patch(`/v1/templates/${templateId}/cug-failed`, formData, {
+    headers: {
+      'X-Auth-Token' : `Bearer ${sessionStorage.getItem('authToken')}`,
+    },
+  });
 };
 
 export const markPRODReject = (templateId, comment) => {
-  return apiClient.patch(`/v1/templates/${templateId}/final-reject`, comment);
+  return apiClient.patch(`/v1/templates/${templateId}/final-reject`, comment, {
+    headers: {
+      'X-Auth-Token' : `Bearer ${sessionStorage.getItem('authToken')}`,
+    },
+  });
 };
 
 export const markPRODApproved = (templateId, comment) => {
-  return apiClient.patch(`/v1/templates/${templateId}/final-approved`, comment); 
+  return apiClient.patch(`/v1/templates/${templateId}/final-approved`, comment, {
+    headers: {
+      'X-Auth-Token' : `Bearer ${sessionStorage.getItem('authToken')}`,
+    },
+  }); 
 };
 
 export const markPRODEnable = (templateId) => {
-  return apiClient.patch(`/v1/templates/${templateId}/enable`, null); 
+  return apiClient.patch(`/v1/templates/${templateId}/enable`, null, {
+    headers: {
+      'X-Auth-Token' : `Bearer ${sessionStorage.getItem('authToken')}`,
+    },
+  }); 
 };
 
 export const markPRODDisable = (templateId) => {
-  return apiClient.patch(`/v1/templates/${templateId}/disable`, null);
+  return apiClient.patch(`/v1/templates/${templateId}/disable`, null, {
+    headers: {
+      'X-Auth-Token' : `Bearer ${sessionStorage.getItem('authToken')}`,
+    },
+  });
 };
 
 export const getAllCUGUsers = () => {
-  return apiClient.get(`/v1/cug/users`);
+  return apiClient.get(`/v1/cug/users`, {
+    headers: {
+      'X-Auth-Token' : `Bearer ${sessionStorage.getItem('authToken')}`,
+    },
+  });
 };
 
 export const deleteSelectedCUGUsers = (selectedUsers) => {
   return apiClient.delete(`/v1/cug/users`, {
     data: selectedUsers, 
+    headers: {
+      'X-Auth-Token' : `Bearer ${sessionStorage.getItem('authToken')}`,
+    },
   }); 
 };
 
 export const createNewCugUser = (user) => {
-  return apiClient.post(`/v1/cug/users`, user);
+  return apiClient.post(`/v1/cug/users`, user, {
+    headers: {
+      'X-Auth-Token' : `Bearer ${sessionStorage.getItem('authToken')}`,
+    },
+  });
 };
 
 
