@@ -17,15 +17,16 @@ const ShowAllMakerTable = ({ setShowAllRequest }) => {
   const [showFilter, setShowFilter] = useState(false);
   const [searchValue, setSearchValue] = useState('');
   const [confirmation, setConfirmation] = useState(false);
-  const [deletionDetails, setDeletionDetails] = useState({templateName : '', templateId : ''});
+  const [deletionDetails, setDeletionDetails] = useState({ templateName: '', templateId: '' });
+  const [statusValue, setStatusValue] = useState(['PROD_APPROVED', 'APPROVAL_PENDING_CUG', 'CUG_APPROVED', 'REJECTED', 'CUG_FAILED', 'APPROVAL_PENDING_PROD']);
   const [checkboxes, setCheckboxes] = useState({
     checkbox1: false, // Select All
-    checkbox2: false, // PROD_APPROVED
-    checkbox3: false, //  APPROVAL_PENDING_CUG
-    checkbox4: false, // CUG_APPROVED
-    checkbox5: false, // REJECTED
-    checkbox6: false, // CUG_FAILED
-    checkbox7: false // APPROVAL_PENDING_PROD
+    checkbox2: true, // PROD_APPROVED
+    checkbox3: true, //  APPROVAL_PENDING_CUG
+    checkbox4: true, // CUG_APPROVED
+    checkbox5: true, // REJECTED
+    checkbox6: true, // CUG_FAILED
+    checkbox7: true // APPROVAL_PENDING_PROD
   });
   const dropdownRef = useRef(null);
 
@@ -47,9 +48,10 @@ const ShowAllMakerTable = ({ setShowAllRequest }) => {
         statusArray.push(statusValue);
       }
     }
+    setStatusValue(statusArray)
     const searchCriteria = {
       templateId: '',
-      templateName: '',
+      templateName: searchValue,
       status: statusArray
     }
     getTemplateDetailsBySearchCriteriaBackend(JSON.stringify(searchCriteria));
@@ -66,8 +68,8 @@ const ShowAllMakerTable = ({ setShowAllRequest }) => {
     sessionStorage.getItem("user") === null && navigate("/login")
     const searchCriteria = {
       templateId: '',
-      templateName: '',
-      status: ['PROD_APPROVED', 'APPROVAL_PENDING_CUG', 'CUG_APPROVED', 'REJECTED', 'CUG_FAILED', 'APPROVAL_PENDING_PROD']
+      templateName: searchValue,
+      status: statusValue
     }
     getTemplateDetailsBySearchCriteriaBackend(JSON.stringify(searchCriteria));
 
@@ -94,8 +96,8 @@ const ShowAllMakerTable = ({ setShowAllRequest }) => {
     if (isValue) {
       const searchCriteria = {
         templateId: '',
-        templateName: searchValue.trim(),
-        status: ['PROD_APPROVED', 'APPROVAL_PENDING_CUG', 'CUG_APPROVED', 'REJECTED', 'CUG_FAILED', 'APPROVAL_PENDING_PROD']
+        templateName: searchValue,
+        status: statusValue
       }
       getTemplateDetailsBySearchCriteriaBackend(JSON.stringify(searchCriteria));
     }else{
@@ -108,9 +110,9 @@ const ShowAllMakerTable = ({ setShowAllRequest }) => {
       const response = await deleteNonApprovedTemplate(templateId);
       if (response.status == 200) {
         const searchCriteria = {
-          templateId: searchValue.trim(),
-          templateName: '',
-          status: ['PROD_APPROVED', 'APPROVAL_PENDING_CUG', 'CUG_APPROVED', 'REJECTED', 'CUG_FAILED', 'APPROVAL_PENDING_PROD']
+          templateId: '',
+          templateName: searchValue,
+          status: statusValue
         }
         getTemplateDetailsBySearchCriteriaBackend(JSON.stringify(searchCriteria));
       }

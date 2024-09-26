@@ -9,7 +9,7 @@ import { NAVIGATE_PATH } from "../constants/routeConstant";
 import ConfirmationWarning from "./ConfirmationWarning";
 import { CONFIRMATION_MESSAGES } from "../constants/ValidationMessageConstant";
 
-const ShowAllMakerTable = () => {
+const ShowAllCheckerTable = () => {
   const navigate = useNavigate();
   const [isEnable, setIsEnable] = useState(true);
   const [isDisable, setIsDisable] = useState(false);
@@ -18,15 +18,16 @@ const ShowAllMakerTable = () => {
   const [showFilter, setShowFilter] = useState(false);
   const [searchValue, setSearchValue] = useState('');
   const [confirmation, setConfirmation] = useState(false);
-  const [deletionDetails, setDeletionDetails] = useState({templateName : '', templateId : ''});
+  const [deletionDetails, setDeletionDetails] = useState({ templateName: '', templateId: '' });
+  const [statusValue, setStatusValue] = useState(['PROD_APPROVED', 'APPROVAL_PENDING_CUG', 'CUG_APPROVED', 'REJECTED', 'CUG_FAILED', 'APPROVAL_PENDING_PROD']);
   const [checkboxes, setCheckboxes] = useState({
     checkbox1: false, // Select All
-    checkbox2: false, // PROD_APPROVED
-    checkbox3: false, //  APPROVAL_PENDING_CUG
-    checkbox4: false, // CUG_APPROVED
-    checkbox5: false, // REJECTED
-    checkbox6: false, // CUG_FAILED
-    checkbox7: false // APPROVAL_PENDING_PROD
+    checkbox2: true, // PROD_APPROVED
+    checkbox3: true, //  APPROVAL_PENDING_CUG
+    checkbox4: true, // CUG_APPROVED
+    checkbox5: true, // REJECTED
+    checkbox6: true, // CUG_FAILED
+    checkbox7: true // APPROVAL_PENDING_PROD
   });
   const dropdownRef = useRef(null);
 
@@ -48,10 +49,10 @@ const ShowAllMakerTable = () => {
         statusArray.push(statusValue);
       }
     }
-
+    setStatusValue(statusArray);
     const searchCriteria = {
       templateId: '',
-      templateName: '',
+      templateName: searchValue,
       status: statusArray
     }
     getTemplateDetailsBySearchCriteriaBackend(JSON.stringify(searchCriteria));
@@ -62,8 +63,8 @@ const ShowAllMakerTable = () => {
     sessionStorage.getItem("user") === null && navigate("/login")
     const searchCriteria = {
       templateId: '',
-      templateName: '',
-      status: ['PROD_APPROVED', 'APPROVAL_PENDING_CUG', 'CUG_APPROVED', 'REJECTED', 'CUG_FAILED', 'APPROVAL_PENDING_PROD']
+      templateName: searchValue,
+      status: statusValue
     }
     getTemplateDetailsBySearchCriteriaBackend(JSON.stringify(searchCriteria));
     document.addEventListener('mousedown', handleClickOutside);
@@ -74,9 +75,7 @@ const ShowAllMakerTable = () => {
 
   const getTemplateDetailsBySearchCriteriaBackend = async (searchCriteria) => {
     try {
-
       const response = await getTemplatesBySearchCriteria(searchCriteria);
-
       setTableData(response.data.payload)
     } catch (error) {
 
@@ -85,16 +84,16 @@ const ShowAllMakerTable = () => {
 
   const handleSearch = () => {
     let isValue = searchValue.match(/^[a-zA-Z0-9 _-]*$/)
-    if (isValue) {
-      const searchCriteria = {
-        templateId: '',
-        templateName: searchValue.trim(),
-        status: ['PROD_APPROVED', 'APPROVAL_PENDING_CUG', 'CUG_APPROVED', 'REJECTED', 'CUG_FAILED', 'APPROVAL_PENDING_PROD']
-      }
-      getTemplateDetailsBySearchCriteriaBackend(JSON.stringify(searchCriteria));
-    } else {
-      getTemplateDetailsBySearchCriteriaBackend(JSON.stringify(searchCriteria));
+
+
+
+    const searchCriteria = {
+      templateId: '',
+      templateName: searchValue.trim(),
+      status: statusValue
     }
+    getTemplateDetailsBySearchCriteriaBackend(JSON.stringify(searchCriteria));
+
   }
 
   const templatePRODEnable = async (templateId) => {
@@ -105,8 +104,8 @@ const ShowAllMakerTable = () => {
         setIsDisable(true);
         const searchCriteria = {
           templateId: '',
-          templateName: '',
-          status: ['PROD_APPROVED', 'APPROVAL_PENDING_CUG', 'CUG_APPROVED', 'REJECTED', 'CUG_FAILED', 'APPROVAL_PENDING_PROD']
+          templateName: searchValue,
+          status: statusValue
         }
         getTemplateDetailsBySearchCriteriaBackend(JSON.stringify(searchCriteria));
       }
@@ -123,8 +122,8 @@ const ShowAllMakerTable = () => {
         setIsDisable(false);
         const searchCriteria = {
           templateId: '',
-          templateName: '',
-          status: ['PROD_APPROVED', 'APPROVAL_PENDING_CUG', 'CUG_APPROVED', 'REJECTED', 'CUG_FAILED', 'APPROVAL_PENDING_PROD']
+          templateName: searchValue,
+          status: statusValue
         }
         getTemplateDetailsBySearchCriteriaBackend(JSON.stringify(searchCriteria));
       }
@@ -138,9 +137,9 @@ const ShowAllMakerTable = () => {
       const response = await deleteNonApprovedTemplate(templateId);
       if (response.status == 200) {
         const searchCriteria = {
-          templateId: searchValue.trim(),
-          templateName: '',
-          status: ['PROD_APPROVED', 'APPROVAL_PENDING_CUG', 'CUG_APPROVED', 'REJECTED', 'CUG_FAILED', 'APPROVAL_PENDING_PROD']
+          templateId: '',
+          templateName: searchValue,
+          status: statusValue
         }
         getTemplateDetailsBySearchCriteriaBackend(JSON.stringify(searchCriteria));
       }
@@ -177,7 +176,7 @@ const ShowAllMakerTable = () => {
                 <img onClick={() => showFilter ? setShowFilter(false) : setShowFilter(true)} src={filter} alt="" />
               </div>
               {showFilter &&
-                <div ref={dropdownRef}  className='absolute top-full right-0 mt-2 w-64 p-2 border bg-white shadow-md rounded-sm'>
+                <div ref={dropdownRef} className='absolute top-full right-0 mt-2 w-64 p-2 border bg-white shadow-md rounded-sm'>
                   <div className="">
                     <input onChange={handleCheckboxChange} checked={checkboxes.checkbox2} type="checkbox" id="checkbox2" className="h-[0.60rem] w-[0.60rem]" name="prodApproved" value="PROD_APPROVED" />
                     <label className="font-semibold text-red-700 text-sm font-mono" htmlFor="checkbox2"> {status.PROD_APPROVED}</label>
@@ -229,16 +228,16 @@ const ShowAllMakerTable = () => {
                   : <>
                     <button onClick={() => navigate(`${NAVIGATE_PATH.CHECKER_SEARCH_SCREEN_TEMPLATE_FORM + val.templateId + '/status/' + val.status}`)} className="text-blue-500 hover:underline">View</button>
                     <span>|</span>
-                    <button onClick={() => {setConfirmation(true); setDeletionDetails({templateName : val.templateName, templateId : val.templateId})}} className="text-blue-500 hover:underline">Delete</button>
+                    <button onClick={() => { setConfirmation(true); setDeletionDetails({ templateName: val.templateName, templateId: val.templateId }) }} className="text-blue-500 hover:underline">Delete</button>
                   </>}
               </td>
             </tr>
           );
         })}
       </table>
-      {confirmation && <ConfirmationWarning message={CONFIRMATION_MESSAGES.CONFIRMATION_ON_DELETE + deletionDetails.templateName} handleConfirmWarning={() => {deleteNonApprovedTemplateBackend(deletionDetails.templateId); setConfirmation(false)} } handleCloseWarning={() => setConfirmation(false)}/>}
+      {confirmation && <ConfirmationWarning message={CONFIRMATION_MESSAGES.CONFIRMATION_ON_DELETE + deletionDetails.templateName} handleConfirmWarning={() => { deleteNonApprovedTemplateBackend(deletionDetails.templateId); setConfirmation(false) }} handleCloseWarning={() => setConfirmation(false)} />}
     </div>
   );
 };
 
-export default ShowAllMakerTable;
+export default ShowAllCheckerTable;
