@@ -167,6 +167,11 @@ const DraftTemplateForm = () => {
 
   }
 
+  const getAdjustedDay = (date) => {
+    const day = new Date(date).getDay();
+    return day === 0 ? 7 : day;
+  }
+
   const submitForm = (data) => {
     const payload = {
       "templateId": templateId,
@@ -177,7 +182,7 @@ const DraftTemplateForm = () => {
       "endDate": data.endDate,
       "occurrenceFrequency": data.occurrenceFrequency,
       "occurrenceUnit": data.occurrenceUnit,
-      "occurrenceDays": data.occurrenceDays,
+      "occurrenceDays": data.startDate === data.endDate ? [getAdjustedDay(data.startDate)] : data.occurrenceDays,
       "hourOfDay": data.hourOfDay,
     }
     return JSON.stringify(payload);
@@ -420,6 +425,7 @@ const DraftTemplateForm = () => {
                   <label className="block font-medium text-gray-700 mb-2">Hours Of Day*</label>
                   <select
                     name="hourOfDay"
+                    disabled={(formData.startDate === formData.endDate)}
                     value={formData.hourOfDay}
                     onChange={handleChange}
                     className="w-24 p-2 bg-gray-50 border border-gray-400 rounded"
@@ -434,13 +440,29 @@ const DraftTemplateForm = () => {
               </div>
             </div>}
 
+            {(formData.startDate === formData.endDate) && <div>
+              <label className="block font-medium text-gray-700 mb-2">Hours of Day*</label>
+              <select
+                name="hourOfDay"
+                value={formData.hourOfDay}
+                onChange={handleChange}
+                className="w-24 p-2 bg-gray-50 border border-gray-400 rounded"
+              >
+                {Array.from({ length: 24 }, (_, i) => i).map((val) => (
+                  <option key={val} value={val}>
+                    {occurrenceHoursOption[val].label}
+                  </option>
+                ))}
+              </select>
+            </div>}
+
             {/* Notification Image */}
             <div className="flex items-center space-x-2">
               <input onClick={() => setIsCheckedForImage((prev) => !prev)} type="checkbox" id="notificationImage" className="h-[0.80rem] w-[0.80rem]" name="notificationImage" value="submitted" />
               <label className="font-medium text-red-700 text-sm " htmlFor="notificationImage"> Add an image along with the notification</label>
             </div>
 
-            {(formData.imageFile !== null || formData.imageFile !== '') && !isEditImage && isCheckedForImage &&
+            {(formData.imageFile !== null) && !isEditImage && isCheckedForImage &&
             <div className='flex'>
               <div className="space-y-1 space-x-2 flex items-center">
                 <label htmlFor="showEvidence">
@@ -462,6 +484,7 @@ const DraftTemplateForm = () => {
                 type="file"
                 accept="image/*"
                 onChange={handleFileChange}
+                required={isCheckedForImage}
                 className="w-full p-2 bg-gray-50 border border-gray-400 rounded"
               />
             </div>}

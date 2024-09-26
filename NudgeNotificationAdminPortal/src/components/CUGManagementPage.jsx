@@ -5,6 +5,8 @@ import Alert from './Alert';
 import { COMMON_ROUTE, NAVIGATE_PATH } from '../constants/routeConstant';
 import { useNavigate } from 'react-router-dom';
 import { ERROR_MESSAGE } from '../constants/ErrorMessageConstant';
+import { CONFIRMATION_MESSAGES } from '../constants/ValidationMessageConstant';
+import ConfirmationWarning from './ConfirmationWarning';
 
 const CUGManagementPage = () => {
   const [activeTab, setActiveTab] = useState(0);
@@ -17,6 +19,7 @@ const CUGManagementPage = () => {
   const [showAlert, setshowAlert] = useState(false);
   const [alertTrue, setAlertTrue] = useState(true);
   const [error, setError] = useState(false);
+  const [confirmation, setConfirmation] = useState(false);
 
   const navigate = useNavigate();
   
@@ -30,15 +33,19 @@ const CUGManagementPage = () => {
     try {
       const response = await getAllCUGUsers();
       if(response.status == 200){
-        console.log(response.data.payload)
         setUsers(response.data.payload)
       }
     } catch (error) {
       setSubmitMessage(error.response.data.message)
       setAlertTrue(false)
       setshowAlert(true);
-      console.log(error)
     }
+  }
+
+  const handleDelete = (selectedUsers) => {
+    setUsers(users.filter((user) => !selectedUsers.includes(user.mobileNumber))); 
+    const userMobileNumber = users.map((user) => user.mobileNumber);
+    deleteSelectedUserBackend(userMobileNumber);
   }
 
   // Handle checkbox toggle
@@ -54,7 +61,9 @@ const CUGManagementPage = () => {
     try {
       const response = await deleteSelectedCUGUsers(selectedUsers);
       if(response.status == 200){
-        alert("Deleted")
+        setSubmitMessage(response.data.message)
+        setAlertTrue(true)
+        setshowAlert(true);
       }
     } catch (error) {
       setSubmitMessage(error.response.data.message)
@@ -68,30 +77,20 @@ const CUGManagementPage = () => {
     try {
       const response = await createNewCugUser(userDetails);
       if(response.status == 200){
-        alert("Created")
+        setSubmitMessage(response.data.message)
+        setAlertTrue(false)
+        setshowAlert(true);
       }
     } catch (error) {
       setSubmitMessage(error.response.data.message)
       setAlertTrue(false)
       setshowAlert(true);
-      console.log(error)
     }
   }
 
   // Handle deletion of selected users
   const handleDeleteSelectedUsers = () => {
-    if (selectedUsers.length === 0) return;
-
-    try {
-      setUsers(users.filter((user) => !selectedUsers.includes(user.mobileNumber))); 
-      const userMobileNumber = users.map((user) => user.mobileNumber);
-
-      console.log(userMobileNumber)
-      deleteSelectedUserBackend(userMobileNumber);
-    } catch (err) {
-      setError(true);
-      console.log(err)
-    } 
+    setConfirmation(true);
   };
 
   // Handle adding new users to the list
@@ -200,7 +199,7 @@ const CUGManagementPage = () => {
                 <button
                   onClick={handleDeleteSelectedUsers}
                   className="px-4 py-2 mt-4 text-white bg-red-500 rounded hover:bg-red-600"
-                  disabled={selectedUsers.length === 0}
+                  disabled={selectedUsers.length === 0 || (users !== null && users.length === 0)}
                 >
                   Delete Selected Users
                 </button>
@@ -265,6 +264,7 @@ const CUGManagementPage = () => {
         </div>
       )}
     </div>
+    {confirmation && <ConfirmationWarning message={CONFIRMATION_MESSAGES.CONFIRMATION_ON_SELECTED_USER_DELETE} handleConfirmWarning={() => {handleDelete(selectedUsers); setConfirmation(false)} } handleCloseWarning={() => setConfirmation(false)}/>}
     {showAlert && <Alert alertDetail={{ success: alertTrue, message: submitMessage }} handleCloseAlert={() => {setshowAlert(false); setAlertTrue(true)}} />}
     </>
   );

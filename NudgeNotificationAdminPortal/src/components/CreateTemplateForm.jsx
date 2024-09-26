@@ -20,7 +20,7 @@ const CreateTemplateForm = () => {
     occurrenceFrequency: 1,
     occurrenceUnit: 'Week',
     occurrenceDays: [],
-    hourOfDay : 9,
+    hourOfDay: 9,
     environment: 'CUG',
     imageFile: null
   });
@@ -49,14 +49,14 @@ const CreateTemplateForm = () => {
   // Handle file upload
   const handleFileChange = (e) => {
     const file = e.target.files[0];
-    if(file){
+    if (file) {
       const maxSizeInBytes = NOTIFICATION_IMAGE_MAX_SIZE;
-      if(file.size > maxSizeInBytes){
+      if (file.size > maxSizeInBytes) {
         setSubmitMessage(VALIDATION_MESSAGES.NOTIFICATION_IMAGE_MAX_SIZE_VALIDATION)
         document.getElementById("notificationImageFile").value = ''
         setAlertTrue(false)
         setshowAlert(true);
-      }else{
+      } else {
         setshowAlert(false);
         setFormData((prevData) => ({
           ...prevData,
@@ -118,6 +118,11 @@ const CreateTemplateForm = () => {
 
   }
 
+  const getAdjustedDay = (date) => {
+    const day = new Date(date).getDay();
+    return day === 0 ? 7 : day;
+  }
+
   const submitForm = (data) => {
     const payload = {
       "templateName": data.templateName,
@@ -127,7 +132,7 @@ const CreateTemplateForm = () => {
       "endDate": data.endDate,
       "occurrenceFrequency": data.occurrenceFrequency,
       "occurrenceUnit": data.occurrenceUnit,
-      "occurrenceDays": data.occurrenceDays,
+      "occurrenceDays": data.startDate === data.endDate ? [getAdjustedDay(data.startDate)] : data.occurrenceDays,
       "hourOfDay": data.hourOfDay
     }
     return JSON.stringify(payload);
@@ -137,8 +142,6 @@ const CreateTemplateForm = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     let errorData = false;
-    const start = new Date(formData.startDate);
-    const end = new Date(formData.endDate);
 
     const errorArray = [];
 
@@ -148,23 +151,8 @@ const CreateTemplateForm = () => {
       errorArray.push(ERROR_MESSAGE.SELECTED_DAYS_NOT_EQUAL_TO_FREQUENCY)
     }
 
-    if((formData.startDate === formData.endDate)){
-      setFormData((prevData) => ({
-        ...prevData,
-        occurrenceDays: [7],
-      }));
-    }
-
-    if (formData.imageFile === undefined || formData.imageFile === null) {
-      const emptyFile = new File([], 'empty.txt')
-      setFormData((prevData) => ({
-        ...prevData,
-        imageFile: emptyFile,
-      }));
-    }
-
     formDataCreate.append('payload', new Blob([submitForm(formData)], { type: 'application/json' }));
-    formDataCreate.append('image', formData.imageFile);
+    formDataCreate.append('image', !isCheckedForImage ? new File([], 'empty.txt') : formData.imageFile);
 
     if (errorData) {
       setSubmitMessage(errorArray.join(", "));
@@ -278,7 +266,7 @@ const CreateTemplateForm = () => {
               <label className="block font-medium text-gray-700 mb-2">Start Date*</label>
               <input
                 type="date"
-                name="startDate"          
+                name="startDate"
                 value={formData.startDate}
                 onChange={handleChange}
                 className="w-full p-2 bg-gray-50 border border-gray-400 rounded"
@@ -363,18 +351,19 @@ const CreateTemplateForm = () => {
                               formData.occurrenceDays.length >= formData.occurrenceFrequency
                             }
                           />
-                          <span>{maxDays == 7 ? occurrenceFrequencyOption[val-1].label : val}</span>
+                          <span>{maxDays == 7 ? occurrenceFrequencyOption[val - 1].label : val}</span>
                         </label>
                       </div>
                     ))}
                   </div>}
                 </div>
 
-                    {/* hour Of Day */}
+                {/* hour Of Day */}
                 <div>
                   <label className="block font-medium text-gray-700 mb-2">Hours Of Day*</label>
                   <select
                     name="hourOfDay"
+                    disabled={(formData.startDate === formData.endDate)}
                     value={formData.hourOfDay}
                     onChange={handleChange}
                     className="w-24 p-2 bg-gray-50 border border-gray-400 rounded"
@@ -389,6 +378,22 @@ const CreateTemplateForm = () => {
               </div>
             </div>}
 
+            {(formData.startDate === formData.endDate) && <div>
+              <label className="block font-medium text-gray-700 mb-2">Hours Of Day*</label>
+              <select
+                name="hourOfDay"
+                value={formData.hourOfDay}
+                onChange={handleChange}
+                className="w-24 p-2 bg-gray-50 border border-gray-400 rounded"
+              >
+                {Array.from({ length: 24 }, (_, i) => i).map((val) => (
+                  <option key={val} value={val}>
+                    {occurrenceHoursOption[val].label}
+                  </option>
+                ))}
+              </select>
+            </div>}
+
             {/* Notification Image */}
             <div className="flex items-center space-x-2">
               <input onClick={() => setIsCheckedForImage((prev) => !prev)} type="checkbox" id="notificationImage" className="h-[0.80rem] w-[0.80rem]" name="notificationImage" value="submitted" />
@@ -398,10 +403,11 @@ const CreateTemplateForm = () => {
             {isCheckedForImage && <div>
               <label className="block "><p className='font-medium text-gray-700 mb-2'>Notification Image</p><p className='text-red-700 text-sm'>{`**Notification Image must be of 1 MB in size`}</p></label>
               <input
-                id = "notificationImageFile"
+                id="notificationImageFile"
                 type="file"
                 accept="image/*"
                 onChange={handleFileChange}
+                required={isCheckedForImage}
                 className="w-full p-2 bg-gray-50 border border-gray-400 rounded"
               />
             </div>}
@@ -421,9 +427,9 @@ const CreateTemplateForm = () => {
                 <option value="PROD">PROD</option>
               </select>
               {showTooltip && (
-              <div className="absolute left-0 mt-2 w-[200px] p-2 bg-gray-800 text-white text-sm rounded shadow">
-                {VALIDATION_MESSAGES.ENVIRONMENT_DETAILS}
-              </div>
+                <div className="absolute left-0 mt-2 w-[200px] p-2 bg-gray-800 text-white text-sm rounded shadow">
+                  {VALIDATION_MESSAGES.ENVIRONMENT_DETAILS}
+                </div>
               )}
             </div>
 
@@ -466,6 +472,6 @@ const CreateTemplateForm = () => {
       </div>
     </>
   );
-}; 
+};
 
 export default CreateTemplateForm;

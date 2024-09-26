@@ -420,15 +420,32 @@ const CheckerTempateForm = () => {
               </div>
             </div>}
 
+            {(formData.startDate === formData.endDate) && <div>
+              <label className="block font-medium text-gray-700 mb-2">Hours of Day*</label>
+              <select
+                name="hourOfDay"
+                value={formData.hourOfDay}
+                disabled
+                onChange={handleChange}
+                className="w-24 p-2 bg-gray-50 border border-gray-400 rounded"
+              >
+                {Array.from({ length: 24 }, (_, i) => i).map((val) => (
+                  <option key={val} value={val}>
+                    {occurrenceHoursOption[val].label}
+                  </option>
+                ))}
+              </select>
+            </div>}
+
             {/* Images */}
-            <div className="space-y-1 space-x-2 flex items-center">
+            {(formData.imageUrl === null || formData.imageUrl !== '') && <div className="space-y-1 space-x-2 flex items-center">
               <label htmlFor="showEvidence">
                 <p className="inline font-medium text-gray-700 mb-2">Show Notification Image :</p>
               </label>
               <div className="flex items-center justify-center pb-1 h-8 w-8">
                 <img onClick={() => setShowNotificationImage(true)} src={preview} alt="" />
               </div>
-            </div>
+            </div>}
 
             {/* Environment */}
             <div className="mb-4 w-[50%]">
