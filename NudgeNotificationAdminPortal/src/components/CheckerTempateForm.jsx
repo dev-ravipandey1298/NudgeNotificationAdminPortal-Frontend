@@ -435,7 +435,7 @@ const CheckerTempateForm = () => {
             </div>}
 
             {/* Images */}
-            {(formData.imageUrl === null || formData.imageUrl !== '') && <div className="space-y-1 space-x-2 flex items-center">
+            {(formData.imageUrl !== null) && <div className="space-y-1 space-x-2 flex items-center">
               <label htmlFor="showEvidence">
                 <p className="inline font-medium text-gray-700 mb-2">Show Notification Image :</p>
               </label>
