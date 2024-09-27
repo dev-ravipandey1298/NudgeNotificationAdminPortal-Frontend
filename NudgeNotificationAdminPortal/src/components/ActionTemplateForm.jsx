@@ -19,6 +19,7 @@ const ActionTemplateForm = () => {
   const formDataCreate = new FormData();
   const [isCheckedForImage, setIsCheckedForImage] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
+  const [isImageAvailable, setIsImageAvailable] = useState(false);
 
   const [formData, setFormData] = useState({
     templateId: templateId,
@@ -160,9 +161,13 @@ const ActionTemplateForm = () => {
           file: null,
           comment: '',
         })
-        if(data.templateData.imageUrl !== null && data.templateData.imageUrl !== '') {
+        if(data.templateData.imageUrl !== null) {
           setIsCheckedForImage(true);
+          setIsImageAvailable(false)
           document.getElementById("notificationImage").checked = true
+        }
+        if(data.templateData.imageUrl === null) {
+          setIsImageAvailable(true)
         }
 
       }
@@ -244,16 +249,9 @@ const ActionTemplateForm = () => {
         submitForProdApprovalBackend(templateId, formDataPROD);
       }
     } else {
-      if (formData.imageFile === undefined || formData.imageFile === null) {
-        const emptyFile = new File([], 'empty.txt')
-        setFormData((prevData) => ({
-          ...prevData,
-          imageFile: emptyFile,
-        }));
-      }
 
       formDataCreate.append('payload', new Blob([submitForm(formData)], { type: 'application/json' }));
-      formDataCreate.append('image', formData.imageFile);
+      formDataCreate.append('image', !isCheckedForImage ? new File([], 'empty.txt') : formData.imageFile);
       submitForCUGApprovalBackend(formDataCreate);
     }
 
@@ -535,6 +533,19 @@ const ActionTemplateForm = () => {
                   className="w-full p-2 bg-gray-50 border border-gray-400 rounded"
                 />
               </div>}
+
+              {isImageAvailable && isCheckedForImage &&<div>
+              <label className="block "><p className='font-medium text-gray-700 mb-2'>Notification Image</p><p className='text-red-700 text-sm'>{`**Notification Image must be of 1 MB in size`}</p></label>
+              <input
+                id = "notificationImageFile"
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                required={isCheckedForImage}
+                className="w-full p-2 bg-gray-50 border border-gray-400 rounded"
+              />
+            </div>}
+
             </div>}
 
             {/* Notification Image */}
@@ -586,7 +597,7 @@ const ActionTemplateForm = () => {
                 <p className="inline font-medium text-gray-700 mb-2">Maker's Comment :</p>
               </label>
               <div className="flex items-center justify-center pb-1">
-                <p>{formData.makerComment != '' ? formData.makerComment : '**NO Comments**'}</p>
+                <p>{formData.makerComment !== null ? formData.makerComment : '**NO Comments**'}</p>
               </div>
             </div>}
 
@@ -596,17 +607,17 @@ const ActionTemplateForm = () => {
                 <p className="inline font-medium text-gray-700 mb-2">Checker's CUG Comment :</p>
               </label>
               <div className="flex items-center justify-center pb-1">
-                <p>{formData.checkerCUGComment != '' ? formData.checkerCUGComment : '**NO Comments**'}</p>
+                <p>{formData.checkerCUGComment !== null ? formData.checkerCUGComment : '**NO Comments**'}</p>
               </div>
             </div>}
 
             {/* Checker Final Comment */}
-            {(status === "REJECTED" && (formData.checkerFinalComment !== '' || formData.checkerFinalComment !== null))  && <div className="space-y-1 space-x-2 flex items-center">
+            {(status === "REJECTED" && (formData.checkerFinalComment !== null))  && <div className="space-y-1 space-x-2 flex items-center">
               <label htmlFor="checkerComment">
                 <p className="inline font-medium text-gray-700 mb-2">Checker's Final Comment :</p>
               </label>
               <div className="flex items-center justify-center pb-1">
-                <p>{formData.checkerFinalComment != '' ? formData.checkerFinalComment : '**NO Comments**'}</p>
+                <p>{formData.checkerFinalComment !== null ? formData.checkerFinalComment : '**NO Comments**'}</p>
               </div>
             </div>}
 

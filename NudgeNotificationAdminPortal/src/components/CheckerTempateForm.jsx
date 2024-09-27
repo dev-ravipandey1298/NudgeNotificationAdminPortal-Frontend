@@ -387,10 +387,7 @@ const CheckerTempateForm = () => {
                             value={val}
                             checked={formData.occurrenceDays.includes(val)}
                             onChange={handleRecDayChange}
-                            disabled={true
-                              // !formData.occurrenceDays.includes(val) &&
-                              // formData.occurrenceDays.length >= formData.occurrenceFrequency
-                            }
+                            disabled={true}
                           />
                           <span className={`ml-2 ${formData.occurrenceDays.includes(val) ? 'text-black font-semibold' : 'text-gray-500'}`}>{maxDays == 7 ? occurrenceFrequencyOption[val - 1].label : val}</span>
                         </label>
@@ -468,7 +465,7 @@ const CheckerTempateForm = () => {
                 <p className="inline font-medium text-gray-700 mb-2">Maker's Comment :</p>
               </label>
               <div className="flex items-center justify-center pb-1">
-                <p>{formData.makerComment}</p>
+                <p>{formData.makerComment !== null ? formData.makerComment : "**No Comments**"}</p>
               </div>
             </div>}
 

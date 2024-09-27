@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import filter from '/icons/filter.png'
 import PageHeader from './PageHeader';
@@ -10,13 +10,14 @@ const PendingRequestTable = () => {
 
   const [showTemplateForm, setShowTemplateForm] = useState(false);
   const navigate = useNavigate();
+  const dropdownRef = useRef(null);
 
   const [pendingRequestData, setPendingRequestData] = useState([]);
   const [showFilter, setShowFilter] = useState(false);
   const [checkboxes, setCheckboxes] = useState({
     checkbox1: false,
-    checkbox2: false,
-    checkbox3: false
+    checkbox2: true,
+    checkbox3: true
   });
 
   const getPendingRequest = async (searchCriteria) => {
@@ -35,6 +36,12 @@ const PendingRequestTable = () => {
       ...prevState,
       [id]: checked
     }));
+  };
+
+  const handleClickOutside = (event) => {
+    if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      setShowFilter(false);
+    }
   };
 
   const handleFetchData = async () => {
@@ -76,7 +83,10 @@ const PendingRequestTable = () => {
       status : ["APPROVAL_PENDING_CUG", "APPROVAL_PENDING_PROD"]
     }
     getPendingRequest(JSON.stringify(searchCriteria));
-    
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, [])
 
   const handleClickBack = () => {
@@ -99,7 +109,7 @@ const PendingRequestTable = () => {
                   <img onClick={() => showFilter ? setShowFilter(false) : setShowFilter(true)} src={filter} alt="" />
                 </div>
                 {showFilter &&
-                  <div className='absolute top-full right-0 mt-2 w-60 p-2 border bg-white shadow-md rounded-sm'>
+                  <div ref={dropdownRef}  className='absolute top-full right-0 mt-2 w-60 p-2 border bg-white shadow-md rounded-sm'>
                     <div className="">
                       <input onChange={handleCheckboxChange} checked={checkboxes.checkbox2} type="checkbox" id="checkbox2" className="h-[0.60rem] w-[0.60rem]" name="pendingPROD" value={status.APPROVAL_PENDING_PROD} />
                       <label className="font-semibold text-red-700 text-sm font-mono" htmlFor="checkbox2"> {status.APPROVAL_PENDING_PROD}</label>
@@ -109,7 +119,7 @@ const PendingRequestTable = () => {
                       <label className="font-semibold text-red-700 text-sm font-mono" htmlFor="checkbox3"> {status.APPROVAL_PENDING_CUG}</label>
                     </div>
                     <div className='flex justify-end pt-2' >
-                    <button disabled={(!checkboxes.checkbox2 && !checkboxes.checkbox3)} onClick={handleFetchData} className='text-sm font-mono hover:text-green-600 text-green-700 '>Filter</button>
+                    <button disabled={(!checkboxes.checkbox2 && !checkboxes.checkbox3)} onClick={handleFetchData} className='text-sm font-mono hover:bg-green-600 bg-green-700 text-white p-1 rounded-sm'>Filter</button>
                     </div>
                   </div>
                   }

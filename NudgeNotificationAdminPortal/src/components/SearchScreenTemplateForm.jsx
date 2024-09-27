@@ -446,7 +446,7 @@ const SearchScreenTemplateForm = () => {
                 <p className="inline font-medium text-gray-700 mb-2">Maker's Comment :</p>
               </label>
               <div className="flex items-center justify-center pb-1">
-                <p>{formData.makerComment != '' ? formData.makerComment : '**NO Comments**'}</p>
+                <p>{formData.makerComment !== null ? formData.makerComment : '**NO Comments**'}</p>
               </div>
             </div>}
 
@@ -456,17 +456,17 @@ const SearchScreenTemplateForm = () => {
                 <p className="inline font-medium text-gray-700 mb-2">Checker's CUG Comment :</p>
               </label>
               <div className="flex items-center justify-center pb-1">
-                <p>{formData.checkerCUGComment != '' ? formData.checkerCUGComment : '**NO Comments**'}</p>
+                <p>{formData.checkerCUGComment !== null ? formData.checkerCUGComment : '**NO Comments**'}</p>
               </div>
             </div>}
 
             {/* Checker Final Comment */}
-            {(status === "REJECTED") && formData.checkerFinalComment != '' && <div className="space-y-1 space-x-2 flex items-center">
+            {(status === "REJECTED") && formData.checkerFinalComment !== null && <div className="space-y-1 space-x-2 flex items-center">
               <label htmlFor="checkerComment">
                 <p className="inline font-medium text-gray-700 mb-2">Checker's Final Comment :</p>
               </label>
               <div className="flex items-center justify-center pb-1">
-                <p>{formData.checkerFinalComment != '' ? formData.checkerFinalComment : '**NO Comments**'}</p>
+                <p>{formData.checkerFinalComment !== null ? formData.checkerFinalComment : '**NO Comments**'}</p>
               </div>
             </div>}
 

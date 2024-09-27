@@ -89,7 +89,7 @@ const ShowAllCheckerTable = () => {
 
     const searchCriteria = {
       templateId: '',
-      templateName: searchValue.trim(),
+      templateName: searchValue,
       status: statusValue
     }
     getTemplateDetailsBySearchCriteriaBackend(JSON.stringify(searchCriteria));

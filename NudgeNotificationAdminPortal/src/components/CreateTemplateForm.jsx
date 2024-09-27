@@ -281,7 +281,7 @@ const CreateTemplateForm = () => {
               <input
                 type="date"
                 name="endDate"
-                value={formData.endDate !== '' ? formData.endDate < formData.startDate ? formData.startDate : formData.endDate : ''}
+                value={formData.endDate !== '' ? formData.endDate < formData.startDate ? '' : formData.endDate : ''}
                 onChange={handleChange}
                 className="w-full p-2 bg-gray-50 border border-gray-400 rounded"
                 required
@@ -334,8 +334,8 @@ const CreateTemplateForm = () => {
                   <label className="block font-medium text-gray-700 mb-2">Days*</label>
                   <div
                     onClick={() => showDays ? setShowDays(false) : setShowDays(true)}
-                    className='w-24 h-[2.50rem] rounded-[0.290rem] text-nowrap p-2 bg-gray-50 border border-gray-400 flex justify-between items-center' >
-                    <p>Select D.</p> <span><img className='h-4 w-4' src={downArrow} alt="" /></span>
+                    className='w-28 h-[2.50rem] rounded-[0.290rem] text-nowrap p-2 bg-gray-50 border border-gray-400 flex justify-between items-center' >
+                    <p>Select D..</p> <span><img className='h-4 w-4' src={downArrow} alt="" /></span>
                   </div>
                   {showDays && <div className={`grid ${maxDays === 7 ? 'grid-cols-1' : 'grid-cols-3'}  gap-2 border bg-gray-50 p-4 rounded absolute shadow-xl`}>
                     {Array.from({ length: maxDays }, (_, i) => i + 1).map((val) => (

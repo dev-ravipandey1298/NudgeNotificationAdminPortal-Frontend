@@ -44,7 +44,7 @@ const CUGManagementPage = () => {
 
   const handleDelete = (selectedUsers) => {
     setUsers(users.filter((user) => !selectedUsers.includes(user.mobileNumber))); 
-    const userMobileNumber = users.map((user) => user.mobileNumber);
+    const userMobileNumber = users.filter((user) => selectedUsers.includes(user.mobileNumber)).map((user) => user.mobileNumber);
     deleteSelectedUserBackend(userMobileNumber);
   }
 
@@ -214,7 +214,7 @@ const CUGManagementPage = () => {
           <h2 className="text-lg font-bold">Add CUG Users</h2>
 
           {/* Add User Form */}
-          <div className="mt-4 flex items-center justify-center space-x-2">
+          <div className="mt-4 w-[80%] flex items-center justify-center space-x-2">
             <input
               type="text"
               placeholder="Name"
