@@ -21,11 +21,10 @@ const Navbar = () => {
             if(response.status == 200){
                 sessionStorage.clear();
                 navigate(NAVIGATE_PATH.LOGIN)
-            }else{
-                alert("Some exception occured")
             }
         } catch (error) {
-            console.log(error)
+            sessionStorage.clear();
+            navigate(NAVIGATE_PATH.LOGIN)
         }
     }
 

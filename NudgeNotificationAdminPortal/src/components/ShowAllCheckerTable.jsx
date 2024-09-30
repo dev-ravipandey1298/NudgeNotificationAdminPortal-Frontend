@@ -110,7 +110,6 @@ const ShowAllCheckerTable = () => {
         getTemplateDetailsBySearchCriteriaBackend(JSON.stringify(searchCriteria));
       }
     } catch (error) {
-      console.log(error)
     }
   }
 
@@ -128,7 +127,6 @@ const ShowAllCheckerTable = () => {
         getTemplateDetailsBySearchCriteriaBackend(JSON.stringify(searchCriteria));
       }
     } catch (error) {
-      console.log(error)
     }
   }
 

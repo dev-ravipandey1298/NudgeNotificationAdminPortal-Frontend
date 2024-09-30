@@ -70,7 +70,6 @@ const LoginPage = ({setUserDetails}) => {
       } catch (error) {
         setIsError(true);
         setErrorMessage(error.response.data.message);
-        console.log(error)
       }
     }
 

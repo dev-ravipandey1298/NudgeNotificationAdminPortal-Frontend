@@ -137,7 +137,6 @@ const DraftTemplateForm = () => {
       setSubmitMessage(error.response.data.message)
       setAlertTrue(false)
       setshowAlert(true);
-      console.log(error)
     }
   }
 
@@ -151,7 +150,6 @@ const DraftTemplateForm = () => {
       setSubmitMessage(error.response.data.message)
       setAlertTrue(false)
       setshowAlert(true);
-      console.log(error)
     }
   }
 
@@ -167,7 +165,6 @@ const DraftTemplateForm = () => {
       setSubmitMessage(error.response.data.message)
       setAlertTrue(false)
       setshowAlert(true);
-      console.log(error)
     }
 
   }

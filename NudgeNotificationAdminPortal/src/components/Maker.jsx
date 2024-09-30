@@ -18,7 +18,6 @@ const Maker = ({ userDetails }) => {
       navigate(NAVIGATE_PATH.MAKER)
     }
 
-    console.log(import.meta.env.VITE_ENVIRONMENT)
   }, [])
   
 

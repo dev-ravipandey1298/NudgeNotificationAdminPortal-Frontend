@@ -194,7 +194,6 @@ const ActionTemplateForm = () => {
       setSubmitMessage(error.response.data.message)
       setAlertTrue(false)
       setshowAlert(true);
-      console.log(error)
     }
   }
 

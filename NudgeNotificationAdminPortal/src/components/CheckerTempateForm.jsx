@@ -105,10 +105,9 @@ const CheckerTempateForm = () => {
 
       }
     } catch (error) {
-      setSubmitMessage(ERROR_MESSAGE.SOME_EXCEPTION_OCCURRED)
+      setSubmitMessage(error.response.data.message)
       setAlertTrue(false)
       setshowAlert(true);
-      console.log(error)
     }
   }
 
@@ -125,15 +124,14 @@ const CheckerTempateForm = () => {
       const response = await markCUGReject(templateId, comment)
       if (response.status == 200) {
 
-        setSubmitMessage("Template rejected successfully.")
+        setSubmitMessage(response.data.message)
         setshowAlert(true)
         setIsSuccessfullySubmit(true)
       }
     } catch (error) {
-      setSubmitMessage(ERROR_MESSAGE.SOME_EXCEPTION_OCCURRED)
+      setSubmitMessage(error.response.data.message)
       setAlertTrue(false)
       setshowAlert(true);
-      console.log(error)
     }
   }
 
@@ -142,15 +140,14 @@ const CheckerTempateForm = () => {
       const comment = submitComment()
       const response = await markCUGApproved(templateId, comment)
       if (response.status == 200) {
-        setSubmitMessage("Template approved successfully.")
+        setSubmitMessage(response.data.message)
         setshowAlert(true)
         setIsSuccessfullySubmit(true)
       }
     } catch (error) {
-      setSubmitMessage(ERROR_MESSAGE.SOME_EXCEPTION_OCCURRED)
+      setSubmitMessage(error.response.data.message)
       setAlertTrue(false)
       setshowAlert(true);
-      console.log(error)
     }
   }
 
@@ -160,15 +157,14 @@ const CheckerTempateForm = () => {
       const response = await markPRODReject(templateId, comment)
       if (response.status == 200) {
 
-        setSubmitMessage("Template rejected for PROD successfully.")
+        setSubmitMessage(response.data.message)
         setshowAlert(true)
         setIsSuccessfullySubmit(true)
       }
     } catch (error) {
-      setSubmitMessage(ERROR_MESSAGE.SOME_EXCEPTION_OCCURRED)
+      setSubmitMessage(error.response.data.message)
       setAlertTrue(false)
       setshowAlert(true);
-      console.log(error)
     }
   }
 
@@ -177,15 +173,14 @@ const CheckerTempateForm = () => {
       const comment = submitComment()
       const response = await markPRODApproved(templateId, comment)
       if (response.status == 200) {
-        setSubmitMessage("Template approved for PROD successfully.")
+        setSubmitMessage(response.data.message)
         setshowAlert(true)
         setIsSuccessfullySubmit(true)
       }
     } catch (error) {
-      setSubmitMessage(ERROR_MESSAGE.SOME_EXCEPTION_OCCURRED)
+      setSubmitMessage(error.response.data.message)
       setAlertTrue(false)
       setshowAlert(true);
-      console.log(error)
     }
   }
 
@@ -193,8 +188,6 @@ const CheckerTempateForm = () => {
   // Submit function
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
-
     if (formData.comment === '') {
       setSubmitMessage(ERROR_MESSAGE.COMMENT_IS_REQUIRED)
       setAlertTrue(false)
@@ -487,6 +480,7 @@ const CheckerTempateForm = () => {
                 placeholder='Provide your comment here ...'
                 value={formData.comment}
                 onChange={handleChange}
+                required
                 className="w-full p-2 bg-gray-50 border border-gray-400 rounded"
               />
             </div>
