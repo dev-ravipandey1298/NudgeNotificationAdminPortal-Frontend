@@ -209,7 +209,6 @@ const ActionTemplateForm = () => {
       setSubmitMessage(error.response.data.message)
       setAlertTrue(false)
       setshowAlert(true);
-      console.log(error)
     }
   }
 
@@ -220,6 +219,7 @@ const ActionTemplateForm = () => {
 
   const submitForm = (data) => {
     const payload = {
+      "templateId" : data.templateId,
       "templateName": data.templateName,
       "title": data.title,
       "body": data.body,
@@ -268,7 +268,6 @@ const ActionTemplateForm = () => {
       setSubmitMessage(error.response.data.message)
       setAlertTrue(false)
       setshowAlert(true);
-      console.log(error)
     }
 
   }
