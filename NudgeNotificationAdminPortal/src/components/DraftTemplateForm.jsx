@@ -31,7 +31,8 @@ const DraftTemplateForm = () => {
     occurrenceUnit: '',
     occurrenceDays: [],
     environment: 'CUG',
-    imageFile: null
+    imageFile: null,
+    imageUrl: ''
   });
 
   const [showDays, setShowDays] = useState(false);
@@ -46,6 +47,8 @@ const DraftTemplateForm = () => {
   const [isSuccessfullySubmit, setIsSuccessfullySubmit] = useState(false);
   const [isCheckedForImage, setIsCheckedForImage] = useState(false);
   const [isImageAvailable, setIsImageAvailable] = useState(false);
+  const [onChangeShowImage, setOnChangeShowImage] = useState(true);
+
 
   const formDataUpdate = new FormData();
 
@@ -67,13 +70,14 @@ const DraftTemplateForm = () => {
   // Handle file upload
   const handleFileChange = (e) => {
     const file = e.target.files[0];
-    if(file){
-      if(file.size > NOTIFICATION_IMAGE_MAX_SIZE){
+    if (file) {
+      setOnChangeShowImage(false);
+      if (file.size > NOTIFICATION_IMAGE_MAX_SIZE) {
         setSubmitMessage(VALIDATION_MESSAGES.NOTIFICATION_IMAGE_MAX_SIZE_VALIDATION)
         document.getElementById("notificationImageFile").value = ''
         setAlertTrue(false)
         setshowAlert(true);
-      }else{
+      } else {
         setshowAlert(false);
         setFormData((prevData) => ({
           ...prevData,
@@ -121,14 +125,15 @@ const DraftTemplateForm = () => {
           hourOfDay: data.hourOfDay,
           environment: 'CUG',
           imageFile: data.imageUrl,
+          imageUrl: data.imageUrl,
           comment: '',
         })
-        if(data.imageUrl !== null) {
+        if (data.imageUrl !== null) {
           setIsCheckedForImage(true);
           setIsImageAvailable(false)
           document.getElementById("notificationImage").checked = true
         }
-        if(data.imageUrl === null) {
+        if (data.imageUrl === null) {
           setIsImageAvailable(true)
         }
 
@@ -174,10 +179,21 @@ const DraftTemplateForm = () => {
     return day === 0 ? 7 : day;
   }
 
+  const markImageUrlAsNull = () => {
+   
+    if (isCheckedForImage) {
+      setFormData(prevFormData => ({
+        ...prevFormData,
+        imageUrl: null
+      }));
+    }
+  }
+
   const submitForm = (data) => {
     const payload = {
       "templateId": templateId,
       "templateName": data.templateName,
+      "imageUrl": data.imageUrl,
       "title": data.title,
       "body": data.body,
       "startDate": data.startDate,
@@ -232,7 +248,7 @@ const DraftTemplateForm = () => {
       occurrenceFrequency: 1,
       occurrenceUnit: 'Week',
       occurrenceDays: [],
-      hourOfDay : 9,
+      hourOfDay: 9,
       environment: 'CUG',
       imageFile: null,
       comment: '',
@@ -407,15 +423,15 @@ const DraftTemplateForm = () => {
                               formData.occurrenceDays.length >= formData.occurrenceFrequency
                             }
                           />
-                          <span>{maxDays == 7 ? occurrenceFrequencyOption[val-1].label : val}</span>
+                          <span>{maxDays == 7 ? occurrenceFrequencyOption[val - 1].label : val}</span>
                         </label>
                       </div>
                     ))}
                   </div>}
                 </div>
 
-                 {/* hour Of Day */}
-                 <div>
+                {/* hour Of Day */}
+                <div>
                   <label className="block font-medium text-gray-700 mb-2">Hours Of Day*</label>
                   <select
                     name="hourOfDay"
@@ -452,29 +468,29 @@ const DraftTemplateForm = () => {
 
             {/* Notification Image */}
             <div className="flex items-center space-x-2">
-              <input onClick={() => setIsCheckedForImage((prev) => !prev)} type="checkbox" id="notificationImage" className="h-[0.80rem] w-[0.80rem]" name="notificationImage" value="submitted" />
+              <input onClick={() => { setIsCheckedForImage((prev) => !prev); markImageUrlAsNull(); }} type="checkbox" id="notificationImage" className="h-[0.80rem] w-[0.80rem]" name="notificationImage" value="submitted" />
               <label className="font-medium text-red-700 text-sm " htmlFor="notificationImage"> Add an image along with the notification</label>
             </div>
 
-            {(formData.imageFile !== null) && !isEditImage && isCheckedForImage &&
-            <div className='flex'>
-              <div className="space-y-1 space-x-2 flex items-center">
-                <label htmlFor="showEvidence">
-                  <p className="inline font-medium text-gray-700 mb-2">Show Notification Image :</p>
-                </label>
-                <div className="flex items-center justify-center pb-1 h-8 w-8">
-                  <img onClick={() => setShowNotificationImage(true)} src={preview} alt="" />
+            {(formData.imageFile !== null) && !isEditImage && isCheckedForImage && onChangeShowImage &&
+              <div className='flex'>
+                <div className="space-y-1 space-x-2 flex items-center">
+                  <label htmlFor="showEvidence">
+                    <p className="inline font-medium text-gray-700 mb-2">Show Notification Image :</p>
+                  </label>
+                  <div className="flex items-center justify-center pb-1 h-8 w-8">
+                    <img onClick={() => setShowNotificationImage(true)} src={preview} alt="" />
+                  </div>
                 </div>
+                <button onClick={() => setIsEditImage((prev) => !prev)} className='text-blue-600 font-semibold ml-10 underline hover:text-blue-500'>Edit Image</button>
               </div>
-              <button onClick={() => setIsEditImage((prev) => !prev)} className='text-blue-600 font-semibold ml-10 underline hover:text-blue-500'>Edit Image</button>
-            </div>
-            
+
             }
 
-            {isEditImage && isCheckedForImage &&<div>
+            {isEditImage && isCheckedForImage && <div>
               <label className="block "><p className='font-medium text-gray-700 mb-2'>Notification Image</p><p className='text-red-700 text-sm'>{`**Notification Image must be of 1 MB in size`}</p></label>
               <input
-                id = "notificationImageFile"
+                id="notificationImageFile"
                 type="file"
                 accept="image/*"
                 onChange={handleFileChange}
@@ -483,10 +499,10 @@ const DraftTemplateForm = () => {
               />
             </div>}
 
-            {isImageAvailable && isCheckedForImage &&<div>
+            {isImageAvailable && isCheckedForImage && <div>
               <label className="block "><p className='font-medium text-gray-700 mb-2'>Notification Image</p><p className='text-red-700 text-sm'>{`**Notification Image must be of 1 MB in size`}</p></label>
               <input
-                id = "notificationImageFile"
+                id="notificationImageFile"
                 type="file"
                 accept="image/*"
                 onChange={handleFileChange}
@@ -510,9 +526,9 @@ const DraftTemplateForm = () => {
                 <option value="PROD">PROD</option>
               </select>
               {showTooltip && (
-              <div className="absolute left-0 mt-2 w-[200px] p-2 bg-gray-800 text-white text-sm rounded shadow">
-                {VALIDATION_MESSAGES.ENVIRONMENT_DETAILS}
-              </div>
+                <div className="absolute left-0 mt-2 w-[200px] p-2 bg-gray-800 text-white text-sm rounded shadow">
+                  {VALIDATION_MESSAGES.ENVIRONMENT_DETAILS}
+                </div>
               )}
             </div>
 
