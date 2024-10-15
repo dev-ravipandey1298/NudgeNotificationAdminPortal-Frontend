@@ -5,7 +5,7 @@ import Alert from './Alert';
 import { COMMON_ROUTE, NAVIGATE_PATH } from '../constants/routeConstant';
 import { useNavigate } from 'react-router-dom';
 import { ERROR_MESSAGE } from '../constants/ErrorMessageConstant';
-import { CONFIRMATION_MESSAGES } from '../constants/ValidationMessageConstant';
+import { CONFIRMATION_MESSAGES, VALIDATION_MESSAGES } from '../constants/ValidationMessageConstant';
 import ConfirmationWarning from './ConfirmationWarning';
 
 const CUGManagementPage = () => {
@@ -43,9 +43,10 @@ const CUGManagementPage = () => {
   }
 
   const handleDelete = (selectedUsers) => {
-    setUsers(users.filter((user) => !selectedUsers.includes(user.mobileNumber))); 
+    // setUsers(users.filter((user) => !selectedUsers.includes(user.mobileNumber))); 
     const userMobileNumber = users.filter((user) => selectedUsers.includes(user.mobileNumber)).map((user) => user.mobileNumber);
     deleteSelectedUserBackend(userMobileNumber);
+    getAllCugUsersFromBackend();
   }
 
   // Handle checkbox toggle
@@ -79,9 +80,17 @@ const CUGManagementPage = () => {
         setSubmitMessage(response.data.message)
         setAlertTrue(false)
         setshowAlert(true);
+      }else{
+        setSubmitMessage(error.response.data.message)
+        setAlertTrue(false)
+        setshowAlert(true);
       }
     } catch (error) {
-      setSubmitMessage(error.response.data.message)
+      if(error.response.data.message.includes("ERROR: null value in column")){
+        setSubmitMessage(VALIDATION_MESSAGES.DUPLICATE_MOBILE_NUMBER)
+      }else{
+        setSubmitMessage(error.response.data.message)
+      }
       setAlertTrue(false)
       setshowAlert(true);
     }
@@ -110,11 +119,9 @@ const CUGManagementPage = () => {
   // Handle submitting new users to backend
   const handleSubmitNewUsers = () => {
     try {      
-      setUsers([...users, ...newUsers]); 
       createNewUsersBackend(JSON.stringify(newUsers));
+      getAllCugUsersFromBackend();
       setNewUsers([]); 
-      setSubmitMessage("New CUG User added successfully.")
-      setshowAlert(true)
     } catch (err) {
       setError('Failed to add users');
     } 
@@ -138,7 +145,7 @@ const CUGManagementPage = () => {
       <div className="mb-4 border-b border-gray-200">
         <ul className="flex flex-wrap">
           <li className={`mr-2 cursor-pointer ${activeTab === 0 ? 'border-b-2 border-blue-500' : ''}`}>
-            <button onClick={() => setActiveTab(0)} className="p-2">All CUG Users</button>
+            <button onClick={() => {setActiveTab(0); getAllCugUsersFromBackend();}} className="p-2">All CUG Users</button>
           </li>
           <li className={`mr-2 cursor-pointer ${activeTab === 1 ? 'border-b-2 border-blue-500' : ''}`}>
             <button onClick={() => { setActiveTab(1); setUserData({ name: '', mobileNumber: '' }); }} className="p-2">Add CUG Users</button>
@@ -231,7 +238,7 @@ const CUGManagementPage = () => {
           
             <button
               onClick={handleAddUser}
-              className="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600 text-nowrap "
+              className="px-4 py-2 w-32 text-white bg-blue-500 rounded hover:bg-blue-600 text-nowrap "
             >
               + Add User
             </button>
