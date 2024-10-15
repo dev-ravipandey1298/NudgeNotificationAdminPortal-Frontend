@@ -271,7 +271,7 @@ const CUGManagementPage = () => {
       )}
     </div>
     {confirmation && <ConfirmationWarning message={CONFIRMATION_MESSAGES.CONFIRMATION_ON_SELECTED_USER_DELETE} handleConfirmWarning={() => {handleDelete(selectedUsers); setConfirmation(false)} } handleCloseWarning={() => setConfirmation(false)}/>}
-    {showAlert && <Alert alertDetail={{ success: alertTrue, message: submitMessage }} handleCloseAlert={() => {setshowAlert(false); setAlertTrue(true)}} />}
+    {showAlert && <Alert alertDetail={{ success: alertTrue, message: submitMessage }} handleCloseAlert={() => {setshowAlert(false); setAlertTrue(true); getAllCugUsersFromBackend()}} />}
     </>
   );
 };
