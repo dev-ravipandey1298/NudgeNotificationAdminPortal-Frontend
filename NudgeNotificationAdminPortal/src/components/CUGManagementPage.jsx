@@ -76,9 +76,9 @@ const CUGManagementPage = () => {
   const createNewUsersBackend = async (userDetails) => {
     try {
       const response = await createNewCugUser(userDetails);
-      if(response.status == 200){
+      if(response.status === 201){
         setSubmitMessage(response.data.message)
-        setAlertTrue(false)
+        setAlertTrue(true)
         setshowAlert(true);
       }else{
         setSubmitMessage(error.response.data.message)
