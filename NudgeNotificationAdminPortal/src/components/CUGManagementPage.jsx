@@ -45,8 +45,11 @@ const CUGManagementPage = () => {
   const handleDelete = (selectedUsers) => {
     // setUsers(users.filter((user) => !selectedUsers.includes(user.mobileNumber))); 
     const userMobileNumber = users.filter((user) => selectedUsers.includes(user.mobileNumber)).map((user) => user.mobileNumber);
-    deleteSelectedUserBackend(userMobileNumber);
-    getAllCugUsersFromBackend();
+    const response = deleteSelectedUserBackend(userMobileNumber);
+    if(response){
+      setUsers(users.filter((user) => !selectedUsers.includes(user.mobileNumber))); 
+      getAllCugUsersFromBackend();
+    }
   }
 
   // Handle checkbox toggle
@@ -65,11 +68,14 @@ const CUGManagementPage = () => {
         setSubmitMessage(response.data.message)
         setAlertTrue(true)
         setshowAlert(true);
+        return true;
       }
+      return false;
     } catch (error) {
       setSubmitMessage(error.response.data.message)
       setAlertTrue(false)
       setshowAlert(true);
+      return false;
     }
   }
 
@@ -271,7 +277,7 @@ const CUGManagementPage = () => {
       )}
     </div>
     {confirmation && <ConfirmationWarning message={CONFIRMATION_MESSAGES.CONFIRMATION_ON_SELECTED_USER_DELETE} handleConfirmWarning={() => {handleDelete(selectedUsers); setConfirmation(false)} } handleCloseWarning={() => setConfirmation(false)}/>}
-    {showAlert && <Alert alertDetail={{ success: alertTrue, message: submitMessage }} handleCloseAlert={() => {setshowAlert(false); setAlertTrue(true); getAllCugUsersFromBackend()}} />}
+    {showAlert && <Alert alertDetail={{ success: alertTrue, message: submitMessage }} handleCloseAlert={() => {setshowAlert(false); setAlertTrue(true);}} />}
     </>
   );
 };
